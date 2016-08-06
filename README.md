@@ -8,13 +8,13 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 
 ## Start Nextcloud
 
-Starting the Nextcloud 9.0.53 instance listening on port 80 is as easy as the following:
+Starting the Nextcloud 9.0.53 php-fpm instance listening on port 9000 is as easy as the following:
 
 ```console
-$ docker run -d -p 80:80 nextcloud:9.0.53
+$ docker run -d nextcloud:9.0.53
 ```
 
-Then go to http://localhost/ and go through the wizard. By default this container uses SQLite for data storage, but the wizard should allow for connecting to an existing database.
+Now you can get access to fpm running on port 9000 inside the container. If you want to access it from the Internets, we recommend using a reverse proxy in front. You can find more information on that on the docker-compose section. Once you have a reverse proxy, go to http://localhost/ and go through the wizard. By default this container uses SQLite for data storage, but the wizard should allow for connecting to an existing database.
 
 For a MySQL database you can link an database container, e.g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup.
 
@@ -29,3 +29,7 @@ For fine grained data persistence, you can use 3 volumes, as shown below.
 - `-v /<mydatalocation>/apps:/var/www/html/apps` installed / modified apps
 - `-v /<mydatalocation>/config:/var/www/html/config` local configuration
 - `-v /<mydatalocation>/data:/var/www/html/data` the actual data of your Nextcloud
+
+## ... via [`docker-compose`](https://github.com/docker/compose)
+
+You can use a setup that is used in production at [IndieHosters/Nextcloud](https://github.com/indiehosters/nextcloud).
