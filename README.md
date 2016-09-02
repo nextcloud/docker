@@ -8,10 +8,10 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 
 ## Start Nextcloud
 
-Starting the Nextcloud 9.0.53 php-fpm instance listening on port 9000 is as easy as the following:
+Starting Nextcloud php-fpm instance listening on port 9000 is as easy as the following:
 
 ```console
-$ docker run -d nextcloud:9.0.53
+$ docker run -d nextcloud
 ```
 
 Now you can get access to fpm running on port 9000 inside the container. If you want to access it from the Internets, we recommend using a reverse proxy in front. You can find more information on that on the docker-compose section. Once you have a reverse proxy, go to http://localhost/ and go through the wizard. By default this container uses SQLite for data storage, but the wizard should allow for connecting to an existing database.
