@@ -12,7 +12,7 @@ This image is designed to be used in a micro-service environment. It consists of
 Starting Nextcloud php-fpm instance listening on port 9000 is as easy as the following:
 
 ```console
-$ docker run -d nextcloud
+$ docker run -d indiehosters/nextcloud
 ```
 
 Now you can get access to fpm running on port 9000 inside the container. If you want to access it from the internet, we recommend using a reverse proxy in front. You can install it directly on your machine or use an additional container (You can find more information on that on the docker-compose section). Once you have a reverse proxy, you can access Nextcloud at http://localhost/ and go through the wizard. 
@@ -37,3 +37,12 @@ The recommended minimal setup is using this image in combination with two contai
 A working example can be found at [IndieHosters/Nextcloud](https://github.com/indiehosters/nextcloud).
 
 If you want to access your Nextcloud from the internet we recommend configuring your reverse proxy to use encryption (for example via [let's Encrypt](https://letsencrypt.org/))
+
+## Update to a newer version
+
+To update your Nextcloud version you simply have to pull and start the new container.
+```console
+$ docker pull indiehosters/nextcloud
+$ docker run -d indiehosters/nextcloud
+```
+When you access your site the update wizard will show up.
