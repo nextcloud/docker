@@ -35,7 +35,7 @@ RUN set -ex \
  && pecl install redis-2.2.8 \
  && docker-php-ext-enable apcu redis memcached
 
-ENV NEXTCLOUD_VERSION 10.0.0
+ENV NEXTCLOUD_VERSION 10.0.1
 VOLUME /var/www/html
 
 RUN curl -fsSL -o nextcloud.tar.bz2 \
