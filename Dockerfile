@@ -1,21 +1,7 @@
-FROM php:5.6-fpm
-
-RUN apt-get update && apt-get install -y \
-  bzip2 \
-  libcurl4-openssl-dev \
-  libfreetype6-dev \
-  libicu-dev \
-  libjpeg-dev \
-  libmcrypt-dev \
-  libmemcached-dev \
-  libpng12-dev \
-  libpq-dev \
-  libxml2-dev \
-  && rm -rf /var/lib/apt/lists/*
+FROM php:7.0-fpm-alpine
 
 # https://docs.nextcloud.com/server/9/admin_manual/installation/source_installation.html
-RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-  && docker-php-ext-install gd exif intl mbstring mcrypt mysql opcache pdo_mysql pdo_pgsql pgsql zip
+RUN docker-php-ext-install gd exif intl mbstring mcrypt opcache pdo_mysql pdo_pgsql pgsql zip
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
@@ -28,12 +14,28 @@ RUN { \
     echo 'opcache.enable_cli=1'; \
   } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-# PECL extensions
+# PECL & source PHP extensions
 RUN set -ex \
- && pecl install APCu-4.0.10 \
- && pecl install memcached-2.2.0 \
- && pecl install redis-2.2.8 \
- && docker-php-ext-enable apcu redis memcached
+  && apk update \
+  && apk add autoconf make g++ gcc git file gnupg re2c \
+  #&& echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+  #&& echo '@community http://nl.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories \
+  #&& apk add php7-session@community \
+  #&& apk add php7-memcached@testing \
+  && pecl install APCu-5.1.6 \
+  && git clone https://github.com/phpredis/phpredis.git \
+  && cd phpredis \
+  && git checkout php7 \
+  && phpize \
+  && ./configure \
+  && make && make install \
+  && cd .. \
+  && rm -rf phpredis \
+  && docker-php-ext-enable redis apcu \
+  && apk del autoconf make g++ gcc git \
+  && rm -rf /var/cache/apk/*
+
+
 
 ENV NEXTCLOUD_VERSION 10.0.0
 VOLUME /var/www/html
@@ -43,7 +45,7 @@ RUN curl -fsSL -o nextcloud.tar.bz2 \
  && curl -fsSL -o nextcloud.tar.bz2.asc \
     "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc" \
  && export GNUPGHOME="$(mktemp -d)" \
-# gpg key from https://nextcloud.com/nextcloud.asc
+ # gpg key from https://nextcloud.com/nextcloud.asc
  && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A \
  && gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2 \
  && rm -r "$GNUPGHOME" nextcloud.tar.bz2.asc \
