@@ -2,7 +2,7 @@ What is Nextcloud?
 
 A safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms.
 
-![logo](https://github.com/nextcloud/docker/blob/master/logo.png)
+![logo](https://github.com/nextcloud/docker/raw/master/logo.png)
 
 # How to use this image
 This image is designed to be used in a micro-service environment. It consists of the Nextcloud installation in an [php-fpm](https://hub.docker.com/_/php/) container. To use this image it must be combined with any webserver that can proxy the http requests to the FastCGI-port of the container.
