@@ -1,7 +1,6 @@
 FROM php:7.0-fpm-alpine
 
-# https://docs.nextcloud.com/server/9/admin_manual/installation/source_installation.html
-RUN docker-php-ext-install gd exif intl mbstring mcrypt opcache pdo_mysql pdo_pgsql pgsql zip
+ENV NEXTCLOUD_VERSION 10.0.0
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
@@ -14,14 +13,18 @@ RUN { \
     echo 'opcache.enable_cli=1'; \
   } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-# PECL & source PHP extensions
+# Install PHP extensions
+# https://docs.nextcloud.com/server/9/admin_manual/installation/source_installation.html
 RUN set -ex \
   && apk update \
-  && apk add autoconf make g++ gcc git file gnupg re2c \
+  && apk add build-base python-dev py-pip jpeg-dev zlib-dev postgresql-dev libmcrypt-dev libpng-dev \
+  && apk add autoconf make g++ gcc git file gnupg re2c icu icu-dev \
   #&& echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
   #&& echo '@community http://nl.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories \
   #&& apk add php7-session@community \
   #&& apk add php7-memcached@testing \
+  && docker-php-ext-install gd exif intl mbstring mcrypt opcache pdo_mysql pdo_pgsql pgsql zip \
+  && docker-php-ext-enable gd intl exif mbstring mcrypt opcache pdo_mysql pdo_pgsql pgsql zip \
   && pecl install APCu-5.1.6 \
   && git clone https://github.com/phpredis/phpredis.git \
   && cd phpredis \
@@ -32,12 +35,9 @@ RUN set -ex \
   && cd .. \
   && rm -rf phpredis \
   && docker-php-ext-enable redis apcu \
-  && apk del autoconf make g++ gcc git \
+  && apk del autoconf make g++ gcc git py-pip zlib-dev jpeg-dev libmcrypt-dev libpng-dev\
   && rm -rf /var/cache/apk/*
 
-
-
-ENV NEXTCLOUD_VERSION 10.0.0
 VOLUME /var/www/html
 
 RUN curl -fsSL -o nextcloud.tar.bz2 \
