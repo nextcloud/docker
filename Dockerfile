@@ -19,7 +19,7 @@ RUN set -ex \
   && apk update \
   && apk add build-base python-dev py-pip jpeg-dev jpeg zlib zlib-dev \
      postgresql-dev libmcrypt-dev libmcrypt libpng-dev libpng \
-     autoconf make g++ gcc git file gnupg re2c icu icu-dev \
+     autoconf make g++ gcc git file gnupg re2c icu icu-dev tzdata \
   #&& echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
   #&& echo '@community http://nl.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories \
   #&& apk add php7-session@community \
