@@ -17,8 +17,9 @@ RUN { \
 # https://docs.nextcloud.com/server/9/admin_manual/installation/source_installation.html
 RUN set -ex \
   && apk update \
-  && apk add build-base python-dev py-pip jpeg-dev zlib-dev postgresql-dev libmcrypt-dev libpng-dev \
-  && apk add autoconf make g++ gcc git file gnupg re2c icu icu-dev \
+  && apk add build-base python-dev py-pip jpeg-dev jpeg zlib zlib-dev \
+     postgresql-dev libmcrypt-dev libmcrypt libpng-dev libpng \
+     autoconf make g++ gcc git file gnupg re2c icu icu-dev \
   #&& echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
   #&& echo '@community http://nl.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories \
   #&& apk add php7-session@community \
