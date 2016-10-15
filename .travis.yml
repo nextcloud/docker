@@ -1,0 +1,23 @@
+language: bash
+services: docker
+
+env:
+  - VARIANT=php5.6/fpm
+  - VARIANT=php7.0/alpine-fpm
+
+install:
+  - git clone https://github.com/docker-library/official-images.git ~/official-images
+
+before_script:
+  - env | sort
+  - cd "$VARIANT"
+  - slash='/'; image="nextcloud:${VARIANT//$slash/-}"
+
+script:
+  - docker build -t "$image" .
+  - ~/official-images/test/run.sh "$image"
+
+after_script:
+  - docker images
+  
+# vim:set et ts=2 sw=2:
