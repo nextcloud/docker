@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/bash
 set -e
 
 if [ ! -e '/var/www/html/version.php' ]; then
