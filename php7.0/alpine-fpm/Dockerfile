@@ -17,15 +17,14 @@ RUN { \
 # https://docs.nextcloud.com/server/9/admin_manual/installation/source_installation.html
 RUN set -ex \
   && apk update \
-  && apk add build-base python-dev py-pip jpeg-dev jpeg zlib zlib-dev \
+  && apk add build-base python-dev py-pip jpeg-dev jpeg \
+     libldap openldap-dev zlib zlib-dev \
      postgresql-dev libmcrypt-dev libmcrypt libpng-dev libpng \
      autoconf make g++ gcc git file gnupg re2c icu icu-dev tzdata \
-  #&& echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-  #&& echo '@community http://nl.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories \
-  #&& apk add php7-session@community \
-  #&& apk add php7-memcached@testing \
-  && docker-php-ext-install gd exif intl mbstring mcrypt opcache pdo_mysql pdo_pgsql pgsql zip \
-  && docker-php-ext-enable gd intl exif mbstring mcrypt opcache pdo_mysql pdo_pgsql pgsql zip \
+  && docker-php-ext-install gd exif intl mbstring mcrypt opcache \
+     pdo_mysql pdo_pgsql pgsql zip ldap \
+  && docker-php-ext-enable gd exif intl mbstring mcrypt opcache \
+     pdo_mysql pdo_pgsql pgsql zip ldap \
   && pecl install APCu-5.1.6 \
   && git clone https://github.com/phpredis/phpredis.git \
   && cd phpredis \
@@ -36,7 +35,8 @@ RUN set -ex \
   && cd .. \
   && rm -rf phpredis \
   && docker-php-ext-enable redis apcu \
-  && apk del autoconf make g++ gcc git py-pip zlib-dev jpeg-dev libmcrypt-dev libpng-dev\
+  && apk del autoconf make g++ gcc git py-pip zlib-dev \
+     jpeg-dev libmcrypt-dev libpng-dev openldap-dev \
   && rm -rf /var/cache/apk/*
 
 VOLUME /var/www/html
