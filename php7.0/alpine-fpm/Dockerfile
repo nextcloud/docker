@@ -1,6 +1,6 @@
 FROM php:7.0-fpm-alpine
 
-ENV NEXTCLOUD_VERSION 10.0.0
+ENV NEXTCLOUD_VERSION 10.0.1
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
