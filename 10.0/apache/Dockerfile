@@ -1,4 +1,4 @@
-FROM php:5.6-fpm
+FROM php:5.6-apache
 
 RUN apt-get update && apt-get install -y \
   bzip2 \
@@ -29,6 +29,7 @@ RUN { \
     echo 'opcache.fast_shutdown=1'; \
     echo 'opcache.enable_cli=1'; \
   } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+RUN a2enmod rewrite
 
 # PECL extensions
 RUN set -ex \
@@ -36,8 +37,9 @@ RUN set -ex \
  && pecl install memcached-2.2.0 \
  && pecl install redis-2.2.8 \
  && docker-php-ext-enable apcu redis memcached
+RUN a2enmod rewrite
 
-ENV NEXTCLOUD_VERSION 10.0.1
+ENV NEXTCLOUD_VERSION 10.0.2
 VOLUME /var/www/html
 
 RUN curl -fsSL -o nextcloud.tar.bz2 \
@@ -55,4 +57,4 @@ RUN curl -fsSL -o nextcloud.tar.bz2 \
 COPY docker-entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["apache2-foreground"]
