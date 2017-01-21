@@ -29,8 +29,7 @@ dockerfileCommit() {
 cat <<-EOH
 # This file is generated via https://github.com/nextcloud/docker/blob/$(fileCommit "$self")/$self
 
-Maintainers: Nextcloud <docker@nextcloud.com> (@nextcloud),
-             Pierre Ozoux <pierre@ozoux.net> (@pierreozoux)
+Maintainers: Nextcloud <docker@nextcloud.com> (@nextcloud)
 GitRepo: https://github.com/nextcloud/docker.git
 EOH
 
