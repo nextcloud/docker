@@ -19,9 +19,16 @@ RUN set -ex \
   && apk update \
   && apk add build-base python-dev py-pip jpeg-dev jpeg \
      libldap openldap-dev zlib zlib-dev \
+     freetype freetype-dev libjpeg-turbo libjpeg-turbo-dev \
      postgresql-dev libmcrypt-dev libmcrypt libpng-dev libpng \
      autoconf make g++ gcc git file gnupg re2c icu icu-dev tzdata \
-  && docker-php-ext-install gd exif intl mbstring mcrypt opcache \
+  && docker-php-ext-configure gd \
+     --with-freetype-dir=/usr/include/ \
+     --with-png-dir=/usr/include \
+     --with-jpeg-dir=/usr/include \
+  && NPROC=$(getconf _NPROCESSORS_ONLN) \
+  && docker-php-ext-install -j${NPROC} gd \
+  && docker-php-ext-install exif intl mbstring mcrypt opcache \
      pdo_mysql pdo_pgsql pgsql zip ldap \
   && docker-php-ext-enable gd exif intl mbstring mcrypt opcache \
      pdo_mysql pdo_pgsql pgsql zip ldap \
@@ -37,6 +44,7 @@ RUN set -ex \
   && docker-php-ext-enable redis apcu \
   && apk del autoconf make g++ gcc git py-pip zlib-dev \
      jpeg-dev libmcrypt-dev libpng-dev openldap-dev \
+     freetype-dev libjpeg-turbo-dev \
   && rm -rf /var/cache/apk/*
 
 VOLUME /var/www/html
