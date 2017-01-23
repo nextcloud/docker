@@ -1,7 +1,5 @@
 FROM php:7.0-fpm-alpine
 
-ENV NEXTCLOUD_VERSION 10.0.3
-
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
@@ -48,6 +46,8 @@ RUN set -ex \
   && rm -rf /var/cache/apk/*
 
 VOLUME /var/www/html
+
+ENV NEXTCLOUD_VERSION 10.0.3
 
 RUN curl -fsSL -o nextcloud.tar.bz2 \
     "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2" \
