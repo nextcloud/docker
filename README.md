@@ -15,17 +15,13 @@ Starting Nextcloud php-fpm instance listening on port 9000 is as easy as the fol
 $ docker run -d indiehosters/nextcloud
 ```
 
-Now you can get access to fpm running on port 9000 inside the container. If you want to access it from the internet, we recommend using a reverse proxy in front. You can install it directly on your machine or use an additional container (You can find more information on that on the docker-compose section). Once you have a reverse proxy, you can access Nextcloud at http://localhost/ and go through the wizard. 
+Now you can get access to fpm running on port 9000 inside the container. If you want to access it from the internet, we recommend using a reverse proxy in front. You can install it directly on your machine or use an additional container (You can find more information on that on the docker-compose section). Once you have a reverse proxy, you can access Nextcloud at http://localhost/ and go through the wizard.
 
 By default this container uses SQLite for data storage, but the Nextcloud setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB or PostgreSQL database. You can also link a database container, e.g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup.
 
 ## Persistent data
 
-All data beyond that which lives in the database (file uploads, etc) is stored within the default volume `/var/www/html`. With this volume, Nextcloud will only be updated when the file `version.php` is not present.
-
-- `-v /<mydatalocation>:/var/www/html`
-
-For fine grained data persistence, you can use 3 volumes, as shown below.
+All data beyond that which lives in the database (file uploads, etc) is stored within several volumes, which are all separately controlled (to ensure that the source code of NextCloud can be updated by switching Docker versions -- please always follow the correct upgrade process despite the ease of just switching images):
 
 - `-v /<mydatalocation>/apps:/var/www/html/apps` installed / modified apps
 - `-v /<mydatalocation>/config:/var/www/html/config` local configuration

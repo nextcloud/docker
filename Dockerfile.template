@@ -40,7 +40,7 @@ RUN set -ex \
 RUN a2enmod rewrite
 
 ENV NEXTCLOUD_VERSION %%VERSION%%
-VOLUME /var/www/html
+VOLUME ["/var/www/html/data", "/var/www/html/config", "/var/www/html/apps"]
 
 RUN curl -fsSL -o nextcloud.tar.bz2 \
     "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2" \
