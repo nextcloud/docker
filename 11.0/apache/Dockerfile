@@ -33,7 +33,7 @@ RUN a2enmod rewrite
 
 # PECL extensions
 RUN set -ex \
- && pecl install APCu-4.0.10 \
+ && pecl install APCu-5.1.8 \
  && pecl install memcached-3.0.2 \
  && pecl install redis-2.2.8 \
  && docker-php-ext-enable apcu redis memcached
