@@ -33,7 +33,7 @@ RUN { \
 # PECL extensions
 RUN set -ex \
  && pecl install APCu-4.0.10 \
- && pecl install memcached-2.2.0 \
+ && pecl install memcached-3.0.2 \
  && pecl install redis-2.2.8 \
  && docker-php-ext-enable apcu redis memcached
 
