@@ -16,7 +16,11 @@ for latest in "${latests[@]}"; do
 	for variant in apache fpm; do
 		# Create the version+variant directory with a Dockerfile.
 		mkdir -p "$version/$variant"
-		cp Dockerfile.template "$version/$variant/Dockerfile"
+		if [ "$version" == "11.0" ]; then
+			cp Dockerfile-php7.template "$version/$variant/Dockerfile"
+		else
+			cp Dockerfile.template "$version/$variant/Dockerfile"
+		fi
 
 		echo "updating $latest [$version] $variant"
 
