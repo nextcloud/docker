@@ -39,7 +39,7 @@ RUN set -ex \
  && docker-php-ext-enable apcu redis memcached
 RUN a2enmod rewrite
 
-ENV NEXTCLOUD_VERSION 10.0.3
+ENV NEXTCLOUD_VERSION 10.0.4
 VOLUME /var/www/html
 
 RUN curl -fsSL -o nextcloud.tar.bz2 \
