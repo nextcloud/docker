@@ -6,6 +6,11 @@ declare -A cmd=(
 	[fpm]='php-fpm'
 )
 
+# version_greater_or_equal A B returns whether A >= B
+function version_greater_or_equal() {
+	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
+}
+
 latests=( $(curl -sSL 'https://nextcloud.com/changelog/' |tac|tac| \
 	grep -o "\(Version\|Release\)\s\+[[:digit:]]\+\(\.[[:digit:]]\+\)\+" | \
 	awk '{ print $2 }' | sort -V ) )
@@ -16,7 +21,12 @@ for latest in "${latests[@]}"; do
 	for variant in apache fpm; do
 		# Create the version+variant directory with a Dockerfile.
 		mkdir -p "$version/$variant"
-		cp Dockerfile.template "$version/$variant/Dockerfile"
+
+		template="Dockerfile.template"
+		if version_greater_or_equal "$version" "11.0"; then
+			template="Dockerfile-php7.template"
+		fi
+		cp "$template" "$version/$variant/Dockerfile"
 
 		echo "updating $latest [$version] $variant"
 
