@@ -1,0 +1,25 @@
+language: bash
+services: docker
+
+env:
+  - VERSION=11.0 VARIANT=fpm
+  - VERSION=11.0 VARIANT=apache
+  - VERSION=10.0 VARIANT=fpm
+  - VERSION=10.0 VARIANT=apache
+  - VERSION=9.0 VARIANT=fpm
+  - VERSION=9.0 VARIANT=apache
+
+install:
+  - git clone https://github.com/docker-library/official-images.git ~/official-images
+
+before_script:
+  - env | sort
+  - cd "$VERSION"
+  - image="nextcloud:${VERSION}${VARIANT:+-$VARIANT}"
+
+script:
+  - travis_retry docker build -t "$image" "${VARIANT}"
+  - ~/official-images/test/run.sh "$image"
+
+after_script:
+  - docker images
