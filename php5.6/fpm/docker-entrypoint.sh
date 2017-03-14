@@ -6,4 +6,8 @@ if [ ! -e '/var/www/html/version.php' ]; then
     chown -R www-data /var/www/html
 fi
 
+if [ -n "$TZ"]; then
+  cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+fi
+
 exec "$@"
