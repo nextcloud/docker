@@ -15,6 +15,7 @@ latests=( $(curl -sSL 'https://nextcloud.com/changelog/' |tac|tac| \
 	grep -o "\(Version\|Release\)\s\+[[:digit:]]\+\(\.[[:digit:]]\+\)\+" | \
 	awk '{ print $2 }' | sort -V ) )
 
+travisEnv=
 for latest in "${latests[@]}"; do
 	version=$(echo "$latest" | cut -d. -f1-2)
 
@@ -44,5 +45,14 @@ for latest in "${latests[@]}"; do
 
 		# Copy the docker-entrypoint.
 		cp docker-entrypoint.sh "$version/$variant/docker-entrypoint.sh"
+
+		travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
 	done
 done
+
+# update .travis.yml
+travis="$(awk -v 'RS=\n\n' '$1 == "env:" { $0 = "env:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
+echo "$travis"  > .travis.yml
+
+# remove duplicate entries
+echo "$(awk '!NF || !seen[$0]++' .travis.yml)" > .travis.yml
