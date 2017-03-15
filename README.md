@@ -54,7 +54,7 @@ Mysql / MariaDB:
 - `-v db:/var/lib/mysql` database files
 
 PostegreSQL:
-- `-v db:/var/lib/postegre/data` database files 
+- `-v db:/var/lib/postresql/data` database files 
 
 
 
@@ -119,7 +119,7 @@ services:
     image: mariadb
     restart: always
     volumes:
-      - db:/var/lib/postresql/data
+      - db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PW=...
       - MYSQL_USER_PW=...
