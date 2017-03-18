@@ -30,7 +30,7 @@ $ docker run -p 80:80 -d nextcloud
 
 ## Using the fpm image
 To use the fpm image you need an additional web server that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases you might want use another container or your host as proxy.
-If you use your host you can adress your nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file).
+If you use your host you can address your nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file).
 In both cases you don't want to map the fpm port to you host. (You can find more information on that on the docker-compose section)
 
 ```console
@@ -174,7 +174,7 @@ $ docker-compose up -d --pull
 
 # Adding Features
 A lot of people use additional functionality inside their nextcloud installation. If the image does not include the packages you need, you can easily build your own image on top of it.
-The [examples folder](https://github.com/nextcloud/docker/blob/master/.examples) gives a few examples on how to add certain functionalities, like including the cron job, smb-support or imap-authentification. 
+The [examples folder](https://github.com/nextcloud/docker/blob/master/.examples) gives a few examples on how to add certain functionalities, like including the cron job, smb-support or imap-authentication. 
 Start your derived image with the `FROM` statement and add whatever you like.
 
 ```yaml
@@ -209,7 +209,7 @@ docker run -d your-name
 or for docker-compose:
 
 ```console
-docker-compose build --no-chache
+docker-compose build --no-cache
 docker-compose up -d
 
 ```
