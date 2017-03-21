@@ -59,7 +59,7 @@ PostegreSQL:
 
 
 # Running this image with docker-compose
-The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are to many different possibilities to setup your system, so here are only some examples what you have to look for. 
+The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for. 
 
 At first make sure you have chosen the right base image (fpm or apache) and added the features you wanted (see at adding features). In almost every case you want to add a database container and https encryption to your setup. You also want to add docker volumes to get persistent data. 
 
