@@ -14,12 +14,20 @@ install:
 
 before_script:
   - env | sort
-  - cd "$VERSION"
   - image="nextcloud:${VERSION}${VARIANT:+-$VARIANT}"
+  - hash_before=$(git write-tree)
 
 script:
-  - travis_retry docker build -t "$image" "${VARIANT}"
+  # Test Image
+  - travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
   - ~/official-images/test/run.sh "$image"
+
+  # Test generate-stackbrew-library.sh
+  - ./generate-stackbrew-library.sh
+
+  # Test update.sh
+  - ./update.sh
+  - bash -c "[[ $hash_before = $(git add -A && git write-tree) ]]"
 
 after_script:
   - docker images
