@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
   libpng12-dev \
   libpq-dev \
   libxml2-dev \
+  samba-client \
   && rm -rf /var/lib/apt/lists/*
 
 # https://docs.nextcloud.com/server/9/admin_manual/installation/source_installation.html
