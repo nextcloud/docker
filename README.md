@@ -201,7 +201,7 @@ If you use your own Dockerfile you need to configure your docker-compose file ac
 Updating your own derived image is also very simple. When a new version of the nextcloud image is available run:
 
 ```console
-docker build -t your-name --no-cache . 
+docker build -t your-name --pull . 
 docker run -d your-name
 
 ```
@@ -209,7 +209,7 @@ docker run -d your-name
 or for docker-compose:
 
 ```console
-docker-compose build --no-cache
+docker-compose build --pull
 docker-compose up -d
 
 ```
