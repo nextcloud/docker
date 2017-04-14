@@ -1,7 +1,7 @@
+# What is Nextcloud?
+
 [![Build Status update.sh](https://doi-janky.infosiftr.net/job/update.sh/job/nextcloud/badge/icon)](https://doi-janky.infosiftr.net/job/update.sh/job/nextcloud)
 [![Build Status Travis](https://travis-ci.org/nextcloud/docker.svg?branch=master)](https://travis-ci.org/nextcloud/docker)
-
-# What is Nextcloud?
 
 A safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms.
 
