@@ -18,7 +18,18 @@ if version_greater "$installed_version" "$image_version"; then
 fi
 
 if version_greater "$image_version" "$installed_version"; then
-    tar cf - --one-file-system -C /usr/src/nextcloud . | tar xf -
+    rsync -a --delete --exclude /config/ --exclude /data/ --exclude /apps/ /usr/src/nextcloud/ /var/www/html/
+
+    if [ ! -d /var/www/html/config ]; then
+        cp -arT /usr/src/nextcloud/config /var/www/html/config
+    fi
+
+    mkdir -p /var/www/html/apps
+    for app in `find /usr/src/nextcloud/apps -maxdepth 1 -mindepth 1 -type d | cut -d / -f 6`; do
+        rm -rf /var/www/html/apps/$app
+        cp -arT /usr/src/nextcloud/apps/$app /var/www/html/apps/$app
+    done
+
     chown -R www-data /var/www/html
 fi
 

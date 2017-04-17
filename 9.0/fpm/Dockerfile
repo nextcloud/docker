@@ -1,6 +1,7 @@
 FROM php:5.6-fpm
 
 RUN apt-get update && apt-get install -y \
+  rsync \
   bzip2 \
   libcurl4-openssl-dev \
   libfreetype6-dev \
