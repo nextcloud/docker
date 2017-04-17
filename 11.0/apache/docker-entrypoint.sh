@@ -22,17 +22,13 @@ if version_greater "$image_version" "$installed_version"; then
         su - www-data -s /bin/bash -c 'php /var/www/html/occ app:list' > /tmp/list_before
     fi
 
-    rsync -a --delete --exclude /config/ --exclude /data/ --exclude /apps/ /usr/src/nextcloud/ /var/www/html/
+    rsync -a --delete --exclude /config/ --exclude /data/ --exclude /custom_apps/ /usr/src/nextcloud/ /var/www/html/
 
     if [ ! -d /var/www/html/config ]; then
         cp -arT /usr/src/nextcloud/config /var/www/html/config
     fi
 
-    mkdir -p /var/www/html/apps
-    for app in `find /usr/src/nextcloud/apps -maxdepth 1 -mindepth 1 -type d | cut -d / -f 6`; do
-        rm -rf /var/www/html/apps/$app
-        cp -arT /usr/src/nextcloud/apps/$app /var/www/html/apps/$app
-    done
+    mkdir -p /var/www/html/custom_apps
 
     chown -R www-data /var/www/html
 

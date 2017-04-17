@@ -56,6 +56,7 @@ RUN curl -fsSL -o nextcloud.tar.bz2 \
  && rm nextcloud.tar.bz2
 
 COPY docker-entrypoint.sh /entrypoint.sh
+COPY apps.config.php /usr/src/nextcloud/config/apps.config.php
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apache2-foreground"]
