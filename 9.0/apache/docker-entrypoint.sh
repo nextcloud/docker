@@ -31,6 +31,10 @@ if version_greater "$image_version" "$installed_version"; then
     done
 
     chown -R www-data /var/www/html
+
+    if [ "$installed_version" != "0.0.0~unknown" ]; then
+        su - www-data -s /bin/bash -c 'php /var/www/html/occ upgrade --no-app-disable'
+    fi
 fi
 
 exec "$@"
