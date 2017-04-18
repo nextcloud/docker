@@ -51,7 +51,8 @@ RUN curl -fsSL -o nextcloud.tar.bz2 \
  && gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2 \
  && rm -r "$GNUPGHOME" nextcloud.tar.bz2.asc \
  && tar -xjf nextcloud.tar.bz2 -C /usr/src/ \
- && rm nextcloud.tar.bz2
+ && rm nextcloud.tar.bz2 \
+ && rm -rf /usr/src/nextcloud/updater
 
 COPY docker-entrypoint.sh /entrypoint.sh
 COPY apps.config.php /usr/src/nextcloud/config/apps.config.php
