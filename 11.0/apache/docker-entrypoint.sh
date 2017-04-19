@@ -28,9 +28,14 @@ if version_greater "$image_version" "$installed_version"; then
         cp -arT /usr/src/nextcloud/config /var/www/html/config
     fi
 
-    mkdir -p /var/www/html/custom_apps
+    if [ ! -d /var/www/html/data ]; then
+        cp -arT /usr/src/nextcloud/data /var/www/html/data
+    fi
 
-    chown -R www-data /var/www/html
+    if [ ! -d /var/www/html/custom_apps ]; then
+        cp -arT /usr/src/nextcloud/custom_apps /var/www/html/custom_apps
+        cp -a /usr/src/nextcloud/config/apps.config.php /var/www/html/config/apps.config.php
+    fi
 
     if [ "$installed_version" != "0.0.0~unknown" ]; then
         su - www-data -s /bin/bash -c 'php /var/www/html/occ upgrade --no-app-disable'
