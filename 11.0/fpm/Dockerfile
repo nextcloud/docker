@@ -1,6 +1,7 @@
 FROM php:7.1-fpm
 
 RUN apt-get update && apt-get install -y \
+  rsync \
   bzip2 \
   libcurl4-openssl-dev \
   libfreetype6-dev \
@@ -50,9 +51,22 @@ RUN curl -fsSL -o nextcloud.tar.bz2 \
  && gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2 \
  && rm -r "$GNUPGHOME" nextcloud.tar.bz2.asc \
  && tar -xjf nextcloud.tar.bz2 -C /usr/src/ \
- && rm nextcloud.tar.bz2
+ && rm nextcloud.tar.bz2 \
+ && rm -rf /usr/src/nextcloud/updater \
+ # https://docs.nextcloud.com/server/11/admin_manual/installation/installation_wizard.html#setting-strong-directory-permissions
+ && mkdir -p /usr/src/nextcloud/data \
+ && mkdir -p /usr/src/nextcloud/custom_apps \
+ && find /usr/src/nextcloud/ -type f -print0 | xargs -0 chmod 0640 \
+ && find /usr/src/nextcloud/ -type d -print0 | xargs -0 chmod 0750 \
+ && chown -R root:www-data /usr/src/nextcloud/ \
+ && chown -R www-data:www-data /usr/src/nextcloud/custom_apps/ \
+ && chown -R www-data:www-data /usr/src/nextcloud/config/ \
+ && chown -R www-data:www-data /usr/src/nextcloud/data/ \
+ && chown -R www-data:www-data /usr/src/nextcloud/themes/ \
+ && chmod +x /usr/src/nextcloud/occ
 
 COPY docker-entrypoint.sh /entrypoint.sh
+COPY apps.config.php /usr/src/nextcloud/config/apps.config.php
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
