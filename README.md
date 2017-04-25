@@ -112,7 +112,7 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
-  web:  
+  app:  
     image: nextcloud
     ports:
       - "80:80"
@@ -214,7 +214,7 @@ RUN ...
 
 If you use your own Dockerfile you need to configure your docker-compose file accordingly. Switch out the `image` option with `build`. You have to specify the path to your Dockerfile. (in the example it's in the same directory next to the docker-compose file)
 
-```yml
+```yaml
   app:
     build: .
     links:
@@ -241,6 +241,50 @@ docker-compose up -d
 
 The `--pull` option tells docker to look for new versions of the base image. The build instructions inside your `Dockerfile` are run on top of the new image.
 
+# Migrating an existing installation
+You're already using nextcloud and want to switch to docker? Great! Here are some things to look out for:
+
+* Define your whole nextcloud instance in a `docker-compose` file and run it with `docker-compose up -d` to get the base installation, volumes and database. Work from there.
+* Restoring your database from a mysqldump (nextcloud\_db\_1 is the name of your db container; typically [folder name of the compose file]\_db\_1 -> if your compose file is in the folder nextcloud then it is nextcloud\_db\_1)
+```console
+docker cp ./database.dmp nextcloud_db:/dmp
+docker-compose exec db sh -c "mysql -u USER -pPASSWORD nextcloud < /dmp"
+docker-compose exec db rm /dmp
+```
+* Edit your config.php
+  * Set database connection 
+  ```php
+  'dbhost' => 'db:3306',
+  ``` 
+  * Make sure you have no configuration for the `apps_paths`. Delete lines like these
+  ```diff
+  - "apps_paths" => array (
+  -    0 => array (
+  -            "path"     => OC::$SERVERROOT."/apps",
+  -            "url"      => "/apps",
+  -            "writable" => true,
+  -    ),
+  ```
+  * Make sure your data directory is set to /var/www/html/data
+  ```php
+  'datadirectory' => '/var/www/html/data',
+  ```
+ 
+
+* Copy your data (nextcloud_data is the name of your nextcloud container; typically [folder name of the compose file]\_app\_1 -> if your compose file is in the folder nextcloud then it is nextcloud\_app\_1):
+```console
+docker cp ./data/ nextcloud_data:/var/www/html/data
+docker-compose exec app chown www-data:www-data /var/www/html/data
+docker cp ./theming/ nextcloud_data:/var/www/html/theming
+docker-compose exec app chown www-data:www-data /var/www/html/theming
+docker cp ./config/config.php nextcloud_data:/var/www/html/config
+docker-compose exec app chown www-data:www-data /var/www/html/config
+```
+* Copy only the custom apps you use (or if you just use the store simply redownload them from the web interface):
+```console 
+docker cp ./apps/ nextcloud_data:/var/www/html/custom_apps
+docker-compose exec app chown www-data:www-data /var/www/html/custom_apps
+```
 
 # Questions / Issues
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.  
