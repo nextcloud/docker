@@ -31,11 +31,13 @@ $ docker run -p 80:80 -d nextcloud
 ## Using the fpm image
 To use the fpm image you need an additional web server that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases you might want use another container or your host as proxy.
 If you use your host you can address your nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file).
-In both cases you don't want to map the fpm port to you host. (You can find more information on that on the docker-compose section)
+In both cases you don't want to map the fpm port to you host. 
 
 ```console
 $ docker run -d nextcloud-fpm
 ```
+
+As the fastCGI-Process is not capable of serving static files (style sheets, images, ...) the webserver needs access to these files. That can be achieved with the `volumes-from` option. You can find more information in the docker-compose section.
 
 ## Using an external database
 By default this container uses SQLite for data storage, but the Nextcloud setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB or PostgreSQL database. You can also link a database container, e.g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup. More info is in the docker-compose section.
@@ -144,6 +146,8 @@ services:
       - app
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    volumes-from:
+      - app
     restart: always
 ```
 
