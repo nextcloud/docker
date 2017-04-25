@@ -45,7 +45,7 @@ By default this container uses SQLite for data storage, but the Nextcloud setup 
 ## Persistent data
 The nextcloud installation and all data beyond what lives in the database (file uploads, etc) is stored in the [unnamed docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) volume `/var/www/html`. The docker daemon will store that data within the docker directory `/var/lib/docker/volumes/...`. That means your data is saved even if the container crashes, is stopped, updated or deleted.
 
-When nextcloud is updated the source files and some system apps, that are shipped with the nextcloud installationare overwritten.
+When nextcloud is updated the source files and some system apps, that are shipped with the nextcloud installation are overwritten.
 To backup your nextcloud installation, you have to take care of five parts: data, config, apps, theming and database. 
 The data and config are stored in respective subfolders inside `/var/www/html/`. The apps are split into system apps (wich are shipped with nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use theming you can apply your theming into the `theming` folder.
 
@@ -128,7 +128,8 @@ services:
 
 ## Base version - FPM
 When using the FPM image you need another container that acts as web server on port 80 and proxies the requests to the nextcloud container. In this example a simple nginx container is used. Like above, a database container is added and the data is stored in docker volumes.
-For the nginx container you need a configuration file `nginx.conf`, that is located next to the docker-compose file and mounted into the container. An example can be found in the examples section [here](https://github.com/nextcloud/docker/tree/master/.examples).
+The nginx container also need access to static files from your nextcloud installation. It gets access to all the volumes mounted to nextcloud via the `volumes_from` option.
+The configuration for nginx is stored in the configuration file `nginx.conf`, that is located next to the docker-compose file and mounted into the container. An example can be found in the examples section [here](https://github.com/nextcloud/docker/tree/master/.examples).
 
 ```yaml
 version: '2'
@@ -175,17 +176,17 @@ services:
 ```
 
 ## First use
-When you first access your nextcloud, the setup wizard will appear and ask you to choose an administrator account and password and the database connection. For the database use `db` as host and `nextcloud` as table and user name. Also enter the password you chose in the compose file.
+When you first access your nextcloud, the setup wizard will appear and ask you to choose an administrator account, password and the database connection. For the database use `db` as host and `nextcloud` as table and user name. Also enter the password you chose in the compose file.
 
 ## SSL encryption
 Until here, we haven't talked about encrypting the connection between your nextcloud host and the clients. Using up-to-date encryption is mandatory if your host is reachable from the internet. There are many different possibilities to introduce encryption. 
 
-An easy and free way to get certificates that are accepted by the browsers is [Let's Encrypt](https://letsencrypt.org/). The great thing about it is, that the whole certificate generation / validation is fully automated and certificate renewals are also very easy. 
+An easy and free way to get certificates that are accepted by the browsers is [Let's Encrypt](https://letsencrypt.org/). The whole certificate generation / validation is fully automated and certificate renewals are also very easy. 
 To integrate Let's Encrypt, we recommend using a reverse proxy in front of our nextcloud installation. Your nextcloud will only be reachable through the proxy, which encrypts all traffic to the clients. See our [examples](https://github.com/nextcloud/docker/tree/master/.examples) to get an idea how it works.
 
 
 # Update to a newer version
-Updating can be done in two ways. The easy solution is running the web-updater. While this should work it can cause problems, because the underlying container image will get outdated. A better solution is updating like docker intended. That means pulling the new image, throw away the old container and start a new one. The startup script will handle updating your data for you.
+Updating the nextcloud container is done by pulling the new image and throwing away the old container. Since all data is stored in volumes nothing gets lost. The startup script will check for the version in your data and the installed docker version. If it finds a mismatch, it automatically starts the upgrade process. 
 
 ```console
 $ docker pull nextcloud
@@ -230,16 +231,16 @@ Updating your own derived image is also very simple. When a new version of the n
 ```console
 docker build -t your-name --pull . 
 docker run -d your-name
-
 ```
 
 or for docker-compose:
-
 ```console
 docker-compose build --pull
 docker-compose up -d
-
 ```
+
+The `--pull` option tells docker to look for new versions of the base image. The build instructions inside your `Dockerfile` are run on top of the new image.
+
 
 # Questions / Issues
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.  
