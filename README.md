@@ -44,20 +44,43 @@ By default this container uses SQLite for data storage, but the Nextcloud setup 
 
 ## Persistent data
 The nextcloud installation and all data beyond what lives in the database (file uploads, etc) is stored in the [unnamed docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) volume `/var/www/html`. The docker daemon will store that data within the docker directory `/var/lib/docker/volumes/...`. That means your data is saved even if the container crashes, is stopped, updated or deleted.
-To get access to your data for backups or migration you should use named docker volumes for the following folders:
 
-- `-v apps:/var/www/html/apps` installed / modified apps
-- `-v config:/var/www/html/config` local configuration
-- `-v data:/var/www/html/data` the actual data of your Nextcloud
+When nextcloud is updated the source files and some system apps, that are shipped with the nextcloud installationare overwritten.
+To backup your nextcloud installation, you have to take care of five parts: data, config, apps, theming and database. 
+The data and config are stored in respective subfolders inside `/var/www/html/`. The apps are split into system apps (wich are shipped with nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use theming you can apply your theming into the `theming` folder.
 
-Additionally, if you use a database container you want a persistent database as well. Use this volume on your database container:
+Overview of the folders:
+
+- `/var/www/html/custom_apps` installed / modified apps
+- `/var/www/html/config` local configuration
+- `/var/www/html/data` the actual data of your Nextcloud
+- `/var/www/html/theming` theming/branding
+
+And if you use an external database you need the following folders on your database container:
 
 Mysql / MariaDB:
-- `-v db:/var/lib/mysql` database files
+- `/var/lib/mysql` database files
 
 PostegreSQL:
-- `-v db:/var/lib/postresql/data` database files 
+- `db:/var/lib/postresql/data` database files 
 
+
+To get access to your data for backups or migration you can use named docker volumes or mount host folders:
+
+Nextcloud:
+```console
+$ docker run -d nextcloud \
+-v apps:/var/www/html/custom_apps \
+-v config:/var/www/html/config \
+-v data:/var/www/html/data \
+-v theming:/var/www/html/theming
+```
+
+Database:
+```console
+$ docker run -d mariadb \
+-v db:/var/lib/mysql
+```
 
 
 # Running this image with docker-compose
@@ -98,7 +121,7 @@ services:
     volumes:
       - data:/var/www/html/data
       - config:/var/www/html/config
-      - apps:/var/www/html/apps
+      - apps:/var/www/html/custom_apps
     restart: always
 
 ```
@@ -135,7 +158,7 @@ services:
     volumes:
       - data:/var/www/html/data
       - config:/var/www/html/config
-      - apps:/var/www/html/apps
+      - apps:/var/www/html/custom_apps
     restart: always
 
   web:
