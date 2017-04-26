@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -Eeuo pipefail
 
 self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
@@ -40,7 +40,7 @@ join() {
 	echo "${out#$sep}"
 }
 
-latest=$(curl -sSL 'https://nextcloud.com/changelog/' |tac|tac \
+latest=$(curl -fsSL 'https://nextcloud.com/changelog/' |tac|tac \
 	   | grep -o "\(Version\|Release\)\s\+[[:digit:]]\+\(.[[:digit:]]\+\)\+" \
 	   | awk '{ print $2 }' \
 	   | sort -uV \
