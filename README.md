@@ -196,7 +196,8 @@ $ docker run -d nextcloud
 When using docker-compose:
 
 ```console
-$ docker-compose up -d --pull
+$ docker-compose pull
+$ docker-compose up -d
 ```
 
 
