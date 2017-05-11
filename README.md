@@ -95,9 +95,7 @@ This version will use the apache image and add a mariaDB container **without enc
 version: '2'
 
 volumes:
-  apps:
-  config:
-  data:
+  nextcloud:
   db:
 
 services:
@@ -119,9 +117,7 @@ services:
     links:
       - db
     volumes:
-      - data:/var/www/html/data
-      - config:/var/www/html/config
-      - apps:/var/www/html/custom_apps
+      - nextcloud:/var/www/html
     restart: always
 
 ```
@@ -135,9 +131,7 @@ The configuration for nginx is stored in the configuration file `nginx.conf`, th
 version: '2'
 
 volumes:
-  apps:
-  config:
-  data:
+  nextcloud:
   db:
 
 services:
@@ -157,9 +151,7 @@ services:
     links:
       - db
     volumes:
-      - data:/var/www/html/data
-      - config:/var/www/html/config
-      - apps:/var/www/html/custom_apps
+      - nextcloud:/var/www/html
     restart: always
 
   web:
