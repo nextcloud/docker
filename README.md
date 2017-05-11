@@ -43,41 +43,43 @@ As the fastCGI-Process is not capable of serving static files (style sheets, ima
 By default this container uses SQLite for data storage, but the Nextcloud setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB or PostgreSQL database. You can also link a database container, e.g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup. More info is in the docker-compose section.
 
 ## Persistent data
-The nextcloud installation and all data beyond what lives in the database (file uploads, etc) is stored in the [unnamed docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) volume `/var/www/html`. The docker daemon will store that data within the docker directory `/var/lib/docker/volumes/...`. That means your data is saved even if the container crashes, is stopped, updated or deleted.
+The nextcloud installation and all data beyond what lives in the database (file uploads, etc) is stored in the [unnamed docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) volume `/var/www/html`. The docker daemon will store that data within the docker directory `/var/lib/docker/volumes/...`. That means your data is saved even if the container crashes, is stopped or deleted.
 
-When nextcloud is updated the source files and system apps, that are shipped with the nextcloud installation are overwritten. Then, an upgrade routine that upgrades the database and handles your data, is started.
+To make your data persistant to upgrading and get access for backups is using named docker volume or mount a host folder. To achieve this you need one volume for your database container and nextcloud.
 
-To backup your nextcloud installation, you have to take care of five parts: data, config, apps, theming and database. 
-The data and config are stored in respective subfolders inside `/var/www/html/`. The apps are split into system apps (wich are shipped with nextcloud and you don't need to take care of) and a `custom_apps` folder. If you want to use a custom theme, you can use the `theming` folder.
+Nextcloud:
+- `/var/www/html/` folder where all nextcloud data lives
+example:
+```console
+$ docker run -d nextcloud \
+-v nextcloud:/var/www/html
+```
 
+Database:
+- `/var/lib/mysql` MySQL / MariaDB Data
+- `/var/lib/postresql/data` PostegreSQL Data
+example:
+```console
+$ docker run -d mariadb \
+-v db:/var/lib/mysql
+```
+
+If you want to get fine grained access to your data and just mount the individual files you have to take care of data, config, your theme, custom apps. 
+The `data`, `config` are stored in respective subfolders inside `/var/www/html/`. The apps are split into core `apps` (wich are shipped with nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use a custom theme it would go into the `themes`subfolder.
 Overview of the folders:
 
 - `/var/www/html/custom_apps` installed / modified apps
 - `/var/www/html/config` local configuration
 - `/var/www/html/data` the actual data of your Nextcloud
-- `/var/www/html/theming` theming/branding
+- `/var/www/html/theme/<YOU_CUSTOM_THEME>` theming/branding
 
-And if you use an external database you need the following folder on your database container:
-
-- `/var/lib/mysql` MySQL / MariaDB
-- `/var/lib/postresql/data` PostegreSQL
-
-
-To get access to your data for backups or migration you can use named docker volumes or mount host folders:
-
-Nextcloud:
+If you want to use named volumes for all of these it would look like this
 ```console
 $ docker run -d nextcloud \
 -v apps:/var/www/html/custom_apps \
 -v config:/var/www/html/config \
 -v data:/var/www/html/data \
--v theming:/var/www/html/theming
-```
-
-Database:
-```console
-$ docker run -d mariadb \
--v db:/var/lib/mysql
+-v theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
 ```
 
 
