@@ -49,7 +49,6 @@ To make your data persistant to upgrading and get access for backups is using na
 
 Nextcloud:
 - `/var/www/html/` folder where all nextcloud data lives
-example:
 ```console
 $ docker run -d nextcloud \
 -v nextcloud:/var/www/html
@@ -58,16 +57,17 @@ $ docker run -d nextcloud \
 Database:
 - `/var/lib/mysql` MySQL / MariaDB Data
 - `/var/lib/postresql/data` PostegreSQL Data
-example:
 ```console
 $ docker run -d mariadb \
 -v db:/var/lib/mysql
 ```
 
-If you want to get fine grained access to your data and just mount the individual files you have to take care of data, config, your theme, custom apps. 
-The `data`, `config` are stored in respective subfolders inside `/var/www/html/`. The apps are split into core `apps` (wich are shipped with nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use a custom theme it would go into the `themes`subfolder.
-Overview of the folders:
+If you want to get fine grained access to your individual files, you can mount additional volumes for data, config, your theme and custom apps. 
+The `data`, `config` are stored in respective subfolders inside `/var/www/html/`. The apps are split into core `apps` (wich are shipped with nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use a custom theme it would go into the `themes` subfolder.
 
+Overview of the folders that can be mounted as volumes:
+
+- `/var/www/html` Main folder, needed for updating
 - `/var/www/html/custom_apps` installed / modified apps
 - `/var/www/html/config` local configuration
 - `/var/www/html/data` the actual data of your Nextcloud
@@ -76,6 +76,7 @@ Overview of the folders:
 If you want to use named volumes for all of these it would look like this
 ```console
 $ docker run -d nextcloud \
+-v nextcloud:/var/www/html \
 -v apps:/var/www/html/custom_apps \
 -v config:/var/www/html/config \
 -v data:/var/www/html/data \
@@ -187,10 +188,11 @@ When the new container starts it detects the mismatch between the installed vers
 $ docker pull nextcloud
 $ docker stop <your_nextcloud_container>
 $ docker rm <your_nextcloud_container>
-$ docker run -d nextcloud
+$ docker run <OPTIONS> -d nextcloud
 ```
+Beware that you have to run the same command with the options that you used to initially start your nextcloud. That includes  volumes, port mapping.
 
-When using docker-compose:
+When using docker-compose your compose file takes care of your configuration, so you just have to run:
 
 ```console
 $ docker-compose pull
