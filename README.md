@@ -247,7 +247,7 @@ You're already using nextcloud and want to switch to docker? Great! Here are som
 * Define your whole nextcloud infrastructure in a `docker-compose` file and run it with `docker-compose up -d` to get the base installation, volumes and database. Work from there.
 * Restoring your database from a mysqldump (nextcloud\_db\_1 is the name of your db container; typically [folder name of the compose file]\_db\_1 -> if your compose file is in the folder nextcloud then it is nextcloud\_db\_1)
 ```console
-docker cp ./database.dmp nextcloud_db:/dmp
+docker cp ./database.dmp nextcloud_db_1:/dmp
 docker-compose exec db sh -c "mysql -u USER -pPASSWORD nextcloud < /dmp"
 docker-compose exec db rm /dmp
 ```
@@ -271,13 +271,13 @@ docker-compose exec db rm /dmp
   ```
  
 
-* Copy your data (nextcloud_data is the name of your nextcloud container; typically [folder name of the compose file]\_app\_1 -> if your compose file is in the folder nextcloud then it is nextcloud\_app\_1):
+* Copy your data (nextcloud_app_1 is the name of your nextcloud container; typically [folder name of the compose file]\_app\_1 -> if your compose file is in the folder nextcloud then it is nextcloud\_app\_1):
 ```console
-docker cp ./data/ nextcloud_data:/var/www/html/data
+docker cp ./data/ nextcloud_app_1:/var/www/html/data
 docker-compose exec app chown www-data:www-data /var/www/html/data
-docker cp ./theming/ nextcloud_data:/var/www/html/theming
+docker cp ./theming/ nextcloud_app_1:/var/www/html/theming
 docker-compose exec app chown www-data:www-data /var/www/html/theming
-docker cp ./config/config.php nextcloud_data:/var/www/html/config
+docker cp ./config/config.php nextcloud_app_1:/var/www/html/config
 docker-compose exec app chown www-data:www-data /var/www/html/config
 ```
 * Copy only the custom apps you use (or simply redownload them from the web interface):
