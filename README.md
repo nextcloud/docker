@@ -218,7 +218,7 @@ $ docker-compose up -d
 
 
 # Adding Features
-A lot of people want use additional functionality inside their Nextcloud installation. If the image does not include the packages you need, you can easily build your own image on top of it.
+A lot of people want to use additional functionality inside their Nextcloud installation. If the image does not include the packages you need, you can easily build your own image on top of it.
 Start your derived image with the `FROM` statement and add whatever you like.
 
 ```yaml
@@ -256,7 +256,7 @@ docker-compose build --pull
 docker-compose up -d
 ```
 
-The `--pull` option tells docker to look for new versions of the base image. The build instructions inside your `Dockerfile` are run on top of the new image.
+The `--pull` option tells docker to look for new versions of the base image. Then the build instructions inside your `Dockerfile` are run on top of the new image.
 
 # Migrating an existing installation
 You're already using Nextcloud and want to switch to docker? Great! Here are some things to look out for:
