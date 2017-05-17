@@ -14,8 +14,8 @@ The `apache` tag contains a full Nextcloud installation including an apache web 
 
 The second option is a `fpm` container. It is based on the [php-fpm](https://hub.docker.com/_/php/) image and runs a fastCGI-Process that serves your Nextcloud page. To use this image it must be combined with any webserver that can proxy the http requests to the FastCGI-port of the container.
 
-## Using the Apache image
-The apache image contains a webserver and exposes port 80. However by default it is not configured to use ssl encryption. To start the container type:
+## Using the apache image
+The apache image contains a webserver and exposes port 80. To start the container type:
 
 ```console
 $ docker run -d nextcloud
@@ -85,7 +85,7 @@ The easiest way to get a fully featured and functional setup is using a `docker-
 
 At first make sure you have chosen the right base image (fpm or apache) and added the features you wanted (see below). In every case you want to add a database container and docker volumes to get easy access to your persistent data. When you want to have your server reachable from the internet adding HTTPS-encryption is mandatory! See below for more information.
 
-## Base version - Apache
+## Base version - apache
 This version will use the apache image and add a mariaDB container. The volumes are set to keep your data persistent. This setup provides **no ssl encryption** and is intended to run behind a proxy. 
 
 ```yaml
@@ -172,23 +172,23 @@ In our [examples](https://github.com/nextcloud/docker/tree/master/.examples) sec
 ## HTTP - insecure, just for development / debugging / testing
 When you're testing you can use this image without the ssl encryption. **Never use this method on a Nextcloud install where actual user data is stored!** 
 
-You just have to map the webserver port to your host. For the apache image you could simply add `-p 80:80` to your docker run command or if you're using compose: 
-```
+You just have to map the webserver port to your host. For the apache image add `-p 80:80` to your docker run command or add to your compose file: 
+```diff
 ...
   app:
     image: nextcloud
-    ports:
-      - 80:80
++   ports:
++     - 80:80
     ...
 ```
 
-For the fpm image you need a webserver in front. If you use an nginx-container like in the example above, you have to add:
-```
+For the fpm image you need a webserver in front. If you're following the docker-compose example above, add:
+```diff
 ...
   web:
     image: nginx
-    ports:
-      - 80:80
++   ports:
++     - 80:80
     ...
 ```
 
@@ -261,19 +261,19 @@ The `--pull` option tells docker to look for new versions of the base image. The
 # Migrating an existing installation
 You're already using Nextcloud and want to switch to docker? Great! Here are some things to look out for:
 
-* Define your whole Nextcloud infrastructure in a `docker-compose` file and run it with `docker-compose up -d` to get the base installation, volumes and database. Work from there.
-* Restoring your database from a mysqldump (nextcloud\_db\_1 is the name of your db container; typically [folder name of the compose file]\_db\_1 -> if your compose file is in the folder nextcloud then it is nextcloud\_db\_1)
+1. Define your whole Nextcloud infrastructure in a `docker-compose` file and run it with `docker-compose up -d` to get the base installation, volumes and database. Work from there.
+2. Restore your database from a mysqldump (nextcloud\_db\_1 is the name of your db container)
 ```console
 docker cp ./database.dmp nextcloud_db_1:/dmp
 docker-compose exec db sh -c "mysql -u USER -pPASSWORD nextcloud < /dmp"
 docker-compose exec db rm /dmp
 ```
-* Edit your config.php
-  * Set database connection 
+3. Edit your config.php
+  1. Set database connection 
   ```php
   'dbhost' => 'db:3306',
   ``` 
-  * Make sure you have no configuration for the `apps_paths`. Delete lines like these
+  2. Make sure you have no configuration for the `apps_paths`. Delete lines like these
   ```diff
   - "apps_paths" => array (
   -    0 => array (
@@ -282,13 +282,13 @@ docker-compose exec db rm /dmp
   -            "writable" => true,
   -    ),
   ```
-  * Make sure your data directory is set to /var/www/html/data
+  3. Make sure your data directory is set to /var/www/html/data
   ```php
   'datadirectory' => '/var/www/html/data',
   ```
  
 
-* Copy your data (nextcloud_app_1 is the name of your Nextcloud container; typically [folder name of the compose file]\_app\_1 -> if your compose file is in the folder nextcloud then it is nextcloud\_app\_1):
+4. Copy your data (nextcloud_app_1 is the name of your Nextcloud container):
 ```console
 docker cp ./data/ nextcloud_app_1:/var/www/html/data
 docker-compose exec app chown www-data:www-data /var/www/html/data
@@ -297,7 +297,7 @@ docker-compose exec app chown www-data:www-data /var/www/html/theming
 docker cp ./config/config.php nextcloud_app_1:/var/www/html/config
 docker-compose exec app chown www-data:www-data /var/www/html/config
 ```
-* Copy only the custom apps you use (or simply redownload them from the web interface):
+5. Copy only the custom apps you use (or simply redownload them from the web interface):
 ```console 
 docker cp ./apps/ nextcloud_data:/var/www/html/custom_apps
 docker-compose exec app chown www-data:www-data /var/www/html/custom_apps
