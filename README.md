@@ -159,7 +159,7 @@ services:
       - app
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    volumes-from:
+    volumes_from:
       - app
     restart: always
 ```
