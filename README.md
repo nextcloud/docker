@@ -88,7 +88,7 @@ At first make sure you have chosen the right base image (fpm or apache) and adde
 ## Base version - apache
 This version will use the apache image and add a mariaDB container. The volumes are set to keep your data persistent. This setup provides **no ssl encryption** and is intended to run behind a proxy. 
 
-Make sure to set the variables `MYSQL_ROOT_PW` and `MYSQL_USER_PW` before you run this setup.
+Make sure to set the variables `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` before you run this setup.
 
 ```yaml
 version: '2'
@@ -104,8 +104,8 @@ services:
     volumes:
       - db:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PW=
-      - MYSQL_USER_PW=
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_PASSWORD=
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
@@ -124,7 +124,7 @@ When using the FPM image you need another container that acts as web server on p
 
 As this setup does **not include ecryption** it should to be run behind a proxy. 
 
-Make sure to set the variables `MYSQL_ROOT_PW` and `MYSQL_USER_PW` before you run this setup.
+Make sure to set the variables `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` before you run this setup.
 
 ```yaml
 version: '2'
@@ -140,8 +140,8 @@ services:
     volumes:
       - db:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PW=
-      - MYSQL_USER_PW=
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_PASSWORD=
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
