@@ -22,7 +22,7 @@ if version_greater "$image_version" "$installed_version"; then
         su - www-data -s /bin/bash -c 'php /var/www/html/occ app:list' > /tmp/list_before
     fi
 
-    rsync -a --delete --exclude /config/ --exclude /data/ --exclude /custom_apps/ /usr/src/nextcloud/ /var/www/html/
+    rsync -a --delete --exclude /config/ --exclude /data/ --exclude /custom_apps/ --exclude /themes/ /usr/src/nextcloud/ /var/www/html/
 
     if [ ! -d /var/www/html/config ]; then
         cp -arT /usr/src/nextcloud/config /var/www/html/config
@@ -35,6 +35,10 @@ if version_greater "$image_version" "$installed_version"; then
     if [ ! -d /var/www/html/custom_apps ]; then
         cp -arT /usr/src/nextcloud/custom_apps /var/www/html/custom_apps
         cp -a /usr/src/nextcloud/config/apps.config.php /var/www/html/config/apps.config.php
+    fi
+
+    if [ ! -d /var/www/html/themes ]; then
+        cp -arT /usr/src/nextcloud/themes /var/www/html/themes
     fi
 
     if [ "$installed_version" != "0.0.0~unknown" ]; then
