@@ -2,6 +2,8 @@ language: bash
 services: docker
 
 env:
+  - VERSION=12.0 VARIANT=fpm
+  - VERSION=12.0 VARIANT=apache
   - VERSION=11.0 VARIANT=fpm
   - VERSION=11.0 VARIANT=apache
   - VERSION=10.0 VARIANT=fpm
