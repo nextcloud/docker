@@ -11,9 +11,10 @@ function version_greater_or_equal() {
 	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
 }
 
-latests=( $(curl -sSL 'https://nextcloud.com/changelog/' |tac|tac| \
-	grep -o "\(Version\|Release\)\s\+[[:digit:]]\+\(\.[[:digit:]]\+\)\+" | \
-	awk '{ print $2 }' | sort -V ) )
+latests=( $(curl -sSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
+	grep -oE '>nextcloud-[[:digit:]]+(.[[:digit:]]+)+\.tar\.bz2<' | \
+	grep -oE '[[:digit:]]+(.[[:digit:]]+)+' | \
+	sort -V ) )
 
 travisEnv=
 for latest in "${latests[@]}"; do
