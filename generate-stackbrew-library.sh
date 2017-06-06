@@ -40,11 +40,11 @@ join() {
 	echo "${out#$sep}"
 }
 
-latest=$(curl -fsSL 'https://nextcloud.com/changelog/' |tac|tac \
-	   | grep -o "\(Version\|Release\)\s\+[[:digit:]]\+\(.[[:digit:]]\+\)\+" \
-	   | awk '{ print $2 }' \
-	   | sort -uV \
-	   | tail -1)
+latest=$( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
+	grep -oE 'nextcloud-[[:digit:]]+(.[[:digit:]]+)+' | \
+	grep -oE '[[:digit:]]+(.[[:digit:]]+)+' | \
+	sort -uV | \
+	tail -1 )
 
 # Generate each of the tags.
 versions=( */ )
