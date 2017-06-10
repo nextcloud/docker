@@ -16,47 +16,53 @@ latests=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|t
 	grep -oE '[[:digit:]]+(.[[:digit:]]+)+' | \
 	sort -uV ) )
 
+find -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+' -exec rm -r '{}' \;
+
 travisEnv=
 for latest in "${latests[@]}"; do
 	version=$(echo "$latest" | cut -d. -f1-2)
 
-	for variant in apache fpm; do
-		# Create the version+variant directory with a Dockerfile.
-		mkdir -p "$version/$variant"
+	# Only add versions >= 10
+	if version_greater_or_equal "$version" "10.0"; then
 
-		template="Dockerfile.template"
-		if version_greater_or_equal "$version" "11.0"; then
-			template="Dockerfile-php7.template"
-		fi
-		cp "$template" "$version/$variant/Dockerfile"
+		for variant in apache fpm; do
+			# Create the version+variant directory with a Dockerfile.
+			mkdir -p "$version/$variant"
 
-		echo "updating $latest [$version] $variant"
+			template="Dockerfile.template"
+			if version_greater_or_equal "$version" "11.0"; then
+				template="Dockerfile-php7.template"
+			fi
+			cp "$template" "$version/$variant/Dockerfile"
 
-		# Replace the variables.
-		sed -ri -e '
-			s/%%VARIANT%%/'"$variant"'/g;
-			s/%%VERSION%%/'"$latest"'/g;
-			s/%%CMD%%/'"${cmd[$variant]}"'/g;
-		' "$version/$variant/Dockerfile"
+			echo "updating $latest [$version] $variant"
 
-		# Remove Apache commands if we're not an Apache variant.
-		if [ "$variant" != "apache" ]; then
-			sed -ri -e '/a2enmod/d' "$version/$variant/Dockerfile"
-		fi
+			# Replace the variables.
+			sed -ri -e '
+				s/%%VARIANT%%/'"$variant"'/g;
+				s/%%VERSION%%/'"$latest"'/g;
+				s/%%CMD%%/'"${cmd[$variant]}"'/g;
+			' "$version/$variant/Dockerfile"
 
-		# Remove the assets folder if version >= 10.0
-		if version_greater_or_equal "$version" "10.0"; then
-			sed -ri -e '/assets/d' "$version/$variant/Dockerfile"
-		fi
+			# Remove Apache commands if we're not an Apache variant.
+			if [ "$variant" != "apache" ]; then
+				sed -ri -e '/a2enmod/d' "$version/$variant/Dockerfile"
+			fi
 
-		# Copy the docker-entrypoint.
-		cp docker-entrypoint.sh "$version/$variant/docker-entrypoint.sh"
+			# Remove the assets folder if version >= 10.0
+			if version_greater_or_equal "$version" "10.0"; then
+				sed -ri -e '/assets/d' "$version/$variant/Dockerfile"
+			fi
 
-		# Copy apps.config.php
-		cp apps.config.php "$version/$variant/apps.config.php"
+			# Copy the docker-entrypoint.
+			cp docker-entrypoint.sh "$version/$variant/docker-entrypoint.sh"
 
-		travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
-	done
+			# Copy apps.config.php
+			cp apps.config.php "$version/$variant/apps.config.php"
+
+			travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
+		done
+	fi
 done
 
 # update .travis.yml

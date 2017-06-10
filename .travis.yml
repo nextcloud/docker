@@ -8,8 +8,6 @@ env:
   - VERSION=11.0 VARIANT=apache
   - VERSION=10.0 VARIANT=fpm
   - VERSION=10.0 VARIANT=apache
-  - VERSION=9.0 VARIANT=fpm
-  - VERSION=9.0 VARIANT=apache
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
