@@ -18,10 +18,10 @@ The second option is a `fpm` container. It is based on the [php-fpm](https://hub
 The apache image contains a webserver and exposes port 80. To start the container type:
 
 ```console
-$ docker run -d nextcloud
+$ docker run -d -p 8080:80 nextcloud
 ```
 
-Now you can access Nextcloud at http://localhost/ from your host system. 
+Now you can access Nextcloud at http://localhost:8080/ from your host system.
 
 
 ## Using the fpm image
@@ -111,6 +111,8 @@ services:
 
   app:  
     image: nextcloud
+    ports:
+      - 8080:80
     links:
       - db
     volumes:
@@ -118,6 +120,8 @@ services:
     restart: always
 
 ```
+
+Then run `docker-compose up -d`, now you can access Nextcloud at http://localhost:8080/ from your host system.
 
 ## Base version - FPM
 When using the FPM image you need another container that acts as web server on port 80 and proxies the requests to the Nextcloud container. In this example a simple nginx container is combindes with the Nextcloud-fpm image and a MariaDB database container. The data is stored in docker volumes. The nginx container also need access to static files from your Nextcloud installation. It gets access to all the volumes mounted to Nextcloud via the `volumes_from` option.The configuration for nginx is stored in the configuration file `nginx.conf`, that is mounted into the container. An example can be found in the examples section [here](https://github.com/nextcloud/docker/tree/master/.examples).
@@ -155,6 +159,8 @@ services:
 
   web:
     image: nginx
+    ports:
+      - 8080:80
     links:
       - app
     volumes:
@@ -163,6 +169,9 @@ services:
       - app
     restart: always
 ```
+
+Then run `docker-compose up -d`, now you can access Nextcloud at http://localhost:8080/ from your host system.
+
 # Make your Nextcloud available from the internet
 Until here your Nextcloud is just available from you docker host. If you want you Nextcloud available from the internet adding SSL encryption is mandatory.
 
@@ -172,32 +181,6 @@ There are many different possibilities to introduce encryption depending on your
 We recommend using a reverse proxy in front of our Nextcloud installation. Your Nextcloud will only be reachable through the proxy, which encrypts all traffic to the clients. You can mount your manually generated certificates to the proxy or use a fully automated solution, which generates and renews the certificates for you.
 
 In our [examples](https://github.com/nextcloud/docker/tree/master/.examples) section we have an example for a fully automated setup using a reverse proxy, a container for [Let's Encrypt](https://letsencrypt.org/) certificate handling, database and Nextcloud. It uses the popular [nginx-proxy](https://github.com/jwilder/nginx-proxy) and [docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion) containers. Please check the according documentations before using this setup.
-
-## HTTP - insecure, just for development / debugging / testing
-When you're testing you can use this image without the ssl encryption. **Never use this method on a Nextcloud install where actual user data is stored!** 
-
-You just have to map the webserver port to your host. For the apache image add `-p 80:80` to your docker run command or add to your compose file: 
-```diff
-...
-  app:
-    image: nextcloud
-+   ports:
-+     - 80:80
-    ...
-```
-
-For the fpm image you need a webserver in front. If you're following the docker-compose example above, add:
-```diff
-...
-  web:
-    image: nginx
-+   ports:
-+     - 80:80
-    ...
-```
-
-
-
 
 # First use
 When you first access your Nextcloud, the setup wizard will appear and ask you to choose an administrator account, password and the database connection. For the database use `db` as host and `nextcloud` as table and user name. Also enter the password you chose in your `docker-compose.yml` file.
