@@ -14,13 +14,17 @@ function version_greater_or_equal() {
 latests=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(.[[:digit:]]+)+' | \
 	grep -oE '[[:digit:]]+(.[[:digit:]]+)+' | \
-	sort -uV ) )
+	sort -urV ) )
 
-find -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+' -exec rm -r '{}' \;
+find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+' -exec rm -r '{}' \;
 
 travisEnv=
 for latest in "${latests[@]}"; do
 	version=$(echo "$latest" | cut -d. -f1-2)
+
+	if [ -d "$version" ]; then
+		continue
+	fi
 
 	# Only add versions >= 10
 	if version_greater_or_equal "$version" "10.0"; then
@@ -55,14 +59,14 @@ for latest in "${latests[@]}"; do
 			# Copy apps.config.php
 			cp apps.config.php "$version/$variant/apps.config.php"
 
-			travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
+			travisEnv='\n    - env: VERSION='"$version"' VARIANT='"$variant$travisEnv"
 		done
 	fi
 done
 
-# update .travis.yml
-travis="$(awk -v 'RS=\n\n' '$1 == "env:" { $0 = "env:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
-echo "$travis"  > .travis.yml
+# replace the fist '-' with ' '
+travisEnv="$(echo "$travisEnv" | sed '0,/-/{s/-/ /}')"
 
-# remove duplicate entries
-echo "$(awk '!NF || !seen[$0]++' .travis.yml)" > .travis.yml
+# update .travis.yml
+travis="$(awk -v 'RS=\n\n' '$1 == "-" && $2 == "stage:" && $3 == "test" && $4 == "images" { $0 = "    - stage: test images'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
+echo "$travis"  > .travis.yml
