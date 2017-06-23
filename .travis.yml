@@ -1,13 +1,9 @@
-language: bash
+dist: trusty
+sudo: required
+
 services: docker
 
-env:
-  - VERSION=12.0 VARIANT=fpm
-  - VERSION=12.0 VARIANT=apache
-  - VERSION=11.0 VARIANT=fpm
-  - VERSION=11.0 VARIANT=apache
-  - VERSION=10.0 VARIANT=fpm
-  - VERSION=10.0 VARIANT=apache
+language: bash
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
@@ -15,19 +11,38 @@ install:
 before_script:
   - env | sort
   - image="nextcloud:${VERSION}${VARIANT:+-$VARIANT}"
-  - hash_before=$(git write-tree)
 
 script:
-  # Test Image
   - travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
   - ~/official-images/test/run.sh "$image"
 
-  # Test generate-stackbrew-library.sh
-  - ./generate-stackbrew-library.sh
-
-  # Test update.sh
-  - ./update.sh
-  - bash -c "[[ $hash_before = $(git add -A && git write-tree) ]]"
-
 after_script:
   - docker images
+
+jobs:
+  include:
+    - &test-scripts
+      stage: test scripts
+      env: SCRIPT=update.sh
+      sudo: false
+      services: []
+      install: skip
+      before_script: skip
+      script:
+        - hash_before=$(git write-tree)
+        - ./update.sh
+        - bash -c "[[ $hash_before = $(git add -A && git write-tree) ]]"
+      after_script: skip
+
+    - <<: *test-scripts
+      env: SCRIPT=generate-stackbrew-library.sh
+      script: 
+        - ./generate-stackbrew-library.sh
+
+    - stage: test images
+      env: VERSION=10.0 VARIANT=fpm
+    - env: VERSION=10.0 VARIANT=apache
+    - env: VERSION=11.0 VARIANT=fpm
+    - env: VERSION=11.0 VARIANT=apache
+    - env: VERSION=12.0 VARIANT=fpm
+    - env: VERSION=12.0 VARIANT=apache
