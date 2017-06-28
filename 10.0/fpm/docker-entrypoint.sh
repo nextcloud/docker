@@ -6,6 +6,12 @@ function version_greater() {
 	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" ]];
 }
 
+# return true if specified directory is empty
+function directory_empty() {
+    [ -n "$(find "$1"/ -prune -empty)" ]
+}
+
+
 installed_version="0.0.0~unknown"
 if [ -f /var/www/html/version.php ]; then
     installed_version=$(php -r 'require "/var/www/html/version.php"; echo "$OC_VersionString";')
@@ -21,25 +27,13 @@ if version_greater "$image_version" "$installed_version"; then
     if [ "$installed_version" != "0.0.0~unknown" ]; then
         su - www-data -s /bin/bash -c 'php /var/www/html/occ app:list' > /tmp/list_before
     fi
-
     rsync -a --delete --exclude /config/ --exclude /data/ --exclude /custom_apps/ --exclude /themes/ /usr/src/nextcloud/ /var/www/html/
-
-    if [ ! -d /var/www/html/config ]; then
-        cp -arT /usr/src/nextcloud/config /var/www/html/config
-    fi
-
-    if [ ! -d /var/www/html/data ]; then
-        cp -arT /usr/src/nextcloud/data /var/www/html/data
-    fi
-
-    if [ ! -d /var/www/html/custom_apps ]; then
-        cp -arT /usr/src/nextcloud/custom_apps /var/www/html/custom_apps
-        cp -a /usr/src/nextcloud/config/apps.config.php /var/www/html/config/apps.config.php
-    fi
-
-    if [ ! -d /var/www/html/themes ]; then
-        cp -arT /usr/src/nextcloud/themes /var/www/html/themes
-    fi
+    
+    for dir in config data custom_apps themes; do
+        if [ ! -d /var/www/html/"$dir" ] || directory_empty /var/www/html/"$dir"; then
+            cp -arT /usr/src/nextcloud/"$dir" /var/www/html/"$dir"
+        fi
+    done
 
     if [ "$installed_version" != "0.0.0~unknown" ]; then
         su - www-data -s /bin/bash -c 'php /var/www/html/occ upgrade --no-app-disable'
