@@ -29,14 +29,18 @@ if version_greater "$image_version" "$installed_version"; then
     fi
     rsync -a --delete --exclude /config/ --exclude /data/ --exclude /custom_apps/ --exclude /themes/ /usr/src/nextcloud/ /var/www/html/
     
-    for dir in config data custom_apps themes; do
+    for dir in config data themes; do
         if [ ! -d /var/www/html/"$dir" ] || directory_empty /var/www/html/"$dir"; then
             cp -arT /usr/src/nextcloud/"$dir" /var/www/html/"$dir"
         fi
     done
 
-    if [ ! -f /var/www/html/config/apps.config.php ]; then
+    if [ ! -d /var/www/html/custom_apps ] && [ ! -f /var/www/html/config/apps.config.php ]; then
         cp -a /usr/src/nextcloud/config/apps.config.php /var/www/html/config/apps.config.php
+    fi
+
+    if [ ! -d /var/www/html/custom_apps ] || directory_empty /var/www/html/custom_apps; then
+        cp -arT /usr/src/nextcloud/custom_apps /var/www/html/custom_apps
     fi
 
     if [ "$installed_version" != "0.0.0~unknown" ]; then
