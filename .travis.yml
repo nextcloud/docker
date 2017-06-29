@@ -11,6 +11,7 @@ install:
 before_script:
   - env | sort
   - image="nextcloud:${VERSION}${VARIANT:+-$VARIANT}"
+  - if [[ "$ARCH" == 'i386' ]]; then sed -i -e 's/FROM php/FROM i386\/php/g' "${VERSION}/${VARIANT}/Dockerfile"; fi
 
 script:
   - travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
@@ -40,9 +41,15 @@ jobs:
         - ./generate-stackbrew-library.sh
 
     - stage: test images
-      env: VERSION=10.0 VARIANT=fpm
-    - env: VERSION=10.0 VARIANT=apache
-    - env: VERSION=11.0 VARIANT=fpm
-    - env: VERSION=11.0 VARIANT=apache
-    - env: VERSION=12.0 VARIANT=fpm
-    - env: VERSION=12.0 VARIANT=apache
+      env: VERSION=10.0 VARIANT=fpm ARCH=amd64
+    - env: VERSION=10.0 VARIANT=fpm ARCH=i386
+    - env: VERSION=10.0 VARIANT=apache ARCH=amd64
+    - env: VERSION=10.0 VARIANT=apache ARCH=i386
+    - env: VERSION=11.0 VARIANT=fpm ARCH=amd64
+    - env: VERSION=11.0 VARIANT=fpm ARCH=i386
+    - env: VERSION=11.0 VARIANT=apache ARCH=amd64
+    - env: VERSION=11.0 VARIANT=apache ARCH=i386
+    - env: VERSION=12.0 VARIANT=fpm ARCH=amd64
+    - env: VERSION=12.0 VARIANT=fpm ARCH=i386
+    - env: VERSION=12.0 VARIANT=apache ARCH=amd64
+    - env: VERSION=12.0 VARIANT=apache ARCH=i386
