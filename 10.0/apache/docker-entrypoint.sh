@@ -35,6 +35,10 @@ if version_greater "$image_version" "$installed_version"; then
         fi
     done
 
+    if [ ! -f /var/www/html/config/apps.config.php ]; then
+        cp -a /usr/src/nextcloud/config/apps.config.php /var/www/html/config/apps.config.php
+    fi
+
     if [ "$installed_version" != "0.0.0~unknown" ]; then
         su - www-data -s /bin/bash -c 'php /var/www/html/occ upgrade --no-app-disable'
 
