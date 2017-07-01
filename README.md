@@ -79,6 +79,15 @@ $ docker run -d nextcloud \
 -v theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
 ```
 
+## Using the Nextcloud command-line interface
+To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/12/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
+```console
+$ docker exec --user www-data CONTAINER_ID php occ
+```
+or for docker-compose:
+```console
+$ docker-compose exec --user www-data app php occ
+```
 
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for. 
