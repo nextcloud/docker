@@ -56,8 +56,8 @@ for latest in "${latests[@]}"; do
 			# Copy the docker-entrypoint.
 			cp docker-entrypoint.sh "$version/$variant/docker-entrypoint.sh"
 
-			# Copy apps.config.php
-			cp apps.config.php "$version/$variant/apps.config.php"
+			# Copy the config directory
+			cp -rT .config "$version/$variant/config"
 
 			for arch in i386 amd64; do
 				travisEnv='\n    - env: VERSION='"$version"' VARIANT='"$variant"' ARCH='"$arch$travisEnv"
