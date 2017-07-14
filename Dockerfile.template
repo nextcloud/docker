@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 RUN debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)" \
   && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
   && docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch" \
-  && docker-php-ext-install gd exif intl mbstring mcrypt ldap mysql opcache pdo_mysql pdo_pgsql pgsql zip
+  && docker-php-ext-install gd exif intl mbstring mcrypt ldap mysql opcache pdo_mysql pdo_pgsql pgsql zip pcntl
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
