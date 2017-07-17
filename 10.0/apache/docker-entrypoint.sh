@@ -11,6 +11,13 @@ function directory_empty() {
     [ -n "$(find "$1"/ -prune -empty)" ]
 }
 
+function run_as() {
+  if [[ $EUID -eq 0 ]]; then
+    su - www-data -s /bin/bash -c "$1"
+  else
+    bash -c "$1"
+  fi
+}
 
 installed_version="0.0.0~unknown"
 if [ -f /var/www/html/version.php ]; then
@@ -25,10 +32,15 @@ fi
 
 if version_greater "$image_version" "$installed_version"; then
     if [ "$installed_version" != "0.0.0~unknown" ]; then
-        su - www-data -s /bin/bash -c 'php /var/www/html/occ app:list' > /tmp/list_before
+        run_as 'php /var/www/html/occ app:list' > /tmp/list_before
     fi
-    rsync -a --delete --exclude /config/ --exclude /data/ --exclude /custom_apps/ --exclude /themes/ /usr/src/nextcloud/ /var/www/html/
-    
+    if [[ $EUID -eq 0 ]]; then
+      rsync_options=-a
+    else
+      rsync_options=-rlD
+    fi
+    rsync $rsync_options --delete --exclude /config/ --exclude /data/ --exclude /custom_apps/ --exclude /themes/ /usr/src/nextcloud/ /var/www/html/
+
     for dir in config data themes; do
         if [ ! -d /var/www/html/"$dir" ] || directory_empty /var/www/html/"$dir"; then
             cp -arT /usr/src/nextcloud/"$dir" /var/www/html/"$dir"
@@ -44,9 +56,9 @@ if version_greater "$image_version" "$installed_version"; then
     fi
 
     if [ "$installed_version" != "0.0.0~unknown" ]; then
-        su - www-data -s /bin/bash -c 'php /var/www/html/occ upgrade --no-app-disable'
+        run_as 'php /var/www/html/occ upgrade --no-app-disable'
 
-        su - www-data -s /bin/bash -c 'php /var/www/html/occ app:list' > /tmp/list_after
+        run_as 'php /var/www/html/occ app:list' > /tmp/list_after
         echo "The following apps have beed disabled:"
         diff <(sed -n "/Enabled:/,/Disabled:/p" /tmp/list_before) <(sed -n "/Enabled:/,/Disabled:/p" /tmp/list_after) | grep '<' | cut -d- -f2 | cut -d: -f1
         rm -f /tmp/list_before /tmp/list_after
