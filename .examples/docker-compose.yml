@@ -59,6 +59,26 @@ services:
       - proxy-tier
     restart: always
 
+  cron:
+    image: nextcloud:fpm
+    container_name: cron
+    links:
+      - db
+    volumes_from:
+      - app
+    user: www-data
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+      trap "break;exit" SIGHUP SIGINT SIGTERM
+      while /bin/true; do
+        /usr/local/bin/php /var/www/html/cron.php
+        sleep 900
+      done
+      EOF'
+    networks:
+      - proxy-tier
+    restart: always
+
   db:
     image: mariadb
     container_name: db
