@@ -67,7 +67,7 @@ Overview of the folders that can be mounted as volumes:
 - `/var/www/html/custom_apps` installed / modified apps
 - `/var/www/html/config` local configuration
 - `/var/www/html/data` the actual data of your Nextcloud
-- `/var/www/html/theme/<YOU_CUSTOM_THEME>` theming/branding
+- `/var/www/html/themes/<YOU_CUSTOM_THEME>` theming/branding
 
 If you want to use named volumes for all of these it would look like this
 ```console
