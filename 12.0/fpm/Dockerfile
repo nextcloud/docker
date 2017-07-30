@@ -33,6 +33,11 @@ RUN { \
   echo 'opcache.revalidate_freq=1'; \
   } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+# Custom
+RUN { \
+  echo 'memory_limit = 512M'; \
+  } > /usr/local/etc/php/conf.d/custom.ini
+
 # PECL extensions
 RUN set -ex \
  && pecl install APCu-5.1.8 \
