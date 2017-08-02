@@ -1,0 +1,79 @@
+version: '3'
+
+volumes:
+  certs:
+  conf.d:
+  vhost.d:
+  html:
+  nextcloud:
+  db:
+
+networks:
+  proxy-tier:
+
+services:
+  proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - conf.d:/etc/nginx/conf.d
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./uploadsize.conf:/etc/nginx/conf.d/uploadsize.conf:ro
+    networks:
+      - proxy-tier
+    labels:
+      - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy
+    restart: always
+
+  letsencrypt-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - conf.d:/etc/nginx/conf.d
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - proxy-tier
+    restart: always
+
+  app:
+    image: nextcloud:apache
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - VIRTUAL_HOST=
+      - LETSENCRYPT_HOST=
+      - LETSENCRYPT_EMAIL=
+    networks:
+      - proxy-tier
+      - default
+    restart: always
+
+  db:
+    image: mariadb
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=
+    restart: always
+
+  redis:
+    image: redis
+    restart: always
+
+  collabora:
+    image: collabora/code
+    cap_add:
+      - MKNOD
+    environment:
+      - domain=
+    restart: always
