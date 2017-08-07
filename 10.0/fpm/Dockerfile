@@ -44,8 +44,6 @@ ENV NEXTCLOUD_VERSION 10.0.6
 RUN chown -R www-data:root /var/www/html
 VOLUME /var/www/html
 
-COPY config/* /usr/src/nextcloud/config/
-
 RUN curl -fsSL -o nextcloud.tar.bz2 \
     "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2" \
  && curl -fsSL -o nextcloud.tar.bz2.asc \
@@ -63,6 +61,7 @@ RUN curl -fsSL -o nextcloud.tar.bz2 \
  && chmod +x /usr/src/nextcloud/occ
 
 COPY docker-entrypoint.sh /entrypoint.sh
+COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
