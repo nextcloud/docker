@@ -42,7 +42,7 @@ RUN set -ex \
  && docker-php-ext-enable apcu redis memcached
 RUN a2enmod rewrite
 
-ENV NEXTCLOUD_VERSION 11.0.3
+ENV NEXTCLOUD_VERSION 11.0.4
 VOLUME /var/www/html
 
 COPY config/* /usr/src/nextcloud/config/
