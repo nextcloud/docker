@@ -35,25 +35,17 @@ if version_greater "$image_version" "$installed_version"; then
         run_as 'php /var/www/html/occ app:list' > /tmp/list_before
     fi
     if [[ $EUID -eq 0 ]]; then
-      rsync_options=-a
+      rsync_options="-rlDog --chown www-data:root"
     else
-      rsync_options=-rlD
+      rsync_options="-rlD"
     fi
     rsync $rsync_options --delete --exclude /config/ --exclude /data/ --exclude /custom_apps/ --exclude /themes/ /usr/src/nextcloud/ /var/www/html/
 
-    for dir in config data themes; do
+    for dir in config data custom_apps themes; do
         if [ ! -d /var/www/html/"$dir" ] || directory_empty /var/www/html/"$dir"; then
-            cp -arT /usr/src/nextcloud/"$dir" /var/www/html/"$dir"
+            rsync $rsync_options --include /"$dir"/ --exclude '/*' /usr/src/nextcloud/ /var/www/html/
         fi
     done
-
-    if [ ! -d /var/www/html/custom_apps ] && [ ! -f /var/www/html/config/apps.config.php ]; then
-        cp -a /usr/src/nextcloud/config/apps.config.php /var/www/html/config/apps.config.php
-    fi
-
-    if [ ! -d /var/www/html/custom_apps ] || directory_empty /var/www/html/custom_apps; then
-        cp -arT /usr/src/nextcloud/custom_apps /var/www/html/custom_apps
-    fi
 
     if [ "$installed_version" != "0.0.0~unknown" ]; then
         run_as 'php /var/www/html/occ upgrade --no-app-disable'
