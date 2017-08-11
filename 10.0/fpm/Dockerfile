@@ -41,7 +41,8 @@ RUN set -ex \
 
 ENV NEXTCLOUD_VERSION 10.0.6
 
-RUN chown -R www-data:root /var/www/html
+RUN chown -R www-data:root /var/www/html && \
+    chmod -R g=u /var/www/html
 VOLUME /var/www/html
 
 RUN curl -fsSL -o nextcloud.tar.bz2 \

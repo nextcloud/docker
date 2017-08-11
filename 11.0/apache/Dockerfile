@@ -44,7 +44,8 @@ RUN a2enmod rewrite
 
 ENV NEXTCLOUD_VERSION 11.0.4
 
-RUN chown -R www-data:root /var/www/html
+RUN chown -R www-data:root /var/www/html && \
+    chmod -R g=u /var/www/html
 VOLUME /var/www/html
 
 RUN curl -fsSL -o nextcloud.tar.bz2 \
