@@ -25,18 +25,12 @@ services:
       - nextcloud:/var/www/html
     env_file:
       - db.env
-    links:
-      - db
-      - redis
 
   cron:
     build: ./app
     restart: always
     volumes:
       - nextcloud:/var/www/html
-    links:
-      - db
-      - redis
     user: www-data
     entrypoint: |
       bash -c 'bash -s <<EOF

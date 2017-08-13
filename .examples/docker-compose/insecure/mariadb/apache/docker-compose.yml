@@ -21,8 +21,6 @@ services:
       - nextcloud:/var/www/html
     env_file:
       - db.env
-    links:
-      - db
 
 volumes:
   db:
