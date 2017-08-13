@@ -3,6 +3,7 @@ version: '3'
 services:
   db:
     image: mariadb
+    # image: mysql
     restart: always
     volumes:
       - db:/var/lib/mysql
