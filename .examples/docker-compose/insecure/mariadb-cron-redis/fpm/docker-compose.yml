@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    # image: mysql
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+    env_file:
+      - db.env
+
+  redis:
+    image: redis
+    restart: always
+
+  app:  
+    build: ./app
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    env_file:
+      - db.env
+
+  web:
+    image: nginx
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - nextcloud:/var/www/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+  cron:
+    build: ./app
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    user: www-data
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+        trap "break;exit" SIGHUP SIGINT SIGTERM
+
+        while [ ! -f /var/www/html/config/config.php ]; do
+          sleep 1
+        done
+
+        while true; do
+          php -f /var/www/html/cron.php
+          sleep 15m
+        done
+      EOF'
+
+volumes:
+  db:
+  nextcloud:
