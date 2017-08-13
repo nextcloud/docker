@@ -12,6 +12,10 @@ services:
     env_file:
       - db.env
 
+  redis:
+    image: redis
+    restart: always
+
   app:  
     build: ./app
     restart: always
@@ -23,6 +27,7 @@ services:
       - db.env
     links:
       - db
+      - redis
 
   cron:
     build: ./app
@@ -31,6 +36,7 @@ services:
       - nextcloud:/var/www/html
     links:
       - db
+      - redis
     user: www-data
     entrypoint: |
       bash -c 'bash -s <<EOF
