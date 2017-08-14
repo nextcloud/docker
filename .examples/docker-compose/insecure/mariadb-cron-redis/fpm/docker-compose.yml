@@ -25,13 +25,12 @@ services:
       - db.env
 
   web:
-    image: nginx
+    build: ./web
     restart: always
     ports:
       - 8080:80
     volumes:
       - nextcloud:/var/www/html:ro
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
 
   cron:
     build: ./app
