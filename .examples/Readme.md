@@ -3,12 +3,12 @@
 In this subfolders are some examples how to use the docker image. There are two sections:
  
  * [`dockerfiles`](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles)
- * [`docker-compose`] (https://github.com/nextcloud/docker/tree/master/.examples/docker-compose)
+ * [`docker-compose`](https://github.com/nextcloud/docker/tree/master/.examples/docker-compose)
 
 The `dockerfiles` are derived images, that add or alter certain functionalities of the default docker images. In the `docker-compose` subfolder are examples for deployment of the application, including database, redis, collabora and other services.
 
 ## Dockerfiles
-The Dockerfiles use the default images as base image an build on top of it.
+The Dockerfiles use the default images as base image and build on top of it.
 
 
 Example | Description
@@ -22,8 +22,8 @@ Example | Description
 
 
 ## docker-compose
-In docker-compose examples additional services are added to create a complete nextcloud installation. The examples are designed to run out-of-the-box.
-Before running the examples you have to open the `db.env` and docker-compose file and fill in appropriate passwords and your domain name(s).
+In `docker-compose` additional services are bundled to create a complete nextcloud installation. The examples are designed to run out-of-the-box.
+Before running the examples you have to modify the `db.env` and `docker-compose` file and fill in your custum information.
 
 
 **TODO: ADD INSECURE DESCRIPTION**
@@ -31,8 +31,8 @@ Before running the examples you have to open the `db.env` and docker-compose fil
 
 ### with-nginx-proxy
 The nginx proxy adds a proxy layer between nextcloud and the internet. The proxy is designed to serve multiple sites on the same host machine.
-The advantage in adding this additional layer is the combination with a container for [Let's Encrypt](https://letsencrypt.org/) certificate handling.
-This combination of the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) and [jrcs/docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion) gives you fully automated https encryption of your nextcloud installation without worrying about certificate generation, validation or renewal.
+The advantage in adding this layer is the ability to add a container for [Let's Encrypt](https://letsencrypt.org/) certificate handling.
+This combination of the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) and [jrcs/docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion) containers creates a fully automated https encryption of the nextcloud installation without worrying about certificate generation, validation or renewal.
 
 To use this example complete the following steps:
 
