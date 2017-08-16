@@ -23,7 +23,7 @@ Example | Description
 
 ## docker-compose
 In `docker-compose` additional services are bundled to create a complete nextcloud installation. The examples are designed to run out-of-the-box.
-Before running the examples you have to modify the `db.env` and `docker-compose` file and fill in your custom information.
+Before running the examples you have to modify the `db.env` and `docker-compose.yml` file and fill in your custom information.
 
 
 **TODO: ADD INSECURE DESCRIPTION**
