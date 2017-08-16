@@ -13,9 +13,9 @@ The Dockerfiles use the default images as base image and build on top of it.
 
 Example | Description
 ------- | -------
-[cron]() | uses supervisor to run the cron job inside the container (so no extra container is needed).
-[imap]() | adds dependencies required to authenticate users via imap
-[smb]() | adds dependencies required to use smb shares
+[cron](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/cron) | uses supervisor to run the cron job inside the container (so no extra container is needed).
+[imap](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/imap) | adds dependencies required to authenticate users via imap
+[smb](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/smb) | adds dependencies required to use smb shares
 
 
 
