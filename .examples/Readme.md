@@ -37,10 +37,10 @@ This combination of the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-p
 To use this example complete the following steps:
 
 1. open docker-compose.yml
-  a. insert your nextcloud domain behind `VIRTUAL_HOST=`and `LETSENCRYPT_HOST=`
-  b. enter a valid email behind `LETSENCRYPT_EMAIL`
-  c. choose a root password for the database behin `MYSQL_ROOT_PASSWORD=`
-  d. enter your collabora domain behind `domain=`
+   1. insert your nextcloud domain behind `VIRTUAL_HOST=`and `LETSENCRYPT_HOST=`
+   2. enter a valid email behind `LETSENCRYPT_EMAIL`
+   3. choose a root password for the database behin `MYSQL_ROOT_PASSWORD=`
+   4. enter your collabora domain behind `domain=`
 2. choose a password for the database user nextcloud in `db.env`behind `MYSQL_PASSWORD`
 3. run `docker-compose build --pull` to pull the most recent base images and build the custom dockerfiles
 4. start nextcloud with `docker-compose up -d`
