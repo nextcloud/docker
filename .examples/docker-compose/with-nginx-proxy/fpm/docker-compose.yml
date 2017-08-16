@@ -13,7 +13,7 @@ networks:
 
 services:
   proxy:
-    image: jwilder/nginx-proxy
+    build: proxy
     ports:
       - 80:80
       - 443:443
@@ -23,7 +23,6 @@ services:
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./uploadsize.conf:/etc/nginx/conf.d/uploadsize.conf:ro
     networks:
       - proxy-tier
     labels:
@@ -43,9 +42,8 @@ services:
     restart: always
 
   web:
-    image: nginx
+    build: web
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - nextcloud:/var/www/html
     environment:
       - VIRTUAL_HOST=
@@ -57,7 +55,9 @@ services:
     restart: always
 
   app:
-    image: nextcloud:fpm
+    build: app
+    env_file:
+      - db.env
     volumes:
       - nextcloud:/var/www/html
     restart: always
@@ -66,17 +66,16 @@ services:
     image: mariadb
     volumes:
       - db:/var/lib/mysql
+    env_file:
+      - db.env
     environment:
       - MYSQL_ROOT_PASSWORD=
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=
     restart: always
 
   redis:
     image: redis
     restart: always
-	
+
   collabora:
     image: collabora/code
     cap_add:

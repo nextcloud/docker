@@ -13,7 +13,7 @@ networks:
 
 services:
   proxy:
-    image: jwilder/nginx-proxy
+    build: proxy
     ports:
       - 80:80
       - 443:443
@@ -23,7 +23,6 @@ services:
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./uploadsize.conf:/etc/nginx/conf.d/uploadsize.conf:ro
     networks:
       - proxy-tier
     labels:
@@ -43,9 +42,11 @@ services:
     restart: always
 
   app:
-    image: nextcloud:apache
+    build: app
     volumes:
       - nextcloud:/var/www/html
+    env_file:
+      - db.env
     environment:
       - VIRTUAL_HOST=
       - LETSENCRYPT_HOST=
@@ -61,9 +62,8 @@ services:
       - db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=
+    env_file:
+      - db.env
     restart: always
 
   redis:
