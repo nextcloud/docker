@@ -25,6 +25,9 @@ services:
       - nextcloud:/var/www/html
     env_file:
       - db.env
+    depends_on:
+      - db
+      - redis
 
   cron:
     build: ./app
@@ -45,6 +48,9 @@ services:
           sleep 15m
         done
       EOF'
+    depends_on:
+      - db
+      - redis
 
 volumes:
   db:

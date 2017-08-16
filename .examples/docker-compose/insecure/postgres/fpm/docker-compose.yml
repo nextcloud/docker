@@ -16,6 +16,8 @@ services:
       - nextcloud:/var/www/html
     env_file:
       - db.env
+    depends_on:
+      - db
 
   web:
     build: ./web
@@ -24,6 +26,8 @@ services:
       - 8080:80
     volumes:
       - nextcloud:/var/www/html:ro
+    depends_on:
+      - app
 
 volumes:
   db:

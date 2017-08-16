@@ -21,6 +21,8 @@ services:
       - nextcloud:/var/www/html
     env_file:
       - db.env
+    depends_on:
+      - db
 
 volumes:
   db:
