@@ -13,9 +13,9 @@ The Dockerfiles use the default images as base image and build on top of it.
 
 Example | Description
 ------- | -------
-[cron]() | uses supervisord to run the cron job inside the container (so no extra container is needed).
-[imap]() | adds dependency to authentificate user via imap
-[smb]() | adds dependency to use smb shares
+[cron]() | uses supervisor to run the cron job inside the container (so no extra container is needed).
+[imap]() | adds dependencies required to authenticate users via imap
+[smb]() | adds dependencies required to use smb shares
 
 
 
@@ -23,7 +23,7 @@ Example | Description
 
 ## docker-compose
 In `docker-compose` additional services are bundled to create a complete nextcloud installation. The examples are designed to run out-of-the-box.
-Before running the examples you have to modify the `db.env` and `docker-compose` file and fill in your custum information.
+Before running the examples you have to modify the `db.env` and `docker-compose` file and fill in your custom information.
 
 
 **TODO: ADD INSECURE DESCRIPTION**
