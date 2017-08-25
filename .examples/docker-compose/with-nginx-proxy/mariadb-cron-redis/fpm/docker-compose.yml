@@ -1,0 +1,108 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    # image: mysql
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+    env_file:
+      - db.env
+
+  redis:
+    image: redis
+    restart: always
+
+  app:  
+    build: ./app
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    env_file:
+      - db.env
+    depends_on:
+      - db
+      - redis
+
+  web:
+    build: ./web
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html:ro
+    environment:
+      - VIRTUAL_HOST=
+      - LETSENCRYPT_HOST=
+      - LETSENCRYPT_EMAIL=
+    depends_on:
+      - app
+    networks:
+      - proxy-tier
+      - default
+
+  cron:
+    build: ./app
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    user: www-data
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+        trap "break;exit" SIGHUP SIGINT SIGTERM
+
+        while [ ! -f /var/www/html/config/config.php ]; do
+          sleep 1
+        done
+
+        while true; do
+          php -f /var/www/html/cron.php
+          sleep 15m
+        done
+      EOF'
+    depends_on:
+      - db
+      - redis
+
+  proxy:
+    build: ./proxy
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    volumes:
+      - certs:/etc/nginx/certs:ro
+      - conf.d:/etc/nginx/conf.d
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - proxy-tier
+
+  letsencrypt-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    restart: always
+    volumes:
+      - certs:/etc/nginx/certs
+      - conf.d:/etc/nginx/conf.d
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
+
+volumes:
+  db:
+  nextcloud:
+  certs:
+  conf.d:
+  vhost.d:
+  html:
+
+networks:
+  proxy-tier:
