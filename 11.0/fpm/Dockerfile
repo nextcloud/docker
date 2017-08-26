@@ -41,9 +41,10 @@ RUN set -ex \
  && docker-php-ext-enable apcu redis memcached
 
 ENV NEXTCLOUD_VERSION 11.0.4
-VOLUME /var/www/html
 
-COPY config/* /usr/src/nextcloud/config/
+RUN chown -R www-data:root /var/www/html && \
+    chmod -R g=u /var/www/html
+VOLUME /var/www/html
 
 RUN curl -fsSL -o nextcloud.tar.bz2 \
     "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2" \
@@ -57,19 +58,12 @@ RUN curl -fsSL -o nextcloud.tar.bz2 \
  && tar -xjf nextcloud.tar.bz2 -C /usr/src/ \
  && rm nextcloud.tar.bz2 \
  && rm -rf /usr/src/nextcloud/updater \
- # https://docs.nextcloud.com/server/11/admin_manual/installation/installation_wizard.html#setting-strong-directory-permissions
  && mkdir -p /usr/src/nextcloud/data \
  && mkdir -p /usr/src/nextcloud/custom_apps \
- && find /usr/src/nextcloud/ -type f -print0 | xargs -0 chmod 0640 \
- && find /usr/src/nextcloud/ -type d -print0 | xargs -0 chmod 0750 \
- && chown -R root:www-data /usr/src/nextcloud/ \
- && chown -R www-data:www-data /usr/src/nextcloud/custom_apps/ \
- && chown -R www-data:www-data /usr/src/nextcloud/config/ \
- && chown -R www-data:www-data /usr/src/nextcloud/data/ \
- && chown -R www-data:www-data /usr/src/nextcloud/themes/ \
  && chmod +x /usr/src/nextcloud/occ
 
 COPY docker-entrypoint.sh /entrypoint.sh
+COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
