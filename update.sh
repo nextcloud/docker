@@ -26,17 +26,14 @@ for latest in "${latests[@]}"; do
 		continue
 	fi
 
-	# Only add versions >= 10
-	if version_greater_or_equal "$version" "10.0"; then
+	# Only add versions >= 11
+	if version_greater_or_equal "$version" "11.0"; then
 
 		for variant in apache fpm; do
 			# Create the version+variant directory with a Dockerfile.
 			mkdir -p "$version/$variant"
 
 			template="Dockerfile.template"
-			if version_greater_or_equal "$version" "11.0"; then
-				template="Dockerfile-php7.template"
-			fi
 			cp "$template" "$version/$variant/Dockerfile"
 
 			echo "updating $latest [$version] $variant"
