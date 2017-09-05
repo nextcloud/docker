@@ -13,12 +13,14 @@ services:
       - db.env
 
   app:  
-    build: ./app
+    image: nextcloud:apache
     restart: always
     ports:
       - 8080:80
     volumes:
       - nextcloud:/var/www/html
+    environment:
+      - MYSQL_HOST=db
     env_file:
       - db.env
     depends_on:

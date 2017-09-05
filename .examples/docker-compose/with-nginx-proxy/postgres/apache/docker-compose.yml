@@ -10,7 +10,7 @@ services:
       - db.env
 
   app:  
-    build: ./app
+    image: nextcloud:apache
     restart: always
     volumes:
       - nextcloud:/var/www/html
@@ -18,6 +18,8 @@ services:
       - VIRTUAL_HOST=
       - LETSENCRYPT_HOST=
       - LETSENCRYPT_EMAIL=
+    environment:
+      - POSTGRES_HOST=db
     env_file:
       - db.env
     depends_on:

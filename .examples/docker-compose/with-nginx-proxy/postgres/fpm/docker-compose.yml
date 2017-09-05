@@ -10,10 +10,12 @@ services:
       - db.env
 
   app:  
-    build: ./app
+    image: nextcloud:fpm
     restart: always
     volumes:
       - nextcloud:/var/www/html
+    environment:
+      - POSTGRES_HOST=db
     env_file:
       - db.env
     depends_on:

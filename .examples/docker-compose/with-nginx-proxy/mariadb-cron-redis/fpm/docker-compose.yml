@@ -21,6 +21,8 @@ services:
     restart: always
     volumes:
       - nextcloud:/var/www/html
+    environment:
+      - MYSQL_HOST=db
     env_file:
       - db.env
     depends_on:
