@@ -95,7 +95,7 @@ The nextcloud image supports auto configuration via environment variables. You c
 __SQLITE_DATABASE__:
 - `SQLITE_DATABASE` Name of the database using sqlite
 
-___MYSQL/MariaDB__:
+__MYSQL/MariaDB__:
 - `MYSQL_DATABASE` Name of the database using mysql / mariadb. 
 - `MYSQL_USER` Username for the database using mysql / mariadb.
 - `MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
