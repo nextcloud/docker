@@ -89,6 +89,35 @@ or for docker-compose:
 $ docker-compose exec --user www-data app php occ
 ```
 
+## Auto configuration via environment variables
+The nextcloud image supports auto configuration via environment variables. You can preconfigure everything that is asked on the install page on first run. To enable auto configuration, set your database connection via the following environment variables. ONLY use one database type!
+
+__SQLITE_DATABASE__:
+- `SQLITE_DATABASE` Name of the database using sqlite
+
+__MYSQL/MariaDB__:
+- `MYSQL_DATABASE` Name of the database using mysql / mariadb. 
+- `MYSQL_USER` Username for the database using mysql / mariadb.
+- `MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
+- `MYSQL_HOST` Hostname of the database server using mysql / mariadb.
+
+__PostgreSQL__:
+- `POSTGRES_DB` Name of the database using postgres.
+- `POSTGRES_USER` Username for the database using postgres.
+- `POSTGRES_PASSWORD` Password for the database user using postgres.
+- `POSTGRES_HOST` Hostname of the database server using postgres.
+
+If you set any values, they will not be asked in the install page on first run. With a complete configuration by using all variables for your database type, you can additionally configure your Nextcloud instance by setting admin user and password (only works if you set both):
+
+- `NEXTCLOUD_ADMIN_USER` Name of the Nextcloud admin user.
+- `NEXTCLOUD_ADMIN_PASSWORD` Password for the Nextcloud admin user.
+
+If you want you can set the data directory and table prefix, otherwise default values will be used.
+
+- `NEXTCLOUD_DATA_DIR` (default: _/var/www/html/data_) Configures the data directory where nextcloud stores all files from the users.
+- `NEXTCLOUD_TABLE_PREFIX` (default: _""_) Optional prefix for the tables. Used to be `oc_` in the past
+
+
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for. 
 
