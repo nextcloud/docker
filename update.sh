@@ -45,16 +45,17 @@ for latest in "${latests[@]}"; do
 				s/%%CMD%%/'"${cmd[$variant]}"'/g;
 			' "$version/$variant/Dockerfile"
 
-			# Remove Apache commands if we're not an Apache variant.
-			if [ "$variant" != "apache" ]; then
-				sed -ri -e '/a2enmod/d' "$version/$variant/Dockerfile"
-			fi
-
 			# Copy the docker-entrypoint.
 			cp docker-entrypoint.sh "$version/$variant/docker-entrypoint.sh"
 
 			# Copy the config directory
 			cp -rT .config "$version/$variant/config"
+
+			# Remove Apache commands and configs if we're not an Apache variant.
+			if [ "$variant" != "apache" ]; then
+				sed -ri -e '/a2enmod/d' "$version/$variant/Dockerfile"
+				rm "$version/$variant/config/apache-pretty-urls.config.php"
+			fi
 
 			for arch in i386 amd64; do
 				travisEnv='\n    - env: VERSION='"$version"' VARIANT='"$variant"' ARCH='"$arch$travisEnv"
