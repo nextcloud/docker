@@ -40,7 +40,7 @@ RUN set -ex \
  && pecl install redis-3.1.3 \
  && docker-php-ext-enable apcu redis memcached
 
-ENV NEXTCLOUD_VERSION 11.0.4
+ENV NEXTCLOUD_VERSION 11.0.5
 
 RUN chown -R www-data:root /var/www/html && \
     chmod -R g=u /var/www/html
