@@ -42,7 +42,7 @@ RUN set -ex \
  && docker-php-ext-enable apcu redis memcached
 RUN a2enmod rewrite
 
-ENV NEXTCLOUD_VERSION 12.0.2
+ENV NEXTCLOUD_VERSION 12.0.3
 
 RUN chown -R www-data:root /var/www/html && \
     chmod -R g=u /var/www/html
