@@ -12,6 +12,7 @@ services:
       - ./proxy/html:/usr/share/nginx/html
       - ./proxy/certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./uploadsize.conf:/etc/nginx/conf.d/uploadsize.conf:ro
     networks:
       - proxy-tier
     restart: always
