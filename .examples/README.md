@@ -29,6 +29,9 @@ The docker-compose examples make heavily use of dereived Dockerfiles to add conf
 
 
 ### insecure
+This example should only be used for testing on the local network because it uses a unencrypted http connection.
+When you want to have your server reachable from the internet adding HTTPS-encryption is mandatory!
+For this use one of the [with-nginx-proxy](#with-nginx-proxy) examples.
 
 To use this example complete the following steps:
 
