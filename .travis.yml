@@ -20,6 +20,7 @@ before_script:
 script:
   - travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
   - ~/official-images/test/run.sh "$image"
+  - .travis/test-example-dockerfiles.sh "$image"
 
 after_script:
   - docker images

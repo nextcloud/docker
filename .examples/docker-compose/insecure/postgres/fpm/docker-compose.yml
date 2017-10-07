@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - db:/var/lib/postgresql/data
+    env_file:
+      - db.env
+
+  app:  
+    image: nextcloud:fpm
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - POSTGRES_HOST=db
+    env_file:
+      - db.env
+    depends_on:
+      - db
+
+  web:
+    build: ./web
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - nextcloud:/var/www/html:ro
+    depends_on:
+      - app
+
+volumes:
+  db:
+  nextcloud:
