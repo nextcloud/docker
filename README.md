@@ -318,16 +318,16 @@ docker-compose exec db rm /dmp
 4. Copy your data (nextcloud_app_1 is the name of your Nextcloud container):
 ```console
 docker cp ./data/ nextcloud_app_1:/var/www/html/data
-docker-compose exec app chown www-data:www-data /var/www/html/data
+docker-compose exec app chown -R www-data:www-data /var/www/html/data
 docker cp ./theming/ nextcloud_app_1:/var/www/html/theming
-docker-compose exec app chown www-data:www-data /var/www/html/theming
+docker-compose exec app chown -R www-data:www-data /var/www/html/theming
 docker cp ./config/config.php nextcloud_app_1:/var/www/html/config
-docker-compose exec app chown www-data:www-data /var/www/html/config
+docker-compose exec app chown -R www-data:www-data /var/www/html/config
 ```
 5. Copy only the custom apps you use (or simply redownload them from the web interface):
 ```console 
 docker cp ./apps/ nextcloud_data:/var/www/html/custom_apps
-docker-compose exec app chown www-data:www-data /var/www/html/custom_apps
+docker-compose exec app chown -R www-data:www-data /var/www/html/custom_apps
 ```
 
 # Questions / Issues
