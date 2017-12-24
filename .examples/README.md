@@ -16,8 +16,51 @@ Example | Description
 [cron](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/cron) | uses supervisor to run the cron job inside the container (so no extra container is needed).
 [imap](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/imap) | adds dependencies required to authenticate users via imap
 [smb](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/smb) | adds dependencies required to use smb shares
+[full](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/full) | adds dependencies for ALL optional packages and cron functionality via supervisor (as in the `cron` example Dockerfile).
 
+### full
+The `full` Dockerfile example adds dependencies for all optional packages suggested by nextcloud that may be needed for some features (e.g. Video Preview Generation), as stated in the [Administration Manual](https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html).
 
+NOTE: The Dockerfile does not install the LibreOffice package (line is commented), because it would increase the generated Image size by approximately 500 MB. In order to install it, simply uncomment the 14th line of the Dockerfile.
+
+The required steps for each optional/recommended package that is not already in the Nextcloud image are listed here, so that the Dockerfile can easily be modified to only install the needed extra packages. Simply remove the steps for the unwanted packages  from the Dockerfile.
+
+#### PHP Module bz2
+`docker-php-ext-install bz2` </br>
+
+#### PHP Module imagick
+`apt install libmagickwand-dev` </br>
+`pecl install imagick` </br>
+`docker-php-ext-enable imagick` </br>
+
+#### PHP Module imap
+`apt install libc-client-dev libkrb5-dev` </br>
+`docker-php-ext-configure imap --with-kerberos --with-imap-ssl` </br>
+`docker-php-ext-install imap` </br>
+
+#### PHP Module gmp
+`apt install libgmp3-dev` </br>
+`docker-php-ext-install gmp` </br>
+
+#### PHP Module smbclient
+`apt install smbclient libsmbclient-dev` </br>
+`pecl install smbclient` </br>
+`docker-php-ext-enable smbclient` </br>
+
+#### ffmpeg
+`echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list` </br>
+`apt install ffmpeg` </br>
+
+#### LibreOffice
+`apt install LibreOffice` </br>
+
+#### CRON via supervisor
+`apt install supervisor cron` </br>
+`mkdir /var/log/supervisord /var/run/supervisord` </br>
+`echo "*/15 * * * * su - www-data -s /bin/bash -c \"php -f /var/www/html/cron.php\""| crontab -` </br>
+The following Dockerfile commands are also necessary for a sucessfull cron installation: </br>
+`COPY supervisord.conf /etc/supervisor/supervisord.conf` </br>
+`CMD ["/usr/bin/supervisord"]` </br>
 
 
 
