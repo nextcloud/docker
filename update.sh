@@ -6,6 +6,11 @@ declare -A cmd=(
 	[fpm]='php-fpm'
 )
 
+declare -A extras=(
+	[apache]='\nRUN a2enmod rewrite'
+	[fpm]=''
+)
+
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
 	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
@@ -43,6 +48,7 @@ for latest in "${latests[@]}"; do
 				s/%%VARIANT%%/'"$variant"'/g;
 				s/%%VERSION%%/'"$latest"'/g;
 				s/%%CMD%%/'"${cmd[$variant]}"'/g;
+				s/%%VARIANT_EXTRAS%%/'"${extras[$variant]}"'/g;
 			' "$version/$variant/Dockerfile"
 
 			# Copy the docker-entrypoint.
@@ -51,9 +57,8 @@ for latest in "${latests[@]}"; do
 			# Copy the config directory
 			cp -rT .config "$version/$variant/config"
 
-			# Remove Apache commands and configs if we're not an Apache variant.
+			# Remove Apache config if we're not an Apache variant.
 			if [ "$variant" != "apache" ]; then
-				sed -ri -e '/a2enmod/d' "$version/$variant/Dockerfile"
 				rm "$version/$variant/config/apache-pretty-urls.config.php"
 			fi
 
