@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /var/log/supervisord /var/run/supervisord && \ 
-  echo "*/15 * * * * su - www-data -s /bin/bash -c \"php -f /var/www/html/cron.php\""| crontab -
+  printf "*/15 * * * * su - www-data -s /bin/bash -c \"php -f /var/www/html/cron.php\"\n"| crontab -
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
