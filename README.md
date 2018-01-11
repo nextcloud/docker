@@ -48,16 +48,18 @@ To make your data persistent to upgrading and get access for backups is using na
 Nextcloud:
 - `/var/www/html/` folder where all nextcloud data lives
 ```console
-$ docker run -d nextcloud \
--v nextcloud:/var/www/html
+$ docker run -d \
+-v nextcloud:/var/www/html \
+nextcloud
 ```
 
 Database:
 - `/var/lib/mysql` MySQL / MariaDB Data
 - `/var/lib/postgresql/data` PostgreSQL Data
 ```console
-$ docker run -d mariadb \
--v db:/var/lib/mysql
+$ docker run -d \
+-v db:/var/lib/mysql \
+mariadb
 ```
 
 If you want to get fine grained access to your individual files, you can mount additional volumes for data, config, your theme and custom apps. 
@@ -73,12 +75,13 @@ Overview of the folders that can be mounted as volumes:
 
 If you want to use named volumes for all of these it would look like this
 ```console
-$ docker run -d nextcloud \
+$ docker run -d \
 -v nextcloud:/var/www/html \
 -v apps:/var/www/html/custom_apps \
 -v config:/var/www/html/config \
 -v data:/var/www/html/data \
--v theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
+-v theme:/var/www/html/themes/<YOUR_CUSTOM_THEME> \
+nextcloud
 ```
 
 ## Using the Nextcloud command-line interface
