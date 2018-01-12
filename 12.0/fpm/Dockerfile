@@ -6,6 +6,7 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         rsync \
         bzip2 \
+        busybox-static \
     ; \
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
