@@ -64,6 +64,7 @@ RUN curl -fsSL -o nextcloud.tar.bz2 \
 
 COPY docker-entrypoint.sh /entrypoint.sh
 COPY config/* /usr/src/nextcloud/config/
+RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
