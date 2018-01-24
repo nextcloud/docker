@@ -66,7 +66,7 @@ RUN set -ex; \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 12.0.4
+ENV NEXTCLOUD_VERSION 12.0.5
 
 RUN set -ex; \
     curl -fsSL -o nextcloud.tar.bz2 \

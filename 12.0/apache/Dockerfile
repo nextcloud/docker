@@ -67,7 +67,7 @@ VOLUME /var/www/html
 
 RUN a2enmod rewrite
 
-ENV NEXTCLOUD_VERSION 12.0.4
+ENV NEXTCLOUD_VERSION 12.0.5
 
 RUN set -ex; \
     curl -fsSL -o nextcloud.tar.bz2 \
