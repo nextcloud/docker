@@ -13,7 +13,9 @@ function directory_empty() {
 
 function run_as() {
   if [[ $EUID -eq 0 ]]; then
-    su - www-data -s /bin/bash -c "$1"
+    HOME="/var/www"
+    su - www-data -p -s /bin/bash -c "$1"
+    HOME="/root"
   else
     bash -c "$1"
   fi
