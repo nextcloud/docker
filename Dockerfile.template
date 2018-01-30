@@ -8,6 +8,7 @@ RUN set -ex; \
         bzip2 \
         busybox-static \
     ; \
+    echo '*/15 * * * * www-data php -f /var/www/html/cron.php' > /etc/crontab; \
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
     \
