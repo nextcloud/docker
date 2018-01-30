@@ -51,8 +51,10 @@ for latest in "${latests[@]}"; do
 				s/%%VARIANT_EXTRAS%%/'"${extras[$variant]}"'/g;
 			' "$version/$variant/Dockerfile"
 
-			# Copy the docker-entrypoint.
-			cp docker-entrypoint.sh "$version/$variant/docker-entrypoint.sh"
+			# Copy the shell scripts
+			for name in entrypoint cron; do
+				cp "docker-$name.sh" "$version/$variant/$name.sh"
+			done
 
 			# Copy the config directory
 			cp -rT .config "$version/$variant/config"

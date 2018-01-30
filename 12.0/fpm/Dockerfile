@@ -87,7 +87,7 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ
 
-COPY docker-entrypoint.sh /entrypoint.sh
+COPY *.sh /
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
