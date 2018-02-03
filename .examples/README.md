@@ -59,9 +59,8 @@ The required steps for each optional/recommended package that is not already in 
 `apt install LibreOffice` </br>
 
 #### CRON via supervisor
-`apt install supervisor cron` </br>
+`apt install supervisor` </br>
 `mkdir /var/log/supervisord /var/run/supervisord` </br>
-`echo "*/15 * * * * su - www-data -s /bin/bash -c \"php -f /var/www/html/cron.php\""| crontab -` </br>
 The following Dockerfile commands are also necessary for a sucessfull cron installation: </br>
 `COPY supervisord.conf /etc/supervisor/supervisord.conf` </br>
 `CMD ["/usr/bin/supervisord"]` </br>

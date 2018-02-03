@@ -1,12 +1,9 @@
 FROM nextcloud:apache
 
 RUN apt-get update && apt-get install -y \
-  supervisor \
-  cron \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir /var/log/supervisord /var/run/supervisord && \ 
-  echo "*/15 * * * * su - www-data -s /bin/bash -c \"php -f /var/www/html/cron.php\""| crontab -
+    supervisor \
+  && rm -rf /var/lib/apt/lists/* \
+  && mkdir /var/log/supervisord /var/run/supervisord
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 

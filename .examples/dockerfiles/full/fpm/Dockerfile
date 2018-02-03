@@ -3,7 +3,6 @@ FROM nextcloud:fpm
 RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
     && apt-get update && apt-get install -y \
         supervisor \
-        cron \
         ffmpeg \
         libmagickwand-dev \
         libgmp3-dev \
@@ -18,8 +17,7 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     && docker-php-ext-install bz2 gmp imap \
     && pecl install imagick smbclient \
     && docker-php-ext-enable imagick smbclient \
-    && mkdir /var/log/supervisord /var/run/supervisord \
-    && echo "*/15 * * * * su - www-data -s /bin/bash -c \"php -f /var/www/html/cron.php\""| crontab -
+    && mkdir /var/log/supervisord /var/run/supervisord
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 

@@ -6,7 +6,10 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         rsync \
         bzip2 \
+        busybox-static \
     ; \
+    mkdir -p /var/spool/cron/crontabs; \
+    echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data; \
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
     \
@@ -86,7 +89,7 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ
 
-COPY docker-entrypoint.sh /entrypoint.sh
+COPY *.sh /
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
