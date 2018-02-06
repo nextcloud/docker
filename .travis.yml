@@ -54,3 +54,7 @@ jobs:
     - env: VERSION=12.0 VARIANT=fpm ARCH=i386
     - env: VERSION=12.0 VARIANT=apache ARCH=amd64
     - env: VERSION=12.0 VARIANT=apache ARCH=i386
+    - env: VERSION=13.0 VARIANT=fpm ARCH=amd64
+    - env: VERSION=13.0 VARIANT=fpm ARCH=i386
+    - env: VERSION=13.0 VARIANT=apache ARCH=amd64
+    - env: VERSION=13.0 VARIANT=apache ARCH=i386
