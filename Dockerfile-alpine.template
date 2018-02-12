@@ -21,6 +21,7 @@ RUN set -ex; \
         libmemcached-dev \
         libxml2-dev \
         openldap-dev \
+        pcre-dev \
         postgresql-dev \
     ; \
     \
