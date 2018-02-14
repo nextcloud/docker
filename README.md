@@ -10,7 +10,7 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 # How to use this image
 This image is designed to be used in a micro-service environment. There are two versions of the image you can choose from.
 
-The `apache` tag contains a full Nextcloud installation including an apache web server. It is designed to be easy to use and get's you running pretty fast. This is also the default for the `latest` tag and version tags that are not further specified.
+The `apache` tag contains a full Nextcloud installation including an apache web server. It is designed to be easy to use and gets you running pretty fast. This is also the default for the `latest` tag and version tags that are not further specified.
 
 The second option is a `fpm` container. It is based on the [php-fpm](https://hub.docker.com/_/php/) image and runs a fastCGI-Process that serves your Nextcloud page. To use this image it must be combined with any webserver that can proxy the http requests to the FastCGI-port of the container.
 
