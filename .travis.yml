@@ -42,8 +42,9 @@ jobs:
 
     - <<: *test-scripts
       env: SCRIPT=generate-stackbrew-library.sh
-      script: 
-        - ./generate-stackbrew-library.sh
+      script:
+        # Only syntax check due bashbrew dependency
+        - bash -n generate-stackbrew-library.sh
 
     - stage: test images
       env: VERSION=11.0 VARIANT=fpm-alpine ARCH=amd64
