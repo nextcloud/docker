@@ -32,7 +32,7 @@ RUN set -ex; \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
     docker-php-ext-install gd exif intl mbstring mcrypt ldap mysqli opcache pdo_mysql pdo_pgsql pgsql zip pcntl; \
-    pecl install APCu-5.1.9; \
+    pecl install APCu-5.1.10; \
     pecl install memcached-3.0.4; \
     pecl install redis-3.1.6; \
     docker-php-ext-enable apcu redis memcached; \
