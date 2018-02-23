@@ -13,8 +13,6 @@ install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
-  - wget https://doi-janky.infosiftr.net/job/bashbrew/lastSuccessfulBuild/artifact/bin/bashbrew-amd64 && ln -s bashbrew-amd64 bashbrew
-  - export PATH=$PATH:$PWD
   - env | sort
   - image="nextcloud:${VERSION}${VARIANT:+-$VARIANT}"
   - if [[ "$ARCH" == 'i386' ]]; then sed -i -e 's/FROM php/FROM i386\/php/g' "${VERSION}/${VARIANT}/Dockerfile"; fi
@@ -44,6 +42,9 @@ jobs:
 
     - <<: *test-scripts
       env: SCRIPT=generate-stackbrew-library.sh
+      install:
+        - wget -O "$HOME/bin/bashbrew" https://doi-janky.infosiftr.net/job/bashbrew/lastSuccessfulBuild/artifact/bin/bashbrew-amd64
+        - chmod +x "$HOME/bin/bashbrew"
       script:
         - ./generate-stackbrew-library.sh
 
