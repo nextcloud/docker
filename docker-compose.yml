@@ -1,0 +1,30 @@
+version: '3'
+services:
+  nextcloud:
+    image: nextcloud
+    ports:
+      - "8080:80"
+    depends_on:
+      - nextcloud_db
+    volumes:
+      - ./storage/html:/var/www/html
+      - ./storage/config:/var/www/html/config
+      - ./storage/data:/var/www/html/data
+    environment:
+      - MYSQL_PASSWORD=changeme
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud_usr
+      - MYSQL_HOST=nextcloud_db
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=changeme
+                  
+  nextcloud_db:
+    image: mariadb
+    restart: always
+    volumes:
+      - ./storage/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=changeme
+      - MYSQL_PASSWORD=changeme
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud_usr
