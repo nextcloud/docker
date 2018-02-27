@@ -1,20 +1,26 @@
 FROM php:7.1-apache
 
+# entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
+    \
     apt-get update; \
-# install the packages we need
     apt-get install -y --no-install-recommends \
         rsync \
         bzip2 \
         busybox-static \
     ; \
+    rm -rf /var/lib/apt/lists/*; \
+    \
     mkdir -p /var/spool/cron/crontabs; \
-    echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data; \
+    echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
+RUN set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
     \
+    apt-get update; \
     apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
         libfreetype6-dev \
@@ -31,11 +37,31 @@ RUN set -ex; \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
-    docker-php-ext-install gd exif intl mbstring mcrypt ldap mysqli opcache pdo_mysql pdo_pgsql pgsql zip pcntl; \
-    pecl install APCu-5.1.10; \
-    pecl install memcached-3.0.4; \
-    pecl install redis-3.1.6; \
-    docker-php-ext-enable apcu redis memcached; \
+    docker-php-ext-install \
+        exif \
+        gd \
+        intl \
+        ldap \
+        mbstring \
+        mcrypt \
+        mysqli \
+        opcache \
+        pcntl \
+        pdo_mysql \
+        pdo_pgsql \
+        pgsql \
+        zip \
+    ; \
+    pecl install \
+        APCu-5.1.10 \
+        memcached-3.0.4 \
+        redis-3.1.6 \
+    ; \
+    docker-php-ext-enable \
+        apcu \
+        memcached \
+        redis \
+    ; \
     \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
     apt-mark auto '.*' > /dev/null; \
@@ -49,11 +75,11 @@ RUN set -ex; \
         | xargs -rt apt-mark manual; \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-    rm -rf /var/lib/apt/lists/*; \
-    \
+    rm -rf /var/lib/apt/lists/*
+
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
-    { \
+RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.enable_cli=1'; \
         echo 'opcache.interned_strings_buffer=8'; \
