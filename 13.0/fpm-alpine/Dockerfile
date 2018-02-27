@@ -105,7 +105,7 @@ RUN set -ex; \
     chmod +x /usr/src/nextcloud/occ; \
     apk del .fetch-deps
 
-COPY entrypoint.sh /
+COPY *.sh /
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
