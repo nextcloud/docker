@@ -9,7 +9,7 @@ RUN set -ex; \
         rsync \
     ; \
     \
-    mkdir -p /var/spool/cron/crontabs; \
+    rm /var/spool/cron/crontabs/root; \
     echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
