@@ -42,18 +42,27 @@ jobs:
 
     - <<: *test-scripts
       env: SCRIPT=generate-stackbrew-library.sh
-      script: 
+      install:
+        - wget -O "$HOME/bin/bashbrew" https://doi-janky.infosiftr.net/job/bashbrew/lastSuccessfulBuild/artifact/bin/bashbrew-amd64
+        - chmod +x "$HOME/bin/bashbrew"
+      script:
         - ./generate-stackbrew-library.sh
 
     - stage: test images
-      env: VERSION=11.0 VARIANT=fpm ARCH=amd64
+      env: VERSION=11.0 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=11.0 VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=11.0 VARIANT=fpm ARCH=amd64
     - env: VERSION=11.0 VARIANT=fpm ARCH=i386
     - env: VERSION=11.0 VARIANT=apache ARCH=amd64
     - env: VERSION=11.0 VARIANT=apache ARCH=i386
+    - env: VERSION=12.0 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=12.0 VARIANT=fpm-alpine ARCH=i386
     - env: VERSION=12.0 VARIANT=fpm ARCH=amd64
     - env: VERSION=12.0 VARIANT=fpm ARCH=i386
     - env: VERSION=12.0 VARIANT=apache ARCH=amd64
     - env: VERSION=12.0 VARIANT=apache ARCH=i386
+    - env: VERSION=13.0 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=13.0 VARIANT=fpm-alpine ARCH=i386
     - env: VERSION=13.0 VARIANT=fpm ARCH=amd64
     - env: VERSION=13.0 VARIANT=fpm ARCH=i386
     - env: VERSION=13.0 VARIANT=apache ARCH=amd64

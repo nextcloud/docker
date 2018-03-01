@@ -4,11 +4,19 @@ set -eo pipefail
 declare -A cmd=(
 	[apache]='apache2-foreground'
 	[fpm]='php-fpm'
+	[fpm-alpine]='php-fpm'
+)
+
+declare -A base=(
+	[apache]='debian'
+	[fpm]='debian'
+	[fpm-alpine]='alpine'
 )
 
 declare -A extras=(
 	[apache]='\nRUN a2enmod rewrite'
 	[fpm]=''
+	[fpm-alpine]=''
 )
 
 # version_greater_or_equal A B returns whether A >= B
@@ -34,11 +42,11 @@ for latest in "${latests[@]}"; do
 	# Only add versions >= 11
 	if version_greater_or_equal "$version" "11.0"; then
 
-		for variant in apache fpm; do
+		for variant in apache fpm fpm-alpine; do
 			# Create the version+variant directory with a Dockerfile.
 			mkdir -p "$version/$variant"
 
-			template="Dockerfile.template"
+			template="Dockerfile-${base[$variant]}.template"
 			cp "$template" "$version/$variant/Dockerfile"
 
 			echo "updating $latest [$version] $variant"

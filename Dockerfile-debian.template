@@ -1,4 +1,4 @@
-FROM php:7.1-fpm
+FROM php:7.1-%%VARIANT%%
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -93,9 +93,9 @@ RUN { \
     chmod -R g=u /var/www/html
 
 VOLUME /var/www/html
+%%VARIANT_EXTRAS%%
 
-
-ENV NEXTCLOUD_VERSION 11.0.7
+ENV NEXTCLOUD_VERSION %%VERSION%%
 
 RUN set -ex; \
     curl -fsSL -o nextcloud.tar.bz2 \
@@ -118,4 +118,4 @@ COPY *.sh /
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["%%CMD%%"]
