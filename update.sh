@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eo pipefail
 
+declare -A php_version=(
+	[default]='7.1'
+)
+
 declare -A cmd=(
 	[apache]='apache2-foreground'
 	[fpm]='php-fpm'
@@ -59,6 +63,7 @@ for latest in "${latests[@]}"; do
 
 			# Replace the variables.
 			sed -ri -e '
+				s/%%PHP_VERSION%%/'"${php_version[$version]-${php_version[default]}}"'/g;
 				s/%%VARIANT%%/'"$variant"'/g;
 				s/%%VERSION%%/'"$latest"'/g;
 				s/%%CMD%%/'"${cmd[$variant]}"'/g;
