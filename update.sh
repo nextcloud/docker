@@ -19,6 +19,12 @@ declare -A extras=(
 	[fpm-alpine]=''
 )
 
+declare -A pecl_versions=(
+	[APCu]='5.1.11'
+	[memcached]='3.0.4'
+	[redis]='3.1.6'
+)
+
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
 	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
@@ -57,6 +63,9 @@ for latest in "${latests[@]}"; do
 				s/%%VERSION%%/'"$latest"'/g;
 				s/%%CMD%%/'"${cmd[$variant]}"'/g;
 				s/%%VARIANT_EXTRAS%%/'"${extras[$variant]}"'/g;
+				s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
+				s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
+				s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 			' "$version/$variant/Dockerfile"
 
 			# Copy the shell scripts

@@ -49,9 +49,9 @@ RUN set -ex; \
         zip \
     ; \
     pecl install \
-        APCu-5.1.10 \
-        memcached-3.0.4 \
-        redis-3.1.6 \
+        APCu-%%APCU_VERSION%% \
+        memcached-%%MEMCACHED_VERSION%% \
+        redis-%%REDIS_VERSION%% \
     ; \
     docker-php-ext-enable \
         apcu \
