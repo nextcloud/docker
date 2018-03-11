@@ -80,8 +80,8 @@ RUN { \
         echo 'opcache.revalidate_freq=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
-    chown -R www-data:root /var/www/html; \
-    chmod -R g=u /var/www/html
+    chown -R www-data:root /var/www; \
+    chmod -R g=u /var/www
 
 VOLUME /var/www/html
 %%VARIANT_EXTRAS%%
