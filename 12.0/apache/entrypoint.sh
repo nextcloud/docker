@@ -21,9 +21,9 @@ function run_as() {
 
 installed_version="0.0.0~unknown"
 if [ -f /var/www/html/version.php ]; then
-    installed_version=$(php -r 'require "/var/www/html/version.php"; echo "$OC_VersionString";')
+    installed_version=$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')
 fi
-image_version=$(php -r 'require "/usr/src/nextcloud/version.php"; echo "$OC_VersionString";')
+image_version=$(php -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);')
 
 if version_greater "$installed_version" "$image_version"; then
     echo "Can't start Nextcloud because the version of the data ($installed_version) is higher than the docker image version ($image_version) and downgrading is not supported. Are you sure you have pulled the newest image version?"
