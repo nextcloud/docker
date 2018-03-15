@@ -4,8 +4,6 @@ FROM php:%%PHP_VERSION%%-%%VARIANT%%
 RUN set -ex; \
     \
     apk add --no-cache \
-        bash \
-        coreutils \
         rsync \
     ; \
     \
