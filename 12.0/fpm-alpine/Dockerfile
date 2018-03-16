@@ -4,8 +4,6 @@ FROM php:7.1-fpm-alpine
 RUN set -ex; \
     \
     apk add --no-cache \
-        bash \
-        coreutils \
         rsync \
     ; \
     \
