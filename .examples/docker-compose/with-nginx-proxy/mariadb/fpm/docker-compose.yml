@@ -2,12 +2,10 @@ version: '3'
 
 services:
   db:
-    image: mariadb
-    # image: mysql
+    build: ./db
     restart: always
     volumes:
       - db:/var/lib/mysql
-      - ./mysql.conf:/etc/mysql/conf.d/mysql-config.cnf
     environment:
       - MYSQL_ROOT_PASSWORD=
     env_file:
