@@ -37,7 +37,6 @@ services:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
     volumes:
       - certs:/etc/nginx/certs:ro
-      - conf.d:/etc/nginx/conf.d
       - vhost.d:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
@@ -49,7 +48,6 @@ services:
     restart: always
     volumes:
       - certs:/etc/nginx/certs
-      - conf.d:/etc/nginx/conf.d
       - vhost.d:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -62,7 +60,6 @@ volumes:
   db:
   nextcloud:
   certs:
-  conf.d:
   vhost.d:
   html:
 
