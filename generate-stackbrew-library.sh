@@ -1,6 +1,11 @@
 #!/bin/bash
 set -Eeuo pipefail
 
+declare -A release_channel=(
+	[production]='12.0.6'
+	[stable]='13.0.1'
+)
+
 self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
@@ -95,6 +100,12 @@ for version in "${versions[@]}"; do
 		if [ "$fullversion_with_extension" = "$latest_rc" ]; then
 			versionAliases+=( "rc" )
 		fi
+
+		for channel in "${!release_channel[@]}"; do
+			if [ "$fullversion_with_extension" = "${release_channel[$channel]}" ]; then
+				versionAliases+=( "$channel" )
+			fi
+		done
 
 		variantAliases=( "${versionAliases[@]/%/-$variant}" )
 		variantAliases=( "${variantAliases[@]//latest-}" )
