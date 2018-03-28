@@ -4,6 +4,7 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     && apt-get update && apt-get install -y \
         supervisor \
         ffmpeg \
+        libmagickcore-extra \
         libmagickwand-dev \
         libgmp3-dev \
         libc-client-dev \
@@ -17,7 +18,8 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     && docker-php-ext-install bz2 gmp imap \
     && pecl install imagick smbclient \
     && docker-php-ext-enable imagick smbclient \
-    && mkdir /var/log/supervisord /var/run/supervisord
+    && mkdir /var/log/supervisord /var/run/supervisord \
+    && echo '*/10 * * * * php -f /var/www/html/occ preview:pre-generate' >> /var/spool/cron/crontabs/www-data
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
