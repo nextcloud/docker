@@ -1,3 +1,4 @@
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
 FROM php:7.1-fpm-alpine
 
 # entrypoint.sh and cron.sh dependencies

@@ -1,3 +1,4 @@
+# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:7.1-apache
 
 # entrypoint.sh and cron.sh dependencies

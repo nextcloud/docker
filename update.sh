@@ -55,7 +55,10 @@ function create_variant() {
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
 
-	cp "Dockerfile-${base[$variant]}.template" "$dir/Dockerfile"
+        template="Dockerfile-${base[$variant]}.template"
+        rm -f "$dir/Dockerfile"
+        echo "# DO NOT EDIT: created by update.sh from $template" > "$dir/Dockerfile"
+	cat "$template" >> "$dir/Dockerfile"
 
 	echo "updating $fullversion [$1] $variant"
 
@@ -71,6 +74,8 @@ function create_variant() {
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 	' "$dir/Dockerfile"
+        # remove write permission as a reminder this file must be modified with this script
+        chmod -w "$dir/Dockerfile"
 
 	# Copy the shell scripts
 	for name in entrypoint cron; do
