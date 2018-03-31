@@ -18,7 +18,7 @@ declare -A base=(
 )
 
 declare -A extras=(
-	[apache]='\nRUN a2enmod rewrite'
+	[apache]='\nRUN a2enmod rewrite remoteip ;\\\n    {\\\n     echo RemoteIPHeader X-Real-IP ;\\\n     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\\\n     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\\\n     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\\\n    } > /etc/apache2/conf-available/remoteip.conf;\\\n    a2enconf remoteip'
 	[fpm]=''
 	[fpm-alpine]=''
 )
@@ -68,7 +68,7 @@ function create_variant() {
 		s/%%VERSION%%/'"$fullversion"'/g;
 		s/%%BASE_DOWNLOAD_URL%%/'"$2"'/g;
 		s/%%CMD%%/'"${cmd[$variant]}"'/g;
-		s/%%VARIANT_EXTRAS%%/'"${extras[$variant]}"'/g;
+		s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
