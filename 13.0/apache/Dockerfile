@@ -102,7 +102,8 @@ RUN a2enmod rewrite remoteip ;\
      echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
      echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
-    a2enconf remoteip
+    a2enconf remoteip;\
+    sed -i -e "s/MaxRequestWorkers.* 150/MaxRequestWorkers 30/" /etc/apache2/mods-available/mpm_prefork.conf
 
 ENV NEXTCLOUD_VERSION 13.0.1
 
