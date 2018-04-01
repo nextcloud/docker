@@ -95,7 +95,14 @@ RUN { \
 
 VOLUME /var/www/html
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite remoteip ;\
+    {\
+     echo RemoteIPHeader X-Real-IP ;\
+     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
+     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
+     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
+    } > /etc/apache2/conf-available/remoteip.conf;\
+    a2enconf remoteip
 
 ENV NEXTCLOUD_VERSION 12.0.6
 
