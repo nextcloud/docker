@@ -89,6 +89,7 @@ RUN { \
         echo 'opcache.revalidate_freq=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
+    mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
