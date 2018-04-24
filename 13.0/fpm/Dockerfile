@@ -1,3 +1,4 @@
+# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:7.1-fpm
 
 # entrypoint.sh and cron.sh dependencies
@@ -89,6 +90,7 @@ RUN { \
         echo 'opcache.revalidate_freq=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
+    mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 

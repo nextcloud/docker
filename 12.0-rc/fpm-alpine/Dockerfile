@@ -1,3 +1,4 @@
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
 FROM php:7.1-fpm-alpine
 
 # entrypoint.sh and cron.sh dependencies
@@ -78,13 +79,14 @@ RUN { \
         echo 'opcache.revalidate_freq=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
+    mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 11.0.8
+ENV NEXTCLOUD_VERSION 12.0.7RC1
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -93,9 +95,9 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
+        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
