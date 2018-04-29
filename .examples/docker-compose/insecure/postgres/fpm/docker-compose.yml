@@ -5,7 +5,7 @@ services:
     image: postgres
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data:z
     env_file:
       - db.env
 
@@ -13,7 +13,7 @@ services:
     image: nextcloud:fpm
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www/html:z
     environment:
       - POSTGRES_HOST=db
     env_file:

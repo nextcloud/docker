@@ -6,7 +6,7 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     volumes:
-      - db:/var/lib/mysql
+      - db:/var/lib/mysql:z
     environment:
       - MYSQL_ROOT_PASSWORD=
     env_file:
@@ -18,7 +18,7 @@ services:
     ports:
       - 8080:80
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www/html:z
     environment:
       - MYSQL_HOST=db
     env_file:
