@@ -5,7 +5,7 @@ services:
     image: postgres
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data:z
     env_file:
       - db.env
 
@@ -13,7 +13,7 @@ services:
     image: nextcloud:fpm
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www/html:z
     environment:
       - POSTGRES_HOST=db
     env_file:
@@ -46,8 +46,8 @@ services:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
     volumes:
       - certs:/etc/nginx/certs:ro
-      - vhost.d:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
+      - vhost.d:/etc/nginx/vhost.d:z
+      - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
       - proxy-tier
@@ -56,9 +56,9 @@ services:
     image: jrcs/letsencrypt-nginx-proxy-companion
     restart: always
     volumes:
-      - certs:/etc/nginx/certs
-      - vhost.d:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs:z
+      - vhost.d:/etc/nginx/vhost.d:z
+      - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - proxy-tier
