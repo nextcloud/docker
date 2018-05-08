@@ -34,8 +34,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     fi
 
     if version_greater "$image_version" "$installed_version"; then
-        echo -n "running uprade from $installed_version to $image_version ..."
+        echo -n "Initializing version $image_version ... "
         if [ "$installed_version" != "0.0.0.0" ]; then
+            echo -ne "\nRunning upgrade from $installed_version ... "
             run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
         fi
         if [ "$(id -u)" = 0 ]; then
