@@ -34,6 +34,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     fi
 
     if version_greater "$image_version" "$installed_version"; then
+        echo -n "running uprade from $installed_version to $image_version ..."
         if [ "$installed_version" != "0.0.0.0" ]; then
             run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
         fi
@@ -103,6 +104,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
             rm -f /tmp/list_before /tmp/list_after
 
         fi
+        echo "finished."
     fi
 fi
 
