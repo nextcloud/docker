@@ -43,14 +43,11 @@ RUN set -ex; \
         gd \
         intl \
         ldap \
-        mbstring \
         mcrypt \
-        mysqli \
         opcache \
         pcntl \
         pdo_mysql \
         pdo_pgsql \
-        pgsql \
         zip \
     ; \
     pecl install \
