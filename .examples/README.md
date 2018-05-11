@@ -94,7 +94,9 @@ If you want to update your installation to a newer version of nextcloud, repeat 
 The nginx proxy adds a proxy layer between nextcloud and the internet. The proxy is designed to serve multiple sites on the same host machine.
 
 The advantage in adding this layer is the ability to add a container for [Let's Encrypt](https://letsencrypt.org/) certificate handling.
-This combination of the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) and [jrcs/docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion) containers creates a fully automated https encryption of the nextcloud installation without worrying about certificate generation, validation or renewal (needs a domain name and not for local setup).
+This combination of the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) and [jrcs/docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion) containers creates a fully automated https encryption of the nextcloud installation without worrying about certificate generation, validation or renewal.
+
+**This setup only works with a valid domain name on a server that is reachable from the internet.**
 
 To use this example complete the following steps:
 
