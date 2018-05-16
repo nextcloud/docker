@@ -1,0 +1,79 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    restart: unless-stopped
+    volumes:
+      - db:/var/lib/mysql
+    env_file:
+      - db.env
+
+  app:
+    image: nextcloud:fpm
+    restart: unless-stopped
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_HOST=db
+    env_file:
+      - db.env
+    depends_on:
+      - db
+
+  web:
+    image: nginx
+    restart: unless-stopped
+    volumes:
+      - nextcloud:/var/www/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    environment:
+      - VIRTUAL_HOST=servhostname.local
+    depends_on:
+      - app
+      - proxy
+    networks:
+      - proxy-tier
+      - default
+
+  proxy:
+    image: jwilder/nginx-proxy:alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - MAX_UPLOAD_SIZE=10GB
+    volumes:
+      - certs:/etc/nginx/certs:ro
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - proxy-tier
+    depends_on:
+      - omgwtfssl
+
+  omgwtfssl:
+    image: paulczar/omgwtfssl
+    restart: "no"
+    volumes:
+      - certs:/certs
+    environment:
+      - SSL_SUBJECT=servhostname.local
+      - CA_SUBJECT=my@example.com
+      - SSL_KEY=/certs/servhostname.local.key
+      - SSL_CSR=/certs/servhostname.local.csr
+      - SSL_CERT=/certs/servhostname.local.crt
+    networks:
+      - proxy-tier
+
+volumes:
+  db:
+  nextcloud:
+  certs:
+  vhost.d:
+  html:
+
+networks:
+  proxy-tier:
