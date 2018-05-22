@@ -34,11 +34,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     fi
 
     if version_greater "$image_version" "$installed_version"; then
+        echo "Initializing nextcloud $image_version ..."
         if [ "$installed_version" != "0.0.0.0" ]; then
-            echo -n "Running upgrade from $installed_version to $image_version ... "
+            echo "Upgrading nextcloud from $installed_version ..."
             run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
-        else
-            echo "Initializing new instance with version $image_version ... "
         fi
         if [ "$(id -u)" = 0 ]; then
             rsync_options="-rlDog --chown www-data:root"
@@ -52,6 +51,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
                 rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
             fi
         done
+        echo "Initializing finished"
 
         #install
         if [ "$installed_version" = "0.0.0.0" ]; then
@@ -106,7 +106,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
             rm -f /tmp/list_before /tmp/list_after
 
         fi
-        echo "finished."
     fi
 fi
 
