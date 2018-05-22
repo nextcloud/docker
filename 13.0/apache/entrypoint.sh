@@ -34,10 +34,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     fi
 
     if version_greater "$image_version" "$installed_version"; then
-        echo -n "Initializing version $image_version ... "
         if [ "$installed_version" != "0.0.0.0" ]; then
-            echo -ne "\nRunning upgrade from $installed_version ... "
+            echo -n "Running upgrade from $installed_version to $image_version ... "
             run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
+        else
+            echo "Initializing new instance with version $image_version ... "
         fi
         if [ "$(id -u)" = 0 ]; then
             rsync_options="-rlDog --chown www-data:root"
