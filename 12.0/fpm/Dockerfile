@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.1-fpm
+FROM php:7.1-fpm-stretch
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -30,7 +30,7 @@ RUN set -ex; \
         libldap2-dev \
         libmcrypt-dev \
         libmemcached-dev \
-        libpng12-dev \
+        libpng-dev \
         libpq-dev \
         libxml2-dev \
     ; \
@@ -97,6 +97,13 @@ VOLUME /var/www/html
 ENV NEXTCLOUD_VERSION 12.0.7
 
 RUN set -ex; \
+    fetchDeps=" \
+        gnupg \
+        dirmngr \
+    "; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends $fetchDeps; \
+    \
     curl -fsSL -o nextcloud.tar.bz2 \
         "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
@@ -111,7 +118,10 @@ RUN set -ex; \
     rm -rf /usr/src/nextcloud/updater; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
-    chmod +x /usr/src/nextcloud/occ
+    chmod +x /usr/src/nextcloud/occ; \
+    \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
+    rm -rf /var/lib/apt/lists/*
 
 COPY *.sh /
 COPY config/* /usr/src/nextcloud/config/
