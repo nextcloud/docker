@@ -5,7 +5,7 @@
 
 A safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms.
 
-![logo](https://cdn.rawgit.com/nextcloud/docker/57b5e03f2abe51f81aa9a5c80018d10b5ed1c353/logo.svg)
+![logo](https://cdn.rawgit.com/nextcloud/docker/80dd587d847b184ba95d7187a2a7a56ae4cbbb7b/logo.svg)
 
 # How to use this image
 This image is designed to be used in a micro-service environment. There are two versions of the image you can choose from.
