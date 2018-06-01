@@ -16,7 +16,7 @@ RUN set -ex; \
 RUN set -ex; \
     \
     apk add --no-cache --virtual .build-deps \
-        alpine-sdk \
+        $PHPIZE_DEPS \
         autoconf \
         freetype-dev \
         icu-dev \
