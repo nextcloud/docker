@@ -115,6 +115,7 @@ RUN set -ex; \
     gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     busybox killall gpg-agent || true; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
+    gpgconf --kill all; \
     rm -r "$GNUPGHOME" nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     rm -rf /usr/src/nextcloud/updater; \
     mkdir -p /usr/src/nextcloud/data; \
