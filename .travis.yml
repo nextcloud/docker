@@ -14,13 +14,19 @@ install:
 
 before_script:
   - env | sort
+  - wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh' | bash
   - image="nextcloud:${VERSION}${VARIANT:+-$VARIANT}"
   - if [[ "$ARCH" == 'i386' ]]; then sed -i -e 's/FROM php/FROM i386\/php/g' "${VERSION}/${VARIANT}/Dockerfile"; fi
 
 script:
-  - travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
-  - ~/official-images/test/run.sh "$image"
-  - .travis/test-example-dockerfiles.sh "$image"
+  - |
+    (
+      set -Eeuo pipefail
+      set -x
+      docker build -t "$image" "${VERSION}/${VARIANT}"
+      ~/official-images/test/run.sh "$image"
+      .travis/test-example-dockerfiles.sh "$image"
+    )
 
 after_script:
   - docker images
