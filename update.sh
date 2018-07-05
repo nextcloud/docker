@@ -18,7 +18,7 @@ declare -A base=(
 )
 
 declare -A extras=(
-	[apache]='\nRUN a2enmod rewrite remoteip ;\\\n    {\\\n     echo RemoteIPHeader X-Real-IP ;\\\n     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\\\n     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\\\n     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\\\n    } > /etc/apache2/conf-available/remoteip.conf;\\\n    a2enconf remoteip'
+	[apache]='\nRUN a2enmod rewrite remoteip ;\\\n    {\\\n     echo RemoteIPHeader X-Real-IP ;\\\n     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\\\n     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\\\n     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\\\n    } > /etc/apache2/conf-available/remoteip.conf;\\\n    a2enconf remoteip;\\\n    sed -i s/80/8080/g /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf;\\\n    chgrp root /var/run/apache2;\\\n    chmod -R g=rwX /var/run/apache2'
 	[fpm]=''
 	[fpm-alpine]=''
 )
@@ -105,7 +105,7 @@ for version in "${versions[@]}"; do
 	if version_greater_or_equal "$version" "$min_version"; then
 
 		for variant in "${variants[@]}"; do
-			
+
 			create_variant "$version" "https:\/\/download.nextcloud.com\/server\/releases"
 		done
 	fi
@@ -124,7 +124,7 @@ for version in "${versions_rc[@]}"; do
 		if ! check_released "$fullversion"; then
 
 			for variant in "${variants[@]}"; do
-			
+
 				create_variant "$version-rc" "https:\/\/download.nextcloud.com\/server\/prereleases"
 			done
 		fi
