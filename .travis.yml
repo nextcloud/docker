@@ -55,7 +55,19 @@ jobs:
         - ./generate-stackbrew-library.sh
 
     - stage: test images
-      env: VERSION=12.0 VARIANT=fpm-alpine ARCH=amd64
+      env: VERSION=12.0-rc VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=12.0-rc VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=12.0-rc VARIANT=fpm ARCH=amd64
+    - env: VERSION=12.0-rc VARIANT=fpm ARCH=i386
+    - env: VERSION=12.0-rc VARIANT=apache ARCH=amd64
+    - env: VERSION=12.0-rc VARIANT=apache ARCH=i386
+    - env: VERSION=13.0-rc VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=13.0-rc VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=13.0-rc VARIANT=fpm ARCH=amd64
+    - env: VERSION=13.0-rc VARIANT=fpm ARCH=i386
+    - env: VERSION=13.0-rc VARIANT=apache ARCH=amd64
+    - env: VERSION=13.0-rc VARIANT=apache ARCH=i386
+    - env: VERSION=12.0 VARIANT=fpm-alpine ARCH=amd64
     - env: VERSION=12.0 VARIANT=fpm-alpine ARCH=i386
     - env: VERSION=12.0 VARIANT=fpm ARCH=amd64
     - env: VERSION=12.0 VARIANT=fpm ARCH=i386
