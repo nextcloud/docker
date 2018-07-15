@@ -13,6 +13,11 @@ services:
     image: nextcloud:fpm
     restart: always
     volumes:
+      - nextcloud-data:/var/www/html/data  
+      - nextcloud-config:/var/www/html/config  
+      - nextcloud-apps:/var/www/html/custom_apps
+      - nextcloud-theme:/var/www/themes/mytheme
+      # full html dir must be last in mount order
       - nextcloud:/var/www/html
     environment:
       - POSTGRES_HOST=db
@@ -27,6 +32,12 @@ services:
     ports:
       - 8080:80
     volumes:
+      # volumes must copy-past volume section from app with readonly 
+      - nextcloud-data:/var/www/html/data:ro
+      - nextcloud-config:/var/www/html/config:ro
+      - nextcloud-apps:/var/www/html/custom_apps:ro
+      - nextcloud-theme:/var/www/themes/mytheme:ro
+      # full html dir must be last in mount order
       - nextcloud:/var/www/html:ro
     depends_on:
       - app
@@ -34,3 +45,7 @@ services:
 volumes:
   db:
   nextcloud:
+  nextcloud-data:
+  nextcloud-config:
+  nextcloud-apps:
+  nextcloud-theme:
