@@ -73,6 +73,12 @@ latest_rc=$( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |ta
 	sort -uV | \
 	tail -1 )
 
+latest_beta=$( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
+	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
+	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
+	sort -uV | \
+	tail -1 )
+
 # Generate each of the tags.
 versions=( */ )
 versions=( "${versions[@]%/}" )
@@ -90,7 +96,7 @@ for version in "${versions[@]}"; do
 		versionPostfix=""
 		if [ "$fullversion_with_extension" != "$fullversion" ]; then
 			versionAliases=( "$fullversion_with_extension" )
-			versionPostfix="-rc"
+			versionPostfix="-$( echo "$fullversion_with_extension" | tr '[:upper:]' '[:lower:]' | grep -oE '(beta|rc)')"
 		fi
 
 		versionAliases+=( "$fullversion$versionPostfix" "${fullversion%.*}$versionPostfix" "${fullversion%.*.*}$versionPostfix" )
@@ -99,6 +105,9 @@ for version in "${versions[@]}"; do
 		fi
 		if [ "$fullversion_with_extension" = "$latest_rc" ]; then
 			versionAliases+=( "rc" )
+		fi
+		if [ "$fullversion_with_extension" = "$latest_beta" ]; then
+			versionAliases+=( "beta" )
 		fi
 
 		for channel in "${!release_channel[@]}"; do
