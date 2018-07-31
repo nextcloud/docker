@@ -140,8 +140,8 @@ fullversions_beta=( $( curl -fsSL 'https://download.nextcloud.com/server/prerele
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
 	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
 	sort -urV ) )
-versions_rc=( $( printf '%s\n' "${fullversions_beta[@]}" | cut -d. -f1-2 | sort -urV ) )
-for version in "${versions_rc[@]}"; do
+versions_beta=( $( printf '%s\n' "${fullversions_beta[@]}" | cut -d. -f1-2 | sort -urV ) )
+for version in "${versions_beta[@]}"; do
 	fullversion="$( printf '%s\n' "${fullversions_beta[@]}" | grep -E "^$version" | head -1 )"
 
 	if version_greater_or_equal "$version" "$min_version"; then
