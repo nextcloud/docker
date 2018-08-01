@@ -3,15 +3,17 @@ version: '3'
 services:
   db:
     image: mariadb
-    restart: unless-stopped
+    restart: always
     volumes:
       - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=
     env_file:
       - db.env
 
-  app:
+  app:  
     image: nextcloud:fpm
-    restart: unless-stopped
+    restart: always
     volumes:
       - nextcloud:/var/www/html
     environment:
@@ -22,28 +24,24 @@ services:
       - db
 
   web:
-    image: nginx
-    restart: unless-stopped
+    build: ./web
+    restart: always
     volumes:
       - nextcloud:/var/www/html:ro
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     environment:
-      - VIRTUAL_HOST=servhostname.local
+      - VIRTUAL_HOST=
     depends_on:
       - app
-      - proxy
     networks:
       - proxy-tier
       - default
 
   proxy:
-    image: jwilder/nginx-proxy:alpine
-    restart: unless-stopped
+    build: ./proxy
+    restart: always
     ports:
       - 80:80
       - 443:443
-    environment:
-      - MAX_UPLOAD_SIZE=10GB
     volumes:
       - certs:/etc/nginx/certs:ro
       - vhost.d:/etc/nginx/vhost.d
