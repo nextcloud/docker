@@ -42,13 +42,12 @@ services:
     ports:
       - 80:80
       - 443:443
-    environment:
-      - MAX_UPLOAD_SIZE=10GB
     volumes:
       - certs:/etc/nginx/certs:ro
       - vhost.d:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./uploadsize.conf:/etc/nginx/conf.d/uploadsize.conf:ro
     networks:
       - proxy-tier
     depends_on:
