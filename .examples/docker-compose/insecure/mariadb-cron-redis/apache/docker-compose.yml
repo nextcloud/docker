@@ -16,7 +16,7 @@ services:
     image: redis
     restart: always
 
-  app:  
+  app:
     build: ./app
     restart: always
     ports:

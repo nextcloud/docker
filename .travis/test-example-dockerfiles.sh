@@ -10,7 +10,7 @@ dirs=( "${dirs[@]%/}" )
 for dir in "${dirs[@]}"; do
     if [ -d "$dir/$VARIANT" ]; then
         (
-            cd "$dir/$VARIANT" 
+            cd "$dir/$VARIANT"
             sed -ri -e 's/^FROM .*/FROM '"$image"'/g' 'Dockerfile'
             docker build -t "$image-$dir" .
             ~/official-images/test/run.sh "$image-$dir"
