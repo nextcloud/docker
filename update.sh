@@ -60,8 +60,8 @@ function create_variant() {
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
 
-        template="Dockerfile-${base[$variant]}.template"
-        echo "# DO NOT EDIT: created by update.sh from $template" > "$dir/Dockerfile"
+	template="Dockerfile-${base[$variant]}.template"
+	echo "# DO NOT EDIT: created by update.sh from $template" > "$dir/Dockerfile"
 	cat "$template" >> "$dir/Dockerfile"
 
 	echo "updating $fullversion [$1] $variant"
