@@ -1,7 +1,7 @@
 # Examples section
 
 In this subfolders are some examples how to use the docker image. There are two sections:
- 
+
  * [`dockerfiles`](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles)
  * [`docker-compose`](https://github.com/nextcloud/docker/tree/master/.examples/docker-compose)
 

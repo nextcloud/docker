@@ -60,8 +60,8 @@ function create_variant() {
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
 
-        template="Dockerfile-${base[$variant]}.template"
-        echo "# DO NOT EDIT: created by update.sh from $template" > "$dir/Dockerfile"
+	template="Dockerfile-${base[$variant]}.template"
+	echo "# DO NOT EDIT: created by update.sh from $template" > "$dir/Dockerfile"
 	cat "$template" >> "$dir/Dockerfile"
 
 	echo "updating $fullversion [$1] $variant"
@@ -110,7 +110,7 @@ for version in "${versions[@]}"; do
 	if version_greater_or_equal "$version" "$min_version"; then
 
 		for variant in "${variants[@]}"; do
-			
+
 			create_variant "$version" "https:\/\/download.nextcloud.com\/server\/releases"
 		done
 	fi
@@ -129,7 +129,7 @@ for version in "${versions_rc[@]}"; do
 		if ! check_released "$fullversion"; then
 
 			for variant in "${variants[@]}"; do
-			
+
 				create_variant "$version-rc" "https:\/\/download.nextcloud.com\/server\/prereleases"
 			done
 		fi
@@ -149,7 +149,7 @@ for version in "${versions_beta[@]}"; do
 		if ! check_rc_released "$fullversion"; then
 
 			for variant in "${variants[@]}"; do
-			
+
 				create_variant "$version-beta" "https:\/\/download.nextcloud.com\/server\/prereleases"
 			done
 		fi
