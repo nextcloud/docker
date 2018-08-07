@@ -43,7 +43,6 @@ RUN set -ex; \
         gd \
         intl \
         ldap \
-        mcrypt \
         opcache \
         pcntl \
         pdo_mysql \

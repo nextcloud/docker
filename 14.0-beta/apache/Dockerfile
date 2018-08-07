@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.1-apache-stretch
+FROM php:7.2-apache-stretch
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -43,7 +43,6 @@ RUN set -ex; \
         gd \
         intl \
         ldap \
-        mcrypt \
         opcache \
         pcntl \
         pdo_mysql \
