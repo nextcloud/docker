@@ -50,7 +50,7 @@ if version_greater "$image_version" "$installed_version"; then
     done
 
     if [ "$installed_version" != "0.0.0.0" ]; then
-        run_as 'php /var/www/html/occ upgrade --no-app-disable'
+        run_as 'php /var/www/html/occ upgrade'
 
         run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
         echo "The following apps have beed disabled:"
