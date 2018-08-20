@@ -243,6 +243,7 @@ When using docker-compose your compose file takes care of your configuration, so
 
 ```console
 $ docker-compose pull
+$ docker-compose down
 $ docker-compose up -d
 ```
 
