@@ -19,6 +19,13 @@ run_as() {
     fi
 }
 
+if [ -n "${NEXTCLOUD_UID+x}" ]; then
+    usermod -u "$NEXTCLOUD_UID" www-data
+fi
+if [ -n "${NEXTCLOUD_GID+x}" ]; then
+    groupmod -g "$NEXTCLOUD_GID" www-data
+fi
+
 installed_version="0.0.0.0"
 if [ -f /var/www/html/version.php ]; then
     # shellcheck disable=SC2016

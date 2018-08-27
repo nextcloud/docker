@@ -6,6 +6,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         rsync \
+        shadow \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
