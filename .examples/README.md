@@ -55,7 +55,7 @@ The required steps for each optional/recommended package that is not already in 
 `apt install ffmpeg`  
 
 #### LibreOffice
-`apt install LibreOffice`  
+`apt install libreoffice`  
 
 #### CRON via supervisor
 `apt install supervisor`  
