@@ -52,7 +52,6 @@ The required steps for each optional/recommended package that is not already in 
 `docker-php-ext-enable smbclient` </br>
 
 #### ffmpeg
-`echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list` </br>
 `apt install ffmpeg` </br>
 
 #### LibreOffice
