@@ -122,6 +122,10 @@ If you want you can set the data directory and table prefix, otherwise default v
 - `NEXTCLOUD_DATA_DIR` (default: _/var/www/html/data_) Configures the data directory where nextcloud stores all files from the users.
 - `NEXTCLOUD_TABLE_PREFIX` (default: _""_) Optional prefix for the tables. Used to be `oc_` in the past
 
+If you want you can set the `Referrer-Policy` header, otherwise the header won't be added to the response.
+
+- `APACHE_REFERRER_POLICY` Sets the value of the `Referrer-Policy` header (`apache` variant only).
+
 
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for.
