@@ -49,13 +49,50 @@ if version_greater "$image_version" "$installed_version"; then
         fi
     done
 
-    if [ "$installed_version" != "0.0.0.0" ]; then
+    #install
+    if [ "$installed_version" = "0.0.0.0" ]; then
+        echo "New nextcloud instance"
+        
+        if [ ! -z ${NEXTCLOUD_ADMIN_USER+x} ] && [ ! -z ${NEXTCLOUD_ADMIN_PASSWORD+x} ]; then
+            install_options="-n --admin-user \"$NEXTCLOUD_ADMIN_USER\" --admin-pass \"$NEXTCLOUD_ADMIN_PASSWORD\""
+            if [ ! -z ${NEXTCLOUD_TABLE_PREFIX+x} ]; then
+                install_options="$install_options --database-table-prefix \"$NEXTCLOUD_TABLE_PREFIX\""
+            fi
+            if [ ! -z ${NEXTCLOUD_DATA_DIR+x} ]; then
+                install_options="$install_options --data-dir \"$NEXTCLOUD_DATA_DIR\""
+            fi
+            
+            if [ ! -z ${SQLITE_DATABASE+x} ]; then
+                echo "Installing with SQLite database"
+                install_options="$install_options --database-name \"$SQLITE_DATABASE\""
+                run_as "php /var/www/html/occ maintenance:install $install_options"
+            elif [ ! -z ${MYSQL_DATABASE+x} ] && [ ! -z ${MYSQL_USER+x} ] && [ ! -z ${MYSQL_PASSWORD+x} ] && [ ! -z ${MYSQL_HOST+x} ]; then
+                echo "Installing with MySQL database"
+                install_options="$install_options --database mysql --database-name \"$MYSQL_DATABASE\" --database-user \"$MYSQL_USER\" --database-pass \"$MYSQL_PASSWORD\" --database-host \"$MYSQL_HOST\""
+                echo "waiting 30s for the database to setup"
+                sleep 30s
+                echo "starting nexcloud installation"
+                run_as "php /var/www/html/occ maintenance:install $install_options"
+            elif [ ! -z ${POSTGRES_DB+x} ] && [ ! -z ${POSTGRES_USER+x} ] && [ ! -z ${POSTGRES_PASSWORD+x} ] && [ ! -z ${POSTGRES_HOST+x} ]; then
+                echo "Installing with PostgreSQL database"
+                install_options="$install_options --database pgsql --database-name \"$POSTGRES_DB\" --database-user \"$POSTGRES_USER\" --database-pass \"$POSTGRES_PASSWORD\" --database-host \"$POSTGRES_HOST\""
+                echo "waiting 10s for the database to setup"
+                sleep 10s
+                echo "starting nexcloud installation"
+                run_as "php /var/www/html/occ maintenance:install $install_options"
+            else
+                echo "running web-based installer on first connect!"
+            fi
+        fi
+    #upgrade
+    else
         run_as 'php /var/www/html/occ upgrade'
 
         run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
         echo "The following apps have been disabled:"
         diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
         rm -f /tmp/list_before /tmp/list_after
+
     fi
 fi
 
