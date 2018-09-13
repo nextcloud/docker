@@ -53,27 +53,29 @@ if version_greater "$image_version" "$installed_version"; then
     if [ "$installed_version" = "0.0.0.0" ]; then
         echo "New nextcloud instance"
         
-        if [ ! -z ${NEXTCLOUD_ADMIN_USER+x} ] && [ ! -z ${NEXTCLOUD_ADMIN_PASSWORD+x} ]; then
+        if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
             install_options="-n --admin-user \"$NEXTCLOUD_ADMIN_USER\" --admin-pass \"$NEXTCLOUD_ADMIN_PASSWORD\""
-            if [ ! -z ${NEXTCLOUD_TABLE_PREFIX+x} ]; then
+            if [ -n "${NEXTCLOUD_TABLE_PREFIX+x}" ]; then
                 install_options="$install_options --database-table-prefix \"$NEXTCLOUD_TABLE_PREFIX\""
+            else
+                install_options="$install_options --database-table-prefix \"\""
             fi
-            if [ ! -z ${NEXTCLOUD_DATA_DIR+x} ]; then
+            if [ -n "${NEXTCLOUD_DATA_DIR+x}" ]; then
                 install_options="$install_options --data-dir \"$NEXTCLOUD_DATA_DIR\""
             fi
             
-            if [ ! -z ${SQLITE_DATABASE+x} ]; then
+            if [  -n "${SQLITE_DATABASE+x}" ]; then
                 echo "Installing with SQLite database"
                 install_options="$install_options --database-name \"$SQLITE_DATABASE\""
                 run_as "php /var/www/html/occ maintenance:install $install_options"
-            elif [ ! -z ${MYSQL_DATABASE+x} ] && [ ! -z ${MYSQL_USER+x} ] && [ ! -z ${MYSQL_PASSWORD+x} ] && [ ! -z ${MYSQL_HOST+x} ]; then
+            elif [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ]; then
                 echo "Installing with MySQL database"
                 install_options="$install_options --database mysql --database-name \"$MYSQL_DATABASE\" --database-user \"$MYSQL_USER\" --database-pass \"$MYSQL_PASSWORD\" --database-host \"$MYSQL_HOST\""
                 echo "waiting 30s for the database to setup"
                 sleep 30s
                 echo "starting nexcloud installation"
                 run_as "php /var/www/html/occ maintenance:install $install_options"
-            elif [ ! -z ${POSTGRES_DB+x} ] && [ ! -z ${POSTGRES_USER+x} ] && [ ! -z ${POSTGRES_PASSWORD+x} ] && [ ! -z ${POSTGRES_HOST+x} ]; then
+            elif [ -n "${POSTGRES_DB+x}" ] && [ -n "${POSTGRES_USER+x}" ] && [ -n "${POSTGRES_PASSWORD+x}" ] && [ -n "${POSTGRES_HOST+x}" ]; then
                 echo "Installing with PostgreSQL database"
                 install_options="$install_options --database pgsql --database-name \"$POSTGRES_DB\" --database-user \"$POSTGRES_USER\" --database-pass \"$POSTGRES_PASSWORD\" --database-host \"$POSTGRES_HOST\""
                 echo "waiting 10s for the database to setup"
