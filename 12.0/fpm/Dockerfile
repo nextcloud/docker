@@ -106,7 +106,7 @@ RUN set -ex; \
         dirmngr \
     "; \
     apt-get update; \
-    apt-get install -y --no-install-recommends $fetchDeps; \
+    apt-get install -y --no-install-recommends $fetchDeps smbclient; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
         "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
