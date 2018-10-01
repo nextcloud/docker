@@ -11,7 +11,13 @@ cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 # Get the most recent commit which modified any of "$@".
 fileCommit() {
-	git log -1 --format='format:%H' HEAD -- "$@"
+	commit="$(git log -1 --format='format:%H' HEAD -- "$@")"
+	if [ -z "$commit" ]; then
+		# return some valid sha1 hash to make bashbrew happy
+		echo '0000000000000000000000000000000000000000'
+	else
+		echo "$commit"
+	fi
 }
 
 # Get the most recent commit which modified "$1/Dockerfile" or any file that
