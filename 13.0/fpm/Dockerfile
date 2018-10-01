@@ -127,8 +127,7 @@ RUN set -ex; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
     rm -rf /var/lib/apt/lists/*
 
-COPY *.sh /
-COPY config/* /usr/src/nextcloud/config/
+COPY rootfs /
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

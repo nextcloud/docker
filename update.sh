@@ -80,17 +80,22 @@ function create_variant() {
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 	' "$dir/Dockerfile"
 
+	rootfs_dir="$dir/rootfs"
+	mkdir -p "$rootfs_dir"
+
 	# Copy the shell scripts
 	for name in entrypoint cron; do
-		cp "docker-$name.sh" "$dir/$name.sh"
+		cp "docker-$name.sh" "$rootfs_dir/$name.sh"
 	done
 
 	# Copy the config directory
-	cp -rT .config "$dir/config"
+	src_dir="$rootfs_dir/usr/src/nextcloud"
+	mkdir -p "$src_dir"
+	cp -rT .config "$src_dir/config"
 
 	# Remove Apache config if we're not an Apache variant.
 	if [ "$variant" != "apache" ]; then
-		rm "$dir/config/apache-pretty-urls.config.php"
+		rm "$src_dir/config/apache-pretty-urls.config.php"
 	fi
 
 	for arch in i386 amd64; do
