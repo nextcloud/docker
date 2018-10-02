@@ -85,6 +85,9 @@ function create_variant() {
 		cp "docker-$name.sh" "$dir/$name.sh"
 	done
 
+	# Copy the upgrade.exclude
+	cp upgrade.exclude "$dir/"
+
 	# Copy the config directory
 	cp -rT .config "$dir/config"
 
