@@ -71,27 +71,38 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
                     install_options=$install_options' --data-dir "$NEXTCLOUD_DATA_DIR"'
                 fi
 
+                install=false
                 if [  -n "${SQLITE_DATABASE+x}" ]; then
                     echo "Installing with SQLite database"
                     # shellcheck disable=SC2016
                     install_options=$install_options' --database-name "$SQLITE_DATABASE"'
-                    run_as "php /var/www/html/occ maintenance:install $install_options"
+                    install=true
                 elif [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ]; then
                     echo "Installing with MySQL database"
                     # shellcheck disable=SC2016
                     install_options=$install_options' --database mysql --database-name "$MYSQL_DATABASE" --database-user "$MYSQL_USER" --database-pass "$MYSQL_PASSWORD" --database-host "$MYSQL_HOST"'
-                    echo "waiting 30s for the database to setup"
-                    sleep 30s
-                    echo "starting nexcloud installation"
-                    run_as "php /var/www/html/occ maintenance:install $install_options"
+                    install=true
                 elif [ -n "${POSTGRES_DB+x}" ] && [ -n "${POSTGRES_USER+x}" ] && [ -n "${POSTGRES_PASSWORD+x}" ] && [ -n "${POSTGRES_HOST+x}" ]; then
                     echo "Installing with PostgreSQL database"
                     # shellcheck disable=SC2016
                     install_options=$install_options' --database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST"'
-                    echo "waiting 10s for the database to setup"
-                    sleep 10s
+                    install=true
+                fi
+                
+                if [ "$install" = true ]; then
                     echo "starting nexcloud installation"
-                    run_as "php /var/www/html/occ maintenance:install $install_options"
+                    max_retries=10
+                    try=0
+                    until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]
+                    do
+                        echo "retrying install..."
+                        try=$((try+1))
+                        sleep 3s
+                    done
+                    if [ "$try" -gt "$max_retries" ]; then
+                        echo "installing of nextcloud failed!"
+                        exit 1
+                    fi
                 else
                     echo "running web-based installer on first connect!"
                 fi
