@@ -32,7 +32,6 @@ jobs:
     - &test-scripts
       stage: test scripts
       env: SCRIPT=update.sh
-      sudo: false
       services: []
       install: skip
       before_script: skip
