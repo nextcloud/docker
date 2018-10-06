@@ -22,7 +22,7 @@ services:
     ports:
       - 8080:80
     volumes:
-      - nextcloud_html:/var/www/html
+      - nextcloud:/var/www/html
       - nextcloud_data:/var/nc_data
     environment:
       - MYSQL_HOST=db
@@ -44,5 +44,5 @@ services:
 
 volumes:
   db:
-  nextcloud_html:
+  nextcloud:
   nextcloud_data:

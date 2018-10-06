@@ -16,7 +16,7 @@ services:
     image: nextcloud:fpm
     restart: always
     volumes:
-      - nextcloud_html:/var/www/html
+      - nextcloud:/var/www/html
       - nextcloud_data:/var/nc_data
     environment:
       - MYSQL_HOST=db
@@ -29,7 +29,7 @@ services:
     build: ./web
     restart: always
     volumes:
-      - nextcloud_html:/var/www/html:ro
+      - nextcloud:/var/www/html:ro
     environment:
       - VIRTUAL_HOST=
     depends_on:
@@ -70,7 +70,7 @@ services:
 
 volumes:
   db:
-  nextcloud_html:
+  nextcloud:
   nextcloud_data:
   certs:
   vhost.d:

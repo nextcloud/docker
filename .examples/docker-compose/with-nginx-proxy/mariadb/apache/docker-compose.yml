@@ -16,7 +16,7 @@ services:
     image: nextcloud:apache
     restart: always
     volumes:
-      - nextcloud_html:/var/www/html
+      - nextcloud:/var/www/html
       - nextcloud_data:/var/nc_data
     environment:
       - VIRTUAL_HOST=
@@ -62,7 +62,7 @@ services:
 
 volumes:
   db:
-  nextcloud_html:
+  nextcloud:
   nextcloud_data:
   certs:
   vhost.d:
