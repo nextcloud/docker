@@ -13,7 +13,7 @@ services:
     image: nextcloud:fpm
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www
     environment:
       - POSTGRES_HOST=db
     env_file:
@@ -25,7 +25,7 @@ services:
     build: ./web
     restart: always
     volumes:
-      - nextcloud:/var/www/html:ro
+      - nextcloud:/var/www:ro
     environment:
       - VIRTUAL_HOST=
       - LETSENCRYPT_HOST=

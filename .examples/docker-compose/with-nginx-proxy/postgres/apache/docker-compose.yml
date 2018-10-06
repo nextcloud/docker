@@ -13,7 +13,7 @@ services:
     image: nextcloud:apache
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www
     environment:
       - VIRTUAL_HOST=
       - LETSENCRYPT_HOST=

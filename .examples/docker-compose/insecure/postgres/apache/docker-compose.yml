@@ -15,7 +15,7 @@ services:
     ports:
       - 8080:80
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www
     environment:
       - POSTGRES_HOST=db
     env_file:
