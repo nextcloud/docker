@@ -20,7 +20,8 @@ services:
     build: ./app
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud_html:/var/www/html
+      - nextcloud_data:/var/nc_data
     environment:
       - MYSQL_HOST=db
     env_file:
@@ -33,7 +34,7 @@ services:
     build: ./web
     restart: always
     volumes:
-      - nextcloud:/var/www/html:ro
+      - nextcloud_html:/var/www/html:ro
     environment:
       - VIRTUAL_HOST=
       - LETSENCRYPT_HOST=
@@ -48,7 +49,8 @@ services:
     build: ./app
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud_html:/var/www/html
+      - nextcloud_data:/var/nc_data
     entrypoint: /cron.sh
     depends_on:
       - db
@@ -85,7 +87,8 @@ services:
 
 volumes:
   db:
-  nextcloud:
+  nextcloud_html:
+  nextcloud_data:
   certs:
   vhost.d:
   html:

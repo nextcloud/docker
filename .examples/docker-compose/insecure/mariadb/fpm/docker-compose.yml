@@ -16,7 +16,8 @@ services:
     image: nextcloud:fpm
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud_html:/var/www/html
+      - nextcloud_data:/var/nc_data
     environment:
       - MYSQL_HOST=db
     env_file:
@@ -30,10 +31,11 @@ services:
     ports:
       - 8080:80
     volumes:
-      - nextcloud:/var/www/html:ro
+      - nextcloud_html:/var/www/html:ro
     depends_on:
       - app
 
 volumes:
   db:
-  nextcloud:
+  nextcloud_html:
+  nextcloud_data:
