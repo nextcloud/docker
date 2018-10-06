@@ -22,7 +22,7 @@ services:
     ports:
       - 8080:80
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www
     environment:
       - MYSQL_HOST=db
     env_file:
@@ -35,7 +35,7 @@ services:
     build: ./app
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www
     entrypoint: /cron.sh
     depends_on:
       - db
