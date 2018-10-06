@@ -95,7 +95,7 @@ RUN { \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-VOLUME /var/www/html
+VOLUME /var/www
 
 RUN a2enmod rewrite remoteip ;\
     {\

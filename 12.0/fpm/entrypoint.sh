@@ -69,6 +69,8 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
                 if [ -n "${NEXTCLOUD_DATA_DIR+x}" ]; then
                     # shellcheck disable=SC2016
                     install_options=$install_options' --data-dir "$NEXTCLOUD_DATA_DIR"'
+                else
+                    install_options=$install_options' --data-dir "/var/www/data"'
                 fi
 
                 install=false
