@@ -21,6 +21,7 @@ services:
     restart: always
     volumes:
       - nextcloud:/var/www/html
+      - nextcloud_data:/var/nc_data
     environment:
       - MYSQL_HOST=db
     env_file:
@@ -49,6 +50,7 @@ services:
     restart: always
     volumes:
       - nextcloud:/var/www/html
+      - nextcloud_data:/var/nc_data
     entrypoint: /cron.sh
     depends_on:
       - db
@@ -86,6 +88,7 @@ services:
 volumes:
   db:
   nextcloud:
+  nextcloud_data:
   certs:
   vhost.d:
   html:

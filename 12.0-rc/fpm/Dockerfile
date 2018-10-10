@@ -91,11 +91,12 @@ RUN { \
     \
     echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini; \
     \
-    mkdir /var/www/data; \
-    chown -R www-data:root /var/www; \
-    chmod -R g=u /var/www
+    mkdir /var/nc_data; \
+    chown -R www-data:root /var/www /var/nc_data; \
+    chmod -R g=u /var/www /var/nc_data
 
 VOLUME /var/www/html
+VOLUME /var/nc_data
 
 
 ENV NEXTCLOUD_VERSION 12.0.12RC2
