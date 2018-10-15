@@ -123,6 +123,12 @@ If you want you can set the data directory and table prefix, otherwise default v
 - `NEXTCLOUD_TABLE_PREFIX` (default: _""_) Optional prefix for the tables. Used to be `oc_` in the past
 
 
+The auto install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you can reenable the install / update with
+
+- `NEXTCLOUD_UPDATE` (default: _0_)
+
+
+
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for.
 
