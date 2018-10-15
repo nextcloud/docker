@@ -2,8 +2,8 @@ version: '3'
 
 services:
   db:
-    image: mariadb
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    image: mariadb:10.3
+    command: --transaction-isolation=READ-COMMITTED --log-bin=mysqld-bin --binlog-format=ROW
     restart: always
     volumes:
       - db:/var/lib/mysql
