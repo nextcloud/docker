@@ -88,7 +88,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
                     install_options=$install_options' --database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST"'
                     install=true
                 fi
-                
+
                 if [ "$install" = true ]; then
                     echo "starting nexcloud installation"
                     max_retries=10
@@ -102,6 +102,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
                     if [ "$try" -gt "$max_retries" ]; then
                         echo "installing of nextcloud failed!"
                         exit 1
+                    fi
+                    if [ -n "${NEXTCLOUD_TRUSTED_DOMAINS+x}" ]; then
+                        echo "setting trusted domains…"
+                        NC_TRUSTED_DOMAIN_IDX=1
+                        for DOMAIN in $NEXTCLOUD_TRUSTED_DOMAINS ; do
+                            DOMAIN=$(echo "$DOMAIN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+                            run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
+                            NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
+                        done
                     fi
                 else
                     echo "running web-based installer on first connect!"
