@@ -19,7 +19,7 @@ run_as() {
     fi
 }
 
-if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
+if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
     installed_version="0.0.0.0"
     if [ -f /var/www/html/version.php ]; then
         # shellcheck disable=SC2016

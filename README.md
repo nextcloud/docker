@@ -126,6 +126,12 @@ One or more trusted domains can be set by environemnt variable, too. They will b
 
 - `NEXTCLOUD_TRUSTED_DOMAINS` (not set by default) Optional space-separated list of domains
 
+The install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
+
+- `NEXTCLOUD_UPDATE` (default: _0_)
+
+
+
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for.
 
@@ -275,6 +281,19 @@ If you use your own Dockerfile you need to configure your docker-compose file ac
       - apps:/var/www/html/apps
     restart: always
 ```
+
+If you intend to use another command to run the image. Make sure that you set `NEXTCLOUD_UPDATE=1` in your Dockerfile. Otherwise the installation and update will not work.
+
+```yaml
+FROM nextcloud:apache
+
+...
+
+ENV NEXTCLOUD_UPDATE=1
+
+CMD ["/usr/bin/supervisord"]
+```
+
 
 **Updating** your own derived image is also very simple. When a new version of the Nextcloud image is available run:
 

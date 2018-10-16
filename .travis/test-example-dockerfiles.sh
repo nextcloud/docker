@@ -13,7 +13,6 @@ for dir in "${dirs[@]}"; do
             cd "$dir/$VARIANT"
             sed -ri -e 's/^FROM .*/FROM '"$image"'/g' 'Dockerfile'
             docker build -t "$image-$dir" .
-            ~/official-images/test/run.sh "$image-$dir"
         )
     fi
 done
