@@ -13,7 +13,7 @@ The Dockerfiles use the default images as base image and build on top of it.
 
 Example | Description
 ------- | -------
-[cron](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/cron) | uses supervisor to run the cron job inside the container (so no extra container is needed). This image runs `supervisord`. To enable auto install and update run images like this with an additional environment variable:  `NEXTCLOUD_UPDATE=1`. See [here](https://github.com/nextcloud/docker/blob/master/README.md#auto-configuration-via-environment-variables) for more information.
+[cron](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/cron) | uses supervisor to run the cron job inside the container (so no extra container is needed). This image runs `supervisord` to start nextcloud and cron as two seperate processes inside the container.
 [imap](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/imap) | adds dependencies required to authenticate users via imap
 [smb](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/smb) | adds dependencies required to use smb shares
 [full](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/full) | adds dependencies for ALL optional packages and cron functionality via supervisor (as in the `cron` example Dockerfile).

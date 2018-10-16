@@ -123,7 +123,7 @@ If you want you can set the data directory and table prefix, otherwise default v
 - `NEXTCLOUD_TABLE_PREFIX` (default: _""_) Optional prefix for the tables. Used to be `oc_` in the past
 
 
-The auto install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you can reenable the install / update with
+The install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
 
 - `NEXTCLOUD_UPDATE` (default: _0_)
 
@@ -278,6 +278,19 @@ If you use your own Dockerfile you need to configure your docker-compose file ac
       - apps:/var/www/html/apps
     restart: always
 ```
+
+If you intend to use another command to run the image. Make sure that you set `NEXTCLOUD_UPDATE=1` in your Dockerfile. Otherwise the installation and update will not work.
+
+```yaml
+FROM nextcloud:apache
+
+...
+
+ENV NEXTCLOUD_UPDATE=1
+
+CMD ["/usr/bin/supervisord"]
+```
+
 
 **Updating** your own derived image is also very simple. When a new version of the Nextcloud image is available run:
 
