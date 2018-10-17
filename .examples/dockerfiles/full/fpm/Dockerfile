@@ -21,4 +21,6 @@ RUN mkdir -p /usr/share/man/man1 \
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
+ENV NEXTCLOUD_UPDATE=1
+
 CMD ["/usr/bin/supervisord"]
