@@ -127,6 +127,16 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
         fi
     fi
+
+    if [ -n "${NEXTCLOUD_OVERWRITEHOST+x}" ]; then
+        echo "setting overwritehost…"
+        run_as "php /var/www/html/occ config:system:set overwritehost --value=$NEXTCLOUD_OVERWRITEHOST"
+    fi
+    if [ -n "${NEXTCLOUD_OVERWRITEPROTOCOL+x}" ]; then
+        echo "setting overwriteprotocol…"
+        run_as "php /var/www/html/occ config:system:set overwriteprotocol --value=$NEXTCLOUD_OVERWRITEPROTOCOL"
+    fi
+
 fi
 
 exec "$@"

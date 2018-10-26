@@ -130,7 +130,12 @@ The install and update script is only triggered when a default command is used (
 
 - `NEXTCLOUD_UPDATE` (default: _0_)
 
+If Nextcloud fails to automatically detect the hostname, protocol or webroot you can use the overwrite parameters inside the config/config.php.
 
+- `NEXTCLOUD_OVERWRITEHOST` The overwritehost parameter is used to set the hostname of the proxy. You can also specify a port.
+- `NEXTCLOUD_OVERWRITEPROTOCOL` The overwriteprotocol parameter is used to set the protocol of the proxy. You can choose between the two options http and https.
+
+These two parameters are available in v14.0+
 
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for.
