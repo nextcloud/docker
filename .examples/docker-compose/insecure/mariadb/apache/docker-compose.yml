@@ -2,7 +2,8 @@ version: '3'
 
 services:
   db:
-    build: ./db
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     volumes:
       - db:/var/lib/mysql
@@ -11,7 +12,7 @@ services:
     env_file:
       - db.env
 
-  app:  
+  app:
     image: nextcloud:apache
     restart: always
     ports:

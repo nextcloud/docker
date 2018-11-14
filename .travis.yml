@@ -1,9 +1,5 @@
-dist: trusty
-sudo: required
-
-services: docker
-
 language: bash
+services: docker
 
 branches:
   only:
@@ -14,13 +10,19 @@ install:
 
 before_script:
   - env | sort
+  - wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh' | bash
   - image="nextcloud:${VERSION}${VARIANT:+-$VARIANT}"
   - if [[ "$ARCH" == 'i386' ]]; then sed -i -e 's/FROM php/FROM i386\/php/g' "${VERSION}/${VARIANT}/Dockerfile"; fi
 
 script:
-  - travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
-  - ~/official-images/test/run.sh "$image"
-  - .travis/test-example-dockerfiles.sh "$image"
+  - |
+    (
+      set -Eeuo pipefail
+      set -x
+      docker build -t "$image" "${VERSION}/${VARIANT}"
+      ~/official-images/test/run.sh "$image"
+      .travis/test-example-dockerfiles.sh "$image"
+    )
 
 after_script:
   - docker images
@@ -30,7 +32,6 @@ jobs:
     - &test-scripts
       stage: test scripts
       env: SCRIPT=update.sh
-      sudo: false
       services: []
       install: skip
       before_script: skip
@@ -49,18 +50,12 @@ jobs:
         - ./generate-stackbrew-library.sh
 
     - stage: test images
-      env: VERSION=12.0-rc VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=12.0-rc VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=12.0-rc VARIANT=fpm ARCH=amd64
-    - env: VERSION=12.0-rc VARIANT=fpm ARCH=i386
-    - env: VERSION=12.0-rc VARIANT=apache ARCH=amd64
-    - env: VERSION=12.0-rc VARIANT=apache ARCH=i386
-    - env: VERSION=13.0-rc VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=13.0-rc VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=13.0-rc VARIANT=fpm ARCH=amd64
-    - env: VERSION=13.0-rc VARIANT=fpm ARCH=i386
-    - env: VERSION=13.0-rc VARIANT=apache ARCH=amd64
-    - env: VERSION=13.0-rc VARIANT=apache ARCH=i386
+      env: VERSION=15.0-beta VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=15.0-beta VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=15.0-beta VARIANT=fpm ARCH=amd64
+    - env: VERSION=15.0-beta VARIANT=fpm ARCH=i386
+    - env: VERSION=15.0-beta VARIANT=apache ARCH=amd64
+    - env: VERSION=15.0-beta VARIANT=apache ARCH=i386
     - env: VERSION=12.0 VARIANT=fpm-alpine ARCH=amd64
     - env: VERSION=12.0 VARIANT=fpm-alpine ARCH=i386
     - env: VERSION=12.0 VARIANT=fpm ARCH=amd64
@@ -73,3 +68,9 @@ jobs:
     - env: VERSION=13.0 VARIANT=fpm ARCH=i386
     - env: VERSION=13.0 VARIANT=apache ARCH=amd64
     - env: VERSION=13.0 VARIANT=apache ARCH=i386
+    - env: VERSION=14.0 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=14.0 VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=14.0 VARIANT=fpm ARCH=amd64
+    - env: VERSION=14.0 VARIANT=fpm ARCH=i386
+    - env: VERSION=14.0 VARIANT=apache ARCH=amd64
+    - env: VERSION=14.0 VARIANT=apache ARCH=i386

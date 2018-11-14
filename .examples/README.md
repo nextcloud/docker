@@ -1,7 +1,7 @@
 # Examples section
 
 In this subfolders are some examples how to use the docker image. There are two sections:
- 
+
  * [`dockerfiles`](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles)
  * [`docker-compose`](https://github.com/nextcloud/docker/tree/master/.examples/docker-compose)
 
@@ -13,7 +13,7 @@ The Dockerfiles use the default images as base image and build on top of it.
 
 Example | Description
 ------- | -------
-[cron](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/cron) | uses supervisor to run the cron job inside the container (so no extra container is needed).
+[cron](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/cron) | uses supervisor to run the cron job inside the container (so no extra container is needed). This image runs `supervisord` to start nextcloud and cron as two seperate processes inside the container.
 [imap](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/imap) | adds dependencies required to authenticate users via imap
 [smb](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/smb) | adds dependencies required to use smb shares
 [full](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/full) | adds dependencies for ALL optional packages and cron functionality via supervisor (as in the `cron` example Dockerfile).
@@ -21,49 +21,48 @@ Example | Description
 ### full
 The `full` Dockerfile example adds dependencies for all optional packages suggested by nextcloud that may be needed for some features (e.g. Video Preview Generation), as stated in the [Administration Manual](https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html).
 
-NOTE: The Dockerfile does not install the LibreOffice package (line is commented), because it would increase the generated Image size by approximately 500 MB. In order to install it, simply uncomment the 13th line of the Dockerfile.</br>
+NOTE: The Dockerfile does not install the LibreOffice package (line is commented), because it would increase the generated Image size by approximately 500 MB. In order to install it, simply uncomment the 13th line of the Dockerfile.  
 
-NOTE: Per default, only previews for BMP, GIF, JPEG, MarkDown, MP3, PNG, TXT, and XBitmap Files are generated. The configuration of the preview generation can be done in config.php, as explained in the [Administration Manual](https://docs.nextcloud.com/server/12/admin_manual/configuration_server/config_sample_php_parameters.html#previews)</br>
+NOTE: Per default, only previews for BMP, GIF, JPEG, MarkDown, MP3, PNG, TXT, and XBitmap Files are generated. The configuration of the preview generation can be done in config.php, as explained in the [Administration Manual](https://docs.nextcloud.com/server/12/admin_manual/configuration_server/config_sample_php_parameters.html#previews)  
 
-NOTE: Nextcloud recommends [disabling preview generation](https://docs.nextcloud.com/server/12/admin_manual/configuration_server/harden_server.html?highlight=enabledpreviewproviders#disable-preview-image-generation) for high security deployments, as preview generation opens your nextcloud instance to new possible attack vectors.</br>
+NOTE: Nextcloud recommends [disabling preview generation](https://docs.nextcloud.com/server/12/admin_manual/configuration_server/harden_server.html?highlight=enabledpreviewproviders#disable-preview-image-generation) for high security deployments, as preview generation opens your nextcloud instance to new possible attack vectors.  
 
 The required steps for each optional/recommended package that is not already in the Nextcloud image are listed here, so that the Dockerfile can easily be modified to only install the needed extra packages. Simply remove the steps for the unwanted packages  from the Dockerfile.
 
 #### PHP Module bz2
-`docker-php-ext-install bz2` </br>
+`docker-php-ext-install bz2`  
 
 #### PHP Module imagick
-`apt install libmagickwand-dev` </br>
-`pecl install imagick` </br>
-`docker-php-ext-enable imagick` </br>
+`apt install libmagickwand-dev`  
+`pecl install imagick`  
+`docker-php-ext-enable imagick`  
 
 #### PHP Module imap
-`apt install libc-client-dev libkrb5-dev` </br>
-`docker-php-ext-configure imap --with-kerberos --with-imap-ssl` </br>
-`docker-php-ext-install imap` </br>
+`apt install libc-client-dev libkrb5-dev`  
+`docker-php-ext-configure imap --with-kerberos --with-imap-ssl`  
+`docker-php-ext-install imap`  
 
 #### PHP Module gmp
-`apt install libgmp3-dev` </br>
-`docker-php-ext-install gmp` </br>
+`apt install libgmp3-dev`  
+`docker-php-ext-install gmp`  
 
 #### PHP Module smbclient
-`apt install smbclient libsmbclient-dev` </br>
-`pecl install smbclient` </br>
-`docker-php-ext-enable smbclient` </br>
+`apt install smbclient libsmbclient-dev`  
+`pecl install smbclient`  
+`docker-php-ext-enable smbclient`  
 
 #### ffmpeg
-`echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list` </br>
-`apt install ffmpeg` </br>
+`apt install ffmpeg`  
 
 #### LibreOffice
-`apt install LibreOffice` </br>
+`apt install libreoffice`  
 
 #### CRON via supervisor
-`apt install supervisor` </br>
-`mkdir /var/log/supervisord /var/run/supervisord` </br>
-The following Dockerfile commands are also necessary for a sucessfull cron installation: </br>
-`COPY supervisord.conf /etc/supervisor/supervisord.conf` </br>
-`CMD ["/usr/bin/supervisord"]` </br>
+`apt install supervisor`  
+`mkdir /var/log/supervisord /var/run/supervisord`  
+The following Dockerfile commands are also necessary for a sucessfull cron installation:  
+`COPY supervisord.conf /etc/supervisor/supervisord.conf`  
+`CMD ["/usr/bin/supervisord"]`  
 
 
 
@@ -92,8 +91,11 @@ If you want to update your installation to a newer version of nextcloud, repeat 
 
 ### with-nginx-proxy
 The nginx proxy adds a proxy layer between nextcloud and the internet. The proxy is designed to serve multiple sites on the same host machine.
+
 The advantage in adding this layer is the ability to add a container for [Let's Encrypt](https://letsencrypt.org/) certificate handling.
 This combination of the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) and [jrcs/docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion) containers creates a fully automated https encryption of the nextcloud installation without worrying about certificate generation, validation or renewal.
+
+**This setup only works with a valid domain name on a server that is reachable from the internet.**
 
 To use this example complete the following steps:
 

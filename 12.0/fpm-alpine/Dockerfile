@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.1-fpm-alpine
+FROM php:7.1-fpm-alpine3.8
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -16,7 +16,7 @@ RUN set -ex; \
 RUN set -ex; \
     \
     apk add --no-cache --virtual .build-deps \
-        alpine-sdk \
+        $PHPIZE_DEPS \
         autoconf \
         freetype-dev \
         icu-dev \
@@ -37,21 +37,18 @@ RUN set -ex; \
         gd \
         intl \
         ldap \
-        mbstring \
-        mcrypt \
-        mysqli \
         opcache \
         pcntl \
         pdo_mysql \
         pdo_pgsql \
-        pgsql \
         zip \
     ; \
-    pecl install \
-        APCu-5.1.11 \
-        memcached-3.0.4 \
-        redis-3.1.6 \
-    ; \
+    \
+# pecl will claim success even if one install fails, so we need to perform each install separately
+    pecl install APCu-5.1.12; \
+    pecl install memcached-3.0.4; \
+    pecl install redis-4.1.1; \
+    \
     docker-php-ext-enable \
         apcu \
         memcached \
@@ -79,6 +76,10 @@ RUN { \
         echo 'opcache.revalidate_freq=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
+    echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
+    \
+    echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini; \
+    \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
@@ -86,7 +87,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 12.0.6
+ENV NEXTCLOUD_VERSION 12.0.12
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -102,16 +103,16 @@ RUN set -ex; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
     gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    rm -r "$GNUPGHOME" nextcloud.tar.bz2.asc; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
-    rm nextcloud.tar.bz2; \
+    gpgconf --kill all; \
+    rm -r "$GNUPGHOME" nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     rm -rf /usr/src/nextcloud/updater; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
     apk del .fetch-deps
 
-COPY *.sh /
+COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]

@@ -1,6 +1,6 @@
 FROM nextcloud:apache
 
-RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+RUN mkdir -p /usr/share/man/man1 \
     && apt-get update && apt-get install -y \
         supervisor \
         ffmpeg \
@@ -11,7 +11,7 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
         libkrb5-dev \
         smbclient \
         libsmbclient-dev \
-#       LibreOffice \
+#       libreoffice \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && ln -s "/usr/include/$(dpkg-architecture --query DEB_BUILD_MULTIARCH)/gmp.h" /usr/include/gmp.h \
@@ -29,5 +29,7 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     && echo '*/10 * * * * php -f /var/www/html/occ preview:pre-generate' >> /var/spool/cron/crontabs/www-data
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+
+ENV NEXTCLOUD_UPDATE=1
 
 CMD ["/usr/bin/supervisord"]

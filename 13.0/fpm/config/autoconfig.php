@@ -26,9 +26,4 @@ if ($autoconfig_enabled) {
     $AUTOCONFIG["dbtableprefix"] = getenv('NEXTCLOUD_TABLE_PREFIX') ?: "";
 
     $AUTOCONFIG["directory"] = getenv('NEXTCLOUD_DATA_DIR') ?: "/var/www/html/data";
-
-    if (getenv('NEXTCLOUD_ADMIN_USER') && getenv('NEXTCLOUD_ADMIN_PASSWORD')) {
-        $AUTOCONFIG["adminlogin"] = getenv('NEXTCLOUD_ADMIN_USER');
-        $AUTOCONFIG["adminpass"] = getenv('NEXTCLOUD_ADMIN_PASSWORD');
-    }
 }

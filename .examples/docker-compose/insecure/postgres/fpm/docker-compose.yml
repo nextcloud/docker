@@ -9,7 +9,7 @@ services:
     env_file:
       - db.env
 
-  app:  
+  app:
     image: nextcloud:fpm
     restart: always
     volumes:

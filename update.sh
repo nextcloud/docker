@@ -2,7 +2,8 @@
 set -eo pipefail
 
 declare -A php_version=(
-	[default]='7.1'
+	[default]='7.2'
+	[12.0]='7.1'
 )
 
 declare -A cmd=(
@@ -24,9 +25,9 @@ declare -A extras=(
 )
 
 declare -A pecl_versions=(
-	[APCu]='5.1.11'
+	[APCu]='5.1.12'
 	[memcached]='3.0.4'
-	[redis]='3.1.6'
+	[redis]='4.1.1'
 )
 
 variants=(
@@ -47,6 +48,11 @@ function check_released() {
 	printf '%s\n' "${fullversions[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
 }
 
+# checks if the the beta has already a rc
+function check_rc_released() {
+	printf '%s\n' "${fullversions_rc[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
+}
+
 travisEnv=
 
 function create_variant() {
@@ -55,8 +61,8 @@ function create_variant() {
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
 
-        template="Dockerfile-${base[$variant]}.template"
-        echo "# DO NOT EDIT: created by update.sh from $template" > "$dir/Dockerfile"
+	template="Dockerfile-${base[$variant]}.template"
+	echo "# DO NOT EDIT: created by update.sh from $template" > "$dir/Dockerfile"
 	cat "$template" >> "$dir/Dockerfile"
 
 	echo "updating $fullversion [$1] $variant"
@@ -79,6 +85,9 @@ function create_variant() {
 		cp "docker-$name.sh" "$dir/$name.sh"
 	done
 
+	# Copy the upgrade.exclude
+	cp upgrade.exclude "$dir/"
+
 	# Copy the config directory
 	cp -rT .config "$dir/config"
 
@@ -92,7 +101,7 @@ function create_variant() {
 	done
 }
 
-find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\)\?' -exec rm -r '{}' \;
+find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\)\?' -exec rm -r '{}' \;
 
 fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
@@ -105,7 +114,7 @@ for version in "${versions[@]}"; do
 	if version_greater_or_equal "$version" "$min_version"; then
 
 		for variant in "${variants[@]}"; do
-			
+
 			create_variant "$version" "https:\/\/download.nextcloud.com\/server\/releases"
 		done
 	fi
@@ -124,8 +133,28 @@ for version in "${versions_rc[@]}"; do
 		if ! check_released "$fullversion"; then
 
 			for variant in "${variants[@]}"; do
-			
+
 				create_variant "$version-rc" "https:\/\/download.nextcloud.com\/server\/prereleases"
+			done
+		fi
+	fi
+done
+
+fullversions_beta=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
+	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
+	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
+	sort -urV ) )
+versions_beta=( $( printf '%s\n' "${fullversions_beta[@]}" | cut -d. -f1-2 | sort -urV ) )
+for version in "${versions_beta[@]}"; do
+	fullversion="$( printf '%s\n' "${fullversions_beta[@]}" | grep -E "^$version" | head -1 )"
+
+	if version_greater_or_equal "$version" "$min_version"; then
+
+		if ! check_rc_released "$fullversion"; then
+
+			for variant in "${variants[@]}"; do
+
+				create_variant "$version-beta" "https:\/\/download.nextcloud.com\/server\/prereleases"
 			done
 		fi
 	fi

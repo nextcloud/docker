@@ -2,7 +2,8 @@ version: '3'
 
 services:
   db:
-    build: ./db
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     volumes:
       - db:/var/lib/mysql
@@ -15,7 +16,7 @@ services:
     image: redis
     restart: always
 
-  app:  
+  app:
     build: ./app
     restart: always
     volumes:
