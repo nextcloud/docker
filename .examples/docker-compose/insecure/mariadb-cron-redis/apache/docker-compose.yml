@@ -13,7 +13,7 @@ services:
       - db.env
 
   redis:
-    image: redis
+    image: redis:alpine
     restart: always
 
   app:
