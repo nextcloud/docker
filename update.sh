@@ -25,9 +25,9 @@ declare -A extras=(
 )
 
 declare -A pecl_versions=(
-	[APCu]='5.1.12'
+	[APCu]='5.1.13'
 	[memcached]='3.0.4'
-	[redis]='4.1.1'
+	[redis]='4.2.0'
 )
 
 variants=(
