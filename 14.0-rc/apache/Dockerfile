@@ -51,7 +51,7 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.13; \
+    pecl install APCu-5.1.14; \
     pecl install memcached-3.0.4; \
     pecl install redis-4.2.0; \
     \
