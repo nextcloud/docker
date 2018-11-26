@@ -45,9 +45,9 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.12; \
+    pecl install APCu-5.1.14; \
     pecl install memcached-3.0.4; \
-    pecl install redis-4.1.1; \
+    pecl install redis-4.2.0; \
     \
     docker-php-ext-enable \
         apcu \
@@ -87,7 +87,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 15.0.0beta1
+ENV NEXTCLOUD_VERSION 15.0.0RC1
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -101,7 +101,7 @@ RUN set -ex; \
         "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
+    gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
     gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
     gpgconf --kill all; \

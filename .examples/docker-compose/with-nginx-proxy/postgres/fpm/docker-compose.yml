@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    image: postgres
+    image: postgres:alpine
     restart: always
     volumes:
       - db:/var/lib/postgresql/data
@@ -10,7 +10,7 @@ services:
       - db.env
 
   app:
-    image: nextcloud:fpm
+    image: nextcloud:fpm-alpine
     restart: always
     volumes:
       - nextcloud:/var/www/html
