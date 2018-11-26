@@ -4,7 +4,6 @@ RUN mkdir -p /usr/share/man/man1 \
     && apt-get update && apt-get install -y \
         supervisor \
         ffmpeg \
-        libmagickcore-extra \
         libmagickwand-dev \
         libgmp3-dev \
         libc-client-dev \
