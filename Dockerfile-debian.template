@@ -8,6 +8,7 @@ RUN set -ex; \
         rsync \
         bzip2 \
         busybox-static \
+        procps \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     \
