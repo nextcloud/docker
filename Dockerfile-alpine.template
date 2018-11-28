@@ -5,6 +5,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         rsync \
+        procps \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
