@@ -6,6 +6,9 @@ services:
     restart: always
     volumes:
       - db:/var/lib/postgresql/data
+    environment:
+      # workaround for https://github.com/nextcloud/docker/issues/345
+      - POSTGRES_DB=deleteme
     env_file:
       - db.env
 
@@ -28,7 +31,8 @@ services:
       - default
 
   proxy:
-    build: ./proxy
+    image: jwilder/nginx-proxy:alpine
+
     restart: always
     ports:
       - 80:80
@@ -40,6 +44,7 @@ services:
       - vhost.d:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./configs/uploadsize.conf:/etc/nginx/conf.d/uploadsize.conf
     networks:
       - proxy-tier
 
