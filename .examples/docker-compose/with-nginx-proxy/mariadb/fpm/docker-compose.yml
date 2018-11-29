@@ -25,7 +25,7 @@ services:
       - db
 
   web:
-    build: ./web
+    image: nginx:alpine
     restart: always
     volumes:
       - nextcloud:/var/www/html:ro
@@ -33,6 +33,8 @@ services:
       - VIRTUAL_HOST=
       - LETSENCRYPT_HOST=
       - LETSENCRYPT_EMAIL=
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - app
     networks:
@@ -40,7 +42,7 @@ services:
       - default
 
   proxy:
-    build: ./proxy
+    image: jwilder/nginx-proxy:alpine
     restart: always
     ports:
       - 80:80
@@ -52,6 +54,7 @@ services:
       - vhost.d:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./configs/uploadsize.conf:/etc/nginx/conf.d/uploadsize.conf
     networks:
       - proxy-tier
 
