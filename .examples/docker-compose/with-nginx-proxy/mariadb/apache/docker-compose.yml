@@ -31,7 +31,7 @@ services:
       - default
 
   proxy:
-    build: ./proxy
+    images: jwilder/nginx-proxy:alpine
     restart: always
     ports:
       - 80:80
@@ -43,6 +43,7 @@ services:
       - vhost.d:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./configs/uploadsize.conf:/etc/nginx/conf.d/uploadsize.conf
     networks:
       - proxy-tier
 
