@@ -22,6 +22,7 @@ services:
       - LETSENCRYPT_HOST=
       - LETSENCRYPT_EMAIL=
       - POSTGRES_HOST=db
+      - POSTGRES_DB=nextcloud
     env_file:
       - db.env
     depends_on:
