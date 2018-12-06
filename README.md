@@ -130,7 +130,9 @@ The install and update script is only triggered when a default command is used (
 
 - `NEXTCLOUD_UPDATE` (default: _0_)
 
+The PHP `memory_limit` setting can be controlled by specifying the below environment variable.
 
+- `PHP_MEMORY_LIMIT` (default: `512M`)
 
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for.

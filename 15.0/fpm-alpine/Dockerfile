@@ -78,11 +78,16 @@ RUN { \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
-    echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini; \
-    \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
+
+# Allow PHP memory_limit to be configurable. Touch the INI file and give open permissions so that
+# the entrypoint script can modify it when the container is run by non-root users.
+ENV PHP_MEMORY_LIMIT=512M
+RUN true \
+    && ini_file=/usr/local/etc/php/conf.d/memory-limit.ini \
+    && touch "$ini_file" && chmod a+rw "$ini_file"
 
 VOLUME /var/www/html
 

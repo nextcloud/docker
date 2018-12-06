@@ -19,6 +19,9 @@ run_as() {
     fi
 }
 
+# Update PHP's memory limit based on environment variable specified to Docker
+echo "memory_limit=$PHP_MEMORY_LIMIT" > /usr/local/etc/php/conf.d/memory-limit.ini
+
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
     installed_version="0.0.0.0"
     if [ -f /var/www/html/version.php ]; then
