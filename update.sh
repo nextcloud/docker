@@ -3,7 +3,7 @@ set -eo pipefail
 
 declare -A php_version=(
 	[default]='7.2'
-	[12.0]='7.1'
+	[15.0]='7.3'
 )
 
 declare -A cmd=(
@@ -58,6 +58,7 @@ travisEnv=
 
 function create_variant() {
 	dir="$1/$variant"
+	phpVersion=${php_version[$version]-${php_version[default]}}
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
@@ -70,7 +71,7 @@ function create_variant() {
 
 	# Replace the variables.
 	sed -ri -e '
-		s/%%PHP_VERSION%%/'"${php_version[$version]-${php_version[default]}}"'/g;
+		s/%%PHP_VERSION%%/'"$phpVersion"'/g;
 		s/%%VARIANT%%/'"$variant"'/g;
 		s/%%VERSION%%/'"$fullversion"'/g;
 		s/%%BASE_DOWNLOAD_URL%%/'"$2"'/g;
@@ -81,6 +82,12 @@ function create_variant() {
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 	' "$dir/Dockerfile"
+
+	if [[ "$phpVersion" != 7.3 ]]; then
+		sed -ri \
+			-e '/libzip-dev/d' \
+			"$dir/Dockerfile"
+	fi
 
 	# Copy the shell scripts
 	for name in entrypoint cron; do
