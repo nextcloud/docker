@@ -1,4 +1,4 @@
-FROM nextcloud:13.0.8-apache
+FROM nextcloud:14.0.4-apache
 
 RUN mkdir -p /usr/share/man/man1 \
     && apt-get update && apt-get install -y \
