@@ -32,11 +32,6 @@ The required steps for each optional/recommended package that is not already in 
 #### PHP Module bz2
 `docker-php-ext-install bz2`  
 
-#### PHP Module imagick
-`apt install libmagickwand-dev`  
-`pecl install imagick`  
-`docker-php-ext-enable imagick`  
-
 #### PHP Module imap
 `apt install libc-client-dev libkrb5-dev`  
 `docker-php-ext-configure imap --with-kerberos --with-imap-ssl`  

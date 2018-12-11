@@ -28,6 +28,7 @@ declare -A pecl_versions=(
 	[APCu]='5.1.15'
 	[memcached]='3.0.4'
 	[redis]='4.2.0'
+	[imagick]='3.4.3'
 )
 
 variants=(
@@ -78,6 +79,7 @@ function create_variant() {
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
+		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 	' "$dir/Dockerfile"
 
 	# Copy the shell scripts
