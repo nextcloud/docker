@@ -28,6 +28,7 @@ RUN set -ex; \
         openldap-dev \
         pcre-dev \
         postgresql-dev \
+        imagemagick-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr; \
@@ -48,11 +49,13 @@ RUN set -ex; \
     pecl install APCu-5.1.15; \
     pecl install memcached-3.0.4; \
     pecl install redis-4.2.0; \
+    pecl install imagick-3.4.3; \
     \
     docker-php-ext-enable \
         apcu \
         memcached \
         redis \
+        imagick \
     ; \
     \
     runDeps="$( \
