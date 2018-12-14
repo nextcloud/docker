@@ -90,7 +90,11 @@ RUN { \
 VOLUME /var/www/html
 
 
+<<<<<<< HEAD:15.0/fpm-alpine/Dockerfile
 ENV NEXTCLOUD_VERSION 15.0.0
+=======
+ENV NEXTCLOUD_VERSION 12.0.13
+>>>>>>> Add two parameters when Nextcloud is behind a proxy:12.0/fpm-alpine/Dockerfile
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \

@@ -109,7 +109,11 @@ RUN a2enmod rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
+<<<<<<< HEAD:15.0/apache/Dockerfile
 ENV NEXTCLOUD_VERSION 15.0.0
+=======
+ENV NEXTCLOUD_VERSION 12.0.13
+>>>>>>> Add two parameters when Nextcloud is behind a proxy:12.0/apache/Dockerfile
 
 RUN set -ex; \
     fetchDeps=" \
