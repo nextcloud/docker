@@ -25,9 +25,10 @@ declare -A extras=(
 )
 
 declare -A pecl_versions=(
-	[APCu]='5.1.12'
+	[APCu]='5.1.15'
 	[memcached]='3.0.4'
-	[redis]='4.1.1'
+	[redis]='4.2.0'
+	[imagick]='3.4.3'
 )
 
 variants=(
@@ -36,7 +37,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='12.0'
+min_version='13.0'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -78,6 +79,7 @@ function create_variant() {
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
+		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 	' "$dir/Dockerfile"
 
 	# Copy the shell scripts
@@ -97,7 +99,7 @@ function create_variant() {
 	fi
 
 	for arch in i386 amd64; do
-		travisEnv='\n    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH='"$arch$travisEnv"
+		travisEnv='    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH='"$arch"'\n'"$travisEnv"
 	done
 }
 
@@ -160,9 +162,10 @@ for version in "${versions_beta[@]}"; do
 	fi
 done
 
+# remove everything after '- stage: test images'
+travis="$(awk '!p; /- stage: test images/ {p=1}' .travis.yml)"
+echo "$travis" > .travis.yml
+
 # replace the fist '-' with ' '
 travisEnv="$(echo "$travisEnv" | sed '0,/-/{s/-/ /}')"
-
-# update .travis.yml
-travis="$(awk -v 'RS=\n\n' '$1 == "-" && $2 == "stage:" && $3 == "test" && $4 == "images" { $0 = "    - stage: test images'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
-echo "$travis"  > .travis.yml
+printf "$travisEnv" >> .travis.yml

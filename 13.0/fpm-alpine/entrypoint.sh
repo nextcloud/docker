@@ -90,7 +90,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 fi
 
                 if [ "$install" = true ]; then
-                    echo "starting nexcloud installation"
+                    echo "starting nextcloud installation"
                     max_retries=10
                     try=0
                     until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]

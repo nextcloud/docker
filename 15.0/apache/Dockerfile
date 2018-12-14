@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.1-apache-stretch
+FROM php:7.2-apache-stretch
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -33,6 +33,7 @@ RUN set -ex; \
         libpng-dev \
         libpq-dev \
         libxml2-dev \
+        libmagickwand-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -51,14 +52,16 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.12; \
+    pecl install APCu-5.1.15; \
     pecl install memcached-3.0.4; \
-    pecl install redis-4.1.1; \
+    pecl install redis-4.2.0; \
+    pecl install imagick-3.4.3; \
     \
     docker-php-ext-enable \
         apcu \
         memcached \
         redis \
+        imagick \
     ; \
     \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
@@ -106,7 +109,11 @@ RUN a2enmod rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 12.0.12
+<<<<<<< HEAD:15.0/apache/Dockerfile
+ENV NEXTCLOUD_VERSION 15.0.0
+=======
+ENV NEXTCLOUD_VERSION 12.0.13
+>>>>>>> Add two parameters when Nextcloud is behind a proxy:12.0/apache/Dockerfile
 
 RUN set -ex; \
     fetchDeps=" \
@@ -122,7 +129,7 @@ RUN set -ex; \
         "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
+    gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
     gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
     gpgconf --kill all; \
