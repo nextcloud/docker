@@ -19,6 +19,7 @@ RUN set -ex; \
         autoconf \
         freetype-dev \
         icu-dev \
+        libevent-dev \
         libjpeg-turbo-dev \
         libmcrypt-dev \
         libpng-dev \

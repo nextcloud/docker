@@ -23,6 +23,7 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
+        libevent-dev \
         libfreetype6-dev \
         libicu-dev \
         libjpeg-dev \
