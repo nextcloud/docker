@@ -240,7 +240,11 @@ In our [examples](https://github.com/nextcloud/docker/tree/master/.examples) sec
 When you first access your Nextcloud, the setup wizard will appear and ask you to choose an administrator account, password and the database connection. For the database use `db` as host and `nextcloud` as table and user name. Also enter the password you chose in your `docker-compose.yml` file.
 
 # Update to a newer version
-Updating the Nextcloud container is done by pulling the new image, throwing away the old container and starting the new one. Since all data is stored in volumes, nothing gets lost. The startup script will check for the version in your volume and the installed docker version. If it finds a mismatch, it automatically starts the upgrade process. Don't forget to add all the volumes to your new container, so it works as expected.
+Updating the Nextcloud container is done by pulling the new image, throwing away the old container and starting the new one.
+
+**It is only possible to upgrade one major version at a time. For example, if you want to upgrade from version 13 to 15, you will have to upgrade from version 13 to 14, then from 14 to 15.**
+
+Since all data is stored in volumes, nothing gets lost. The startup script will check for the version in your volume and the installed docker version. If it finds a mismatch, it automatically starts the upgrade process. Don't forget to add all the volumes to your new container, so it works as expected.
 
 ```console
 $ docker pull nextcloud
