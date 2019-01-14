@@ -2,8 +2,9 @@
 set -eo pipefail
 
 declare -A php_version=(
-	[default]='7.2'
-	[12.0]='7.1'
+	[default]='7.3'
+	[14.0]='7.2'
+	[13.0]='7.2'
 )
 
 declare -A cmd=(
@@ -25,8 +26,8 @@ declare -A extras=(
 )
 
 declare -A pecl_versions=(
-	[APCu]='5.1.15'
-	[memcached]='3.0.4'
+	[APCu]='5.1.16'
+	[memcached]='3.1.3'
 	[redis]='4.2.0'
 	[imagick]='3.4.3'
 )
@@ -58,6 +59,7 @@ travisEnv=
 
 function create_variant() {
 	dir="$1/$variant"
+	phpVersion=${php_version[$version]-${php_version[default]}}
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
@@ -70,7 +72,7 @@ function create_variant() {
 
 	# Replace the variables.
 	sed -ri -e '
-		s/%%PHP_VERSION%%/'"${php_version[$version]-${php_version[default]}}"'/g;
+		s/%%PHP_VERSION%%/'"$phpVersion"'/g;
 		s/%%VARIANT%%/'"$variant"'/g;
 		s/%%VERSION%%/'"$fullversion"'/g;
 		s/%%BASE_DOWNLOAD_URL%%/'"$2"'/g;
@@ -81,6 +83,12 @@ function create_variant() {
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 	' "$dir/Dockerfile"
+
+	if [[ "$phpVersion" != 7.3 ]]; then
+		sed -ri \
+			-e '/libzip-dev/d' \
+			"$dir/Dockerfile"
+	fi
 
 	# Copy the shell scripts
 	for name in entrypoint cron; do

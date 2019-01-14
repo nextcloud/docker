@@ -19,11 +19,13 @@ RUN set -ex; \
         autoconf \
         freetype-dev \
         icu-dev \
+        libevent-dev \
         libjpeg-turbo-dev \
         libmcrypt-dev \
         libpng-dev \
         libmemcached-dev \
         libxml2-dev \
+        libzip-dev \
         openldap-dev \
         pcre-dev \
         postgresql-dev \

@@ -23,6 +23,7 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
+        libevent-dev \
         libfreetype6-dev \
         libicu-dev \
         libjpeg-dev \
@@ -33,6 +34,7 @@ RUN set -ex; \
         libpq-dev \
         libxml2-dev \
         libmagickwand-dev \
+        libzip-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \

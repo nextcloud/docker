@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.2-fpm-alpine3.8
+FROM php:7.3-fpm-alpine3.8
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -20,11 +20,13 @@ RUN set -ex; \
         autoconf \
         freetype-dev \
         icu-dev \
+        libevent-dev \
         libjpeg-turbo-dev \
         libmcrypt-dev \
         libpng-dev \
         libmemcached-dev \
         libxml2-dev \
+        libzip-dev \
         openldap-dev \
         pcre-dev \
         postgresql-dev \
@@ -46,8 +48,8 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.15; \
-    pecl install memcached-3.0.4; \
+    pecl install APCu-5.1.16; \
+    pecl install memcached-3.1.3; \
     pecl install redis-4.2.0; \
     pecl install imagick-3.4.3; \
     \
