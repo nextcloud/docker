@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.3-fpm-stretch
+FROM php:7.2-fpm-stretch
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -35,7 +35,6 @@ RUN set -ex; \
         libpq-dev \
         libxml2-dev \
         libmagickwand-dev \
-        libzip-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
