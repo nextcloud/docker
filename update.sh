@@ -2,7 +2,7 @@
 set -eo pipefail
 
 declare -A php_version=(
-	[default]='7.3'
+	[default]='7.2'
 	[14.0]='7.2'
 	[13.0]='7.2'
 )
