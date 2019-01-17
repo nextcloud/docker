@@ -49,7 +49,6 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
-    /usr/share/man/man1 \
     /var/log/supervisord \
     /var/run/supervisord \
 ;
