@@ -133,6 +133,7 @@ The install and update script is only triggered when a default command is used (
 If you want to use Redis you have to create a seperate [Redis](https://hub.docker.com/_/redis/) container in your setup / in your docker-compose file. To inform Nextcloud about the Redis container add:
 
 - `REDIS_HOST` (not set by default) Name of Redis container
+- `REDIS_HOST_PORT` (default: _6379_) Optional port for Redis, only use for external Redis servers that run on non-standard ports.
 
 The use of Redis is recommended to prevent file locking problems. See the examples for further instructions.
 
