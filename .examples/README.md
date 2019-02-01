@@ -27,7 +27,7 @@ NOTE: Per default, only previews for BMP, GIF, JPEG, MarkDown, MP3, PNG, TXT, an
 
 NOTE: Nextcloud recommends [disabling preview generation](https://docs.nextcloud.com/server/12/admin_manual/configuration_server/harden_server.html?highlight=enabledpreviewproviders#disable-preview-image-generation) for high security deployments, as preview generation opens your nextcloud instance to new possible attack vectors.
 
-The required steps for each optional/recommended package that is not already in the Nextcloud image are listed here, so that the Dockerfile can easily be modified to only install the needed extra packages. Simply remove the steps for the unwanted packages  from the Dockerfile.
+The required steps for each optional/recommended package that is not already in the Nextcloud image are listed here, so that the Dockerfile can easily be modified to only install the needed extra packages. Simply remove the steps for the unwanted packages from the Dockerfile.
 
 #### PHP Module bz2
 `docker-php-ext-install bz2`
@@ -48,6 +48,9 @@ The required steps for each optional/recommended package that is not already in 
 
 #### ffmpeg
 `apt install ffmpeg`
+
+#### imagemagick SVG support
+`apt install libmagickcore-6.q16-3-extra`
 
 #### LibreOffice
 `apt install libreoffice`
