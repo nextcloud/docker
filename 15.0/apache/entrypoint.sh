@@ -129,8 +129,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     fi
 fi
 
-## APACHE SSL
-## als APACHE en ENV VAR set dan dit uitvoeren nog inbouwen
+## APACHE SSL configuration (self signed certificates)
+## ENV VAR set dan dit uitvoeren nog inbouwen
+if expr "$1" : "apache" 1 || [-n "${APACHE_SSL_SELFSIGNED+x}" "true" ]; then
   a2enmod ssl
   a2enmod headers
   openssl genrsa -out ca.key 2048
@@ -139,6 +140,6 @@ fi
   mkdir -p /etc/apache2/ssl
   mv ca.crt ca.key ca.csr /etc/apache2/ssl/
   mv /usr/src/apache/000-default.conf /etc/apache2/sites-enabled/
-## einde SSL toevoegingen
+fi
 
 exec "$@"
