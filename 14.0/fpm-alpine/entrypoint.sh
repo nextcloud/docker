@@ -138,7 +138,7 @@ fi
   openssl x509 -req -days 3650 -in ca.csr -signkey ca.key -out ca.crt
   mkdir -p /etc/apache2/ssl
   mv ca.crt ca.key ca.csr /etc/apache2/ssl/
-  mv /usr/src/apache/000-default.conf /etc/apache2/sites-enabled/
+  mv /var/www/html/config/000-default.conf /etc/apache2/sites-enabled/
 ## einde SSL toevoegingen
 
 exec "$@"
