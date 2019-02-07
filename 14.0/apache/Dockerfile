@@ -138,9 +138,12 @@ RUN set -ex; \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
     rm -rf /var/lib/apt/lists/*
+    \
+    mkdir -p /usr/src/apache
 
 COPY *.sh upgrade.exclude /
-COPY config/* /usr/src/nextcloud/config/
+COPY config/*.php /usr/src/nextcloud/config/
+COPY config/000-default.conf /usr/src/apache/
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apache2-foreground"]
