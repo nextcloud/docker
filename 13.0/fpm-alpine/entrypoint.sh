@@ -131,7 +131,9 @@ fi
 
 ## APACHE SSL configuration (self signed certificates)
 ## ENV VAR set dan dit uitvoeren nog inbouwen
-if [ expr "$1" : "apache" 1] || [ "${APACHE_SSL_SELFSIGNED}" "true" ]; then
+if [ expr "$1" : "apache" 1]; then
+  echo "in de apache loop"	
+  #	[ "${APACHE_SSL_SELFSIGNED}" "true" ]; then
   a2enmod ssl
   a2enmod headers
   openssl genrsa -out ca.key 2048
