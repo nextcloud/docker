@@ -131,7 +131,10 @@ fi
 
 ## APACHE SSL configuration (self signed certificates)
 ## ENV VAR set dan dit uitvoeren nog inbouwen
-if [ expr "$1" = "apache" ]; then
+echo "net voor de loop"
+echo expr "$1"
+
+if expr "$1" : "apache" ; then
   echo "in de apache loop"	
   #	[ "${APACHE_SSL_SELFSIGNED}" "true" ]; then
   a2enmod ssl
