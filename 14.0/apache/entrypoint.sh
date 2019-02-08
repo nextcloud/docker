@@ -132,7 +132,7 @@ fi
 ## APACHE SSL configuration (self signed certificates)
 echo "net voor de loop"
 
-if [ -n "${APACHE_SSL_SELFSIGNED+x}" "true" ] ; then
+if [ -n "${APACHE_SSL_SELFSIGNED}" "true" ] ; then
 # if [ -d "/etc/apache2" ]; then
   echo "in de apache loop"	
   a2enmod ssl
