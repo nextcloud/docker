@@ -130,7 +130,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 fi
 
 ## APACHE SSL configuration (self signed certificates)
-if [ "${APACHE_SSL_SELFSIGNED}" = "true" ] || [ -d "/etc/apache2" ]; then
+if [ "${APACHE_SSL_SELFSIGNED}" = "true" ] || [ -f "/etc/apache2/sites-enabled/000-default.conf" ]; then
   a2enmod ssl
   a2enmod headers
   openssl genrsa -out ca.key 2048
