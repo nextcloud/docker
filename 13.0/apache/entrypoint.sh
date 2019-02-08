@@ -134,7 +134,8 @@ fi
 echo "net voor de loop"
 
 
-if expr "$1" : "apache" 1>/dev/null && [ -n "${APACHE_SSL_SELFSIGNED+x}" ] ; then
+# if expr "$1" : "apache" 1>/dev/null && [ -n "${APACHE_SSL_SELFSIGNED+x}" ] ; then
+if [ ! "/etc/apache2"]; then
   echo "in de apache loop"	
   a2enmod ssl
   a2enmod headers
