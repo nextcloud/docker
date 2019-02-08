@@ -130,11 +130,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 fi
 
 ## APACHE SSL configuration (self signed certificates)
-echo "net voor de loop"
-
-if [ "${APACHE_SSL_SELFSIGNED}" = "true" ] ; then
-# if [ -d "/etc/apache2" ]; then
-  echo "in de apache loop"	
+if [ "${APACHE_SSL_SELFSIGNED}" = "true" ] || [ -d "/etc/apache2" ]; then
   a2enmod ssl
   a2enmod headers
   openssl genrsa -out ca.key 2048
