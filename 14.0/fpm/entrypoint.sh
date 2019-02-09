@@ -130,15 +130,17 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 fi
 
 ## APACHE SSL configuration (self signed certificates)
-if [ -n "${APACHE_SSL_SELFSIGNED}" = "true" ] ; then
-  a2enmod ssl
-  a2enmod headers
-  openssl genrsa -out ca.key 2048
-  openssl req -batch -nodes -new -key ca.key -out ca.csr
-  openssl x509 -req -days 3650 -in ca.csr -signkey ca.key -out ca.crt
-  mkdir -p /etc/apache2/ssl
-  mv ca.crt ca.key ca.csr /etc/apache2/ssl/
-  mv /usr/src/apache/000-default.conf /etc/apache2/sites-enabled/
+if [ -n "${APACHE_SSL_SELFSIGNED+x}" ]; then
+  if [ "${APACHE_SSL_SELFSIGNED}" = "true" ]; then
+    a2enmod ssl
+    a2enmod headers
+    openssl genrsa -out ca.key 2048
+    openssl req -batch -nodes -new -key ca.key -out ca.csr
+    openssl x509 -req -days 3650 -in ca.csr -signkey ca.key -out ca.crt
+    mkdir -p /etc/apache2/ssl
+    mv ca.crt ca.key ca.csr /etc/apache2/ssl/
+    mv /usr/src/apache/000-default.conf /etc/apache2/sites-enabled/
+  fi
 fi
 
 exec "$@"
