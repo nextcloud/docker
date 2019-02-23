@@ -23,11 +23,13 @@ RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
+        libc-client-dev \
         libcurl4-openssl-dev \
         libevent-dev \
         libfreetype6-dev \
         libicu-dev \
         libjpeg-dev \
+        libkrb5-dev \
         libldap2-dev \
         libmcrypt-dev \
         libmemcached-dev \
@@ -40,9 +42,11 @@ RUN set -ex; \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install \
         exif \
         gd \
+        imap \
         intl \
         ldap \
         opcache \
