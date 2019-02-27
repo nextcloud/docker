@@ -1,4 +1,4 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%3.8
+FROM php:%%PHP_VERSION%%-%%VARIANT%%3.9
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -19,14 +19,17 @@ RUN set -ex; \
         autoconf \
         freetype-dev \
         icu-dev \
+        libevent-dev \
         libjpeg-turbo-dev \
         libmcrypt-dev \
         libpng-dev \
         libmemcached-dev \
         libxml2-dev \
+        libzip-dev \
         openldap-dev \
         pcre-dev \
         postgresql-dev \
+        imagemagick-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr; \
@@ -47,11 +50,13 @@ RUN set -ex; \
     pecl install APCu-%%APCU_VERSION%%; \
     pecl install memcached-%%MEMCACHED_VERSION%%; \
     pecl install redis-%%REDIS_VERSION%%; \
+    pecl install imagick-%%IMAGICK_VERSION%%; \
     \
     docker-php-ext-enable \
         apcu \
         memcached \
         redis \
+        imagick \
     ; \
     \
     runDeps="$( \

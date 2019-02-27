@@ -24,6 +24,7 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
+        libevent-dev \
         libfreetype6-dev \
         libicu-dev \
         libjpeg-dev \
@@ -33,6 +34,7 @@ RUN set -ex; \
         libpng-dev \
         libpq-dev \
         libxml2-dev \
+        libmagickwand-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -51,14 +53,16 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.15; \
-    pecl install memcached-3.0.4; \
+    pecl install APCu-5.1.17; \
+    pecl install memcached-3.1.3; \
     pecl install redis-4.2.0; \
+    pecl install imagick-3.4.3; \
     \
     docker-php-ext-enable \
         apcu \
         memcached \
         redis \
+        imagick \
     ; \
     \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
@@ -106,7 +110,7 @@ RUN a2enmod rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 15.0.0
+ENV NEXTCLOUD_VERSION 15.0.4
 
 RUN set -ex; \
     fetchDeps=" \

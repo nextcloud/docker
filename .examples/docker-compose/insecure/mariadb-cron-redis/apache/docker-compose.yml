@@ -17,7 +17,7 @@ services:
     restart: always
 
   app:
-    build: ./app
+    image: nextcloud:apache
     restart: always
     ports:
       - 8080:80
@@ -25,6 +25,7 @@ services:
       - nextcloud:/var/www/html
     environment:
       - MYSQL_HOST=db
+      - REDIS_HOST=redis
     env_file:
       - db.env
     depends_on:
@@ -32,7 +33,7 @@ services:
       - redis
 
   cron:
-    build: ./app
+    image: nextcloud:apache
     restart: always
     volumes:
       - nextcloud:/var/www/html

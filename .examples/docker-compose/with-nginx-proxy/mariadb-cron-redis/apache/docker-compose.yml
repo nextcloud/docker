@@ -17,7 +17,7 @@ services:
     restart: always
 
   app:
-    build: ./app
+    image: nextcloud:apache
     restart: always
     volumes:
       - nextcloud:/var/www/html
@@ -26,6 +26,7 @@ services:
       - LETSENCRYPT_HOST=
       - LETSENCRYPT_EMAIL=
       - MYSQL_HOST=db
+      - REDIS_HOST=redis
     env_file:
       - db.env
     depends_on:
@@ -36,7 +37,7 @@ services:
       - default
 
   cron:
-    build: ./app
+    image: nextcloud:apache
     restart: always
     volumes:
       - nextcloud:/var/www/html
