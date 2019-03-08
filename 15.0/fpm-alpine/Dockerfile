@@ -113,6 +113,7 @@ RUN set -ex; \
     rm -rf /usr/src/nextcloud/updater; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
+    chown www-data:www-data custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
     apk del .fetch-deps
 
