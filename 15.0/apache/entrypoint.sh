@@ -129,4 +129,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     fi
 fi
 
+chown www-data:root /var/www/html/custom_apps
+
 exec "$@"
