@@ -1,5 +1,7 @@
 FROM php:%%PHP_VERSION%%-%%VARIANT%%-stretch
 
+ENV NEXTCLOUD_BASE_DIR /var/www/html
+
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
@@ -12,7 +14,7 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*; \
     \
     mkdir -p /var/spool/cron/crontabs; \
-    echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    echo '*/15 * * * * php -f ${NEXTCLOUD_BASE_DIR}/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
@@ -99,7 +101,7 @@ RUN { \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-VOLUME /var/www/html
+VOLUME ${NEXTCLOUD_BASE_DIR}
 %%VARIANT_EXTRAS%%
 
 ENV NEXTCLOUD_VERSION %%VERSION%%

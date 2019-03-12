@@ -117,6 +117,10 @@ If you set any values, they will not be asked in the install page on first run. 
 - `NEXTCLOUD_ADMIN_USER` Name of the Nextcloud admin user.
 - `NEXTCLOUD_ADMIN_PASSWORD` Password for the Nextcloud admin user.
 
+If you want you can set the data based directory, otherwise default values will be used.
+
+- `NEXTCLOUD_BASE_DIR` (default: _/var/www/html_) Configures the base directory where nextcloud will be installed in the docker container.
+
 If you want you can set the data directory and table prefix, otherwise default values will be used.
 
 - `NEXTCLOUD_DATA_DIR` (default: _/var/www/html/data_) Configures the data directory where nextcloud stores all files from the users.
