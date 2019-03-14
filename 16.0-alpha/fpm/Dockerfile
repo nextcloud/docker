@@ -1,8 +1,6 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:7.2-fpm-stretch
 
-ENV NEXTCLOUD_BASE_DIR /var/www/html
-
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
@@ -15,7 +13,7 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*; \
     \
     mkdir -p /var/spool/cron/crontabs; \
-    echo '*/15 * * * * php -f ${NEXTCLOUD_BASE_DIR}/cron.php' > /var/spool/cron/crontabs/www-data
+    echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
@@ -101,10 +99,10 @@ RUN { \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-VOLUME ${NEXTCLOUD_BASE_DIR}
+VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 13.0.12
+ENV NEXTCLOUD_VERSION 16.0.0alpha1
 
 RUN set -ex; \
     fetchDeps=" \
@@ -115,9 +113,9 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends $fetchDeps; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
+        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \

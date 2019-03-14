@@ -19,21 +19,11 @@ run_as() {
     fi
 }
 
-if [ -z "${NEXTCLOUD_BASE_DIR}" ]; then
-    NEXTCLOUD_BASE_DIR='/var/www/html'
-else
-    mkdir -p $NEXTCLOUD_BASE_DIR
-    if [ -f /usr/sbin/apache2ctl ]; then
-        sed -i "s,$NEXTCLOUD_BASE_DIR,$NEXTCLOUD_BASE_DIR/nextcloud,g" /etc/apache2/sites-available/default-ssl.conf
-        sed -i "s,/var/www/html,$NEXTCLOUD_BASE_DIR,g" /etc/apache2/sites-available/000-default.conf
-    fi
-fi
-
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
     installed_version="0.0.0.0"
-    if [ -f $NEXTCLOUD_BASE_DIR/version.php ]; then
+    if [ -f /var/www/html/version.php ]; then
         # shellcheck disable=SC2016
-        installed_version="$(php -r 'require "$NEXTCLOUD_BASE_DIR/version.php"; echo implode(".", $OC_Version);')"
+        installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
     fi
     # shellcheck disable=SC2016
     image_version="$(php -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);')"
@@ -47,18 +37,18 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         echo "Initializing nextcloud $image_version ..."
         if [ "$installed_version" != "0.0.0.0" ]; then
             echo "Upgrading nextcloud from $installed_version ..."
-            run_as "php $NEXTCLOUD_BASE_DIR/occ app:list" | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
+            run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
         fi
         if [ "$(id -u)" = 0 ]; then
             rsync_options="-rlDog --chown www-data:root"
         else
             rsync_options="-rlD"
         fi
-        rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ $NEXTCLOUD_BASE_DIR/
+        rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
 
         for dir in config data custom_apps themes; do
-            if [ ! -d "$NEXTCLOUD_BASE_DIR/$dir" ] || directory_empty "$NEXTCLOUD_BASE_DIR/$dir"; then
-                rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ $NEXTCLOUD_BASE_DIR/
+            if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
+                rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
             fi
         done
         rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
@@ -104,7 +94,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     echo "starting nextcloud installation"
                     max_retries=10
                     try=0
-                    until run_as "php $NEXTCLOUD_BASE_DIR/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]
+                    until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]
                     do
                         echo "retrying install..."
                         try=$((try+1))
@@ -119,7 +109,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         NC_TRUSTED_DOMAIN_IDX=1
                         for DOMAIN in $NEXTCLOUD_TRUSTED_DOMAINS ; do
                             DOMAIN=$(echo "$DOMAIN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-                            run_as "php $NEXTCLOUD_BASE_DIR/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
+                            run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
                             NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
                         done
                     fi
@@ -129,9 +119,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             fi
         #upgrade
         else
-            run_as "php $NEXTCLOUD_BASE_DIR/occ upgrade"
+            run_as 'php /var/www/html/occ upgrade'
 
-            run_as "php $NEXTCLOUD_BASE_DIR/occ app:list" | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
+            run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
             echo "The following apps have been disabled:"
             diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
             rm -f /tmp/list_before /tmp/list_after
