@@ -25,11 +25,47 @@ declare -A extras=(
 	[fpm-alpine]=''
 )
 
+apcu_version="$(
+	git ls-remote --tags https://github.com/krakjoe/apcu.git \
+		| cut -d/ -f3 \
+		| grep -vE -- '-rc|-b' \
+		| sed -E 's/^v//' \
+		| sort -V \
+		| tail -1
+)"
+
+memcached_version="$(
+	git ls-remote --tags https://github.com/php-memcached-dev/php-memcached.git \
+		| cut -d/ -f3 \
+		| grep -vE -- '-rc|-b' \
+		| sed -E 's/^[rv]//' \
+		| sort -V \
+		| tail -1
+)"
+
+redis_version="$(
+	git ls-remote --tags https://github.com/phpredis/phpredis.git \
+		| cut -d/ -f3 \
+		| grep -viE '[a-z]' \
+		| tr -d '^{}' \
+		| sort -V \
+		| tail -1
+)"
+
+imagick_version="$(
+	git ls-remote --tags https://github.com/mkoppanen/imagick.git \
+		| cut -d/ -f3 \
+		| grep -viE '[a-z]' \
+		| tr -d '^{}' \
+		| sort -V \
+		| tail -1
+)"
+
 declare -A pecl_versions=(
-	[APCu]='5.1.17'
-	[memcached]='3.1.3'
-	[redis]='4.2.0'
-	[imagick]='3.4.3'
+	[APCu]="$apcu_version"
+	[memcached]="$memcached_version"
+	[redis]="$redis_version"
+	[imagick]="$imagick_version"
 )
 
 variants=(
