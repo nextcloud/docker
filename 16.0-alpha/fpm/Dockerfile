@@ -1,6 +1,8 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:7.2-fpm-stretch
 
+ENV NEXTCLOUD_BASE_DIR /var/www/html
+
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
@@ -13,7 +15,7 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*; \
     \
     mkdir -p /var/spool/cron/crontabs; \
-    echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    echo '*/15 * * * * php -f ${NEXTCLOUD_BASE_DIR}/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
@@ -99,7 +101,7 @@ RUN { \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-VOLUME /var/www/html
+VOLUME ${NEXTCLOUD_BASE_DIR}
 
 
 ENV NEXTCLOUD_VERSION 16.0.0alpha1
