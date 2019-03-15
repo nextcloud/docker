@@ -11,7 +11,7 @@ RUN set -ex; \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
-    echo '*/15 * * * * php -f ${NEXTCLOUD_BASE_DIR}/cron.php' > /var/spool/cron/crontabs/www-data
+    echo "*/15 * * * * php -f ${NEXTCLOUD_BASE_DIR}/cron.php" > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html

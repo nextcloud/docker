@@ -24,7 +24,7 @@ if [ -z "${NEXTCLOUD_BASE_DIR}" ]; then
 else
     mkdir -p $NEXTCLOUD_BASE_DIR
     if [ -f /usr/sbin/apache2ctl ]; then
-        sed -i "s,$NEXTCLOUD_BASE_DIR,$NEXTCLOUD_BASE_DIR/nextcloud,g" /etc/apache2/sites-available/default-ssl.conf
+        sed -i "s,/var/www/html,$NEXTCLOUD_BASE_DIR,g" /etc/apache2/sites-available/default-ssl.conf
         sed -i "s,/var/www/html,$NEXTCLOUD_BASE_DIR,g" /etc/apache2/sites-available/000-default.conf
     fi
 fi
