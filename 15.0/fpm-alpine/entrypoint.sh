@@ -61,7 +61,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ $NEXTCLOUD_BASE_DIR/
             fi
         done
-        rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
+        rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ $NEXTCLOUD_BASE_DIR/
         echo "Initializing finished"
 
         #install
