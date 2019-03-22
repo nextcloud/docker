@@ -152,7 +152,7 @@ function create_variant() {
 	done
 }
 
-find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\)\?' -exec rm -r '{}' \;
+find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\|-alpha\)\?' -exec rm -r '{}' \;
 
 fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
