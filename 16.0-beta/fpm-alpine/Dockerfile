@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.2-fpm-alpine3.9
+FROM php:7.3-fpm-alpine3.9
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -26,6 +26,7 @@ RUN set -ex; \
         libpng-dev \
         libmemcached-dev \
         libxml2-dev \
+        libzip-dev \
         openldap-dev \
         pcre-dev \
         postgresql-dev \
