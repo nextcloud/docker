@@ -122,7 +122,7 @@ If you want you can set the data directory and table prefix, otherwise default v
 - `NEXTCLOUD_DATA_DIR` (default: _/var/www/html/data_) Configures the data directory where nextcloud stores all files from the users.
 - `NEXTCLOUD_TABLE_PREFIX` (default: _""_) Optional prefix for the tables. Used to be `oc_` in the past
 
-One or more trusted domains can be set by environemnt variable, too. They will be added to the configuration after install.
+One or more trusted domains can be set by environment variable, too. They will be added to the configuration after install.
 
 - `NEXTCLOUD_TRUSTED_DOMAINS` (not set by default) Optional space-separated list of domains
 
