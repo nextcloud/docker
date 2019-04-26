@@ -92,7 +92,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 16.0.0RC2
+ENV NEXTCLOUD_VERSION 16.0.0
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -101,9 +101,9 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
-        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
+        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
