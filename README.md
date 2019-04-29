@@ -130,12 +130,26 @@ The install and update script is only triggered when a default command is used (
 
 - `NEXTCLOUD_UPDATE` (default: _0_)
 
-If you want to use Redis you have to create a seperate [Redis](https://hub.docker.com/_/redis/) container in your setup / in your docker-compose file. To inform Nextcloud about the Redis container add:
+If you want to use Redis you have to create a separate [Redis](https://hub.docker.com/_/redis/) container in your setup / in your docker-compose file. To inform Nextcloud about the Redis container add:
 
 - `REDIS_HOST` (not set by default) Name of Redis container
 - `REDIS_HOST_PORT` (default: _6379_) Optional port for Redis, only use for external Redis servers that run on non-standard ports.
 
 The use of Redis is recommended to prevent file locking problems. See the examples for further instructions.
+
+To use a external SMTP server you have to provide the conection details. To configure Nextcloud to use SMTP add:
+
+- `SMTP_HOST` (not set by default) hostname of the SMTP server
+- `SMTP_SECURE` (empty by default) set to 'ssl' to use SSL on the connection.
+- `SMTP_PORT` (default: _465_ for SSL and _25_ for non-secure connection) Optional port for SMTP connection.
+- `SMTP_AUTHTYPE` (default: _LOGIN_) The method used for authentication.
+- `SMTP_NAME` (empty by default) Username for the authentication.
+- `SMTP_PASSWORD` (empty by default) Password for the authentication.
+- `MAIL_FROM_ADDRESS` (not set by default) Use this address for the 'from' field in the mail envelopes sent by Nextcloud.
+- `MAIL_DOMAIN` (not set by default) Set a different domain for the emails than the domain where Nextcloud is installed.
+
+Check the [Nextcloud documentation](https://docs.nextcloud.com/server/15/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
+
 
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for.
