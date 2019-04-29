@@ -245,6 +245,62 @@ services:
 
 Then run `docker-compose up -d`, now you can access Nextcloud at http://localhost:8080/ from your host system.
 
+# Docker Secrets
+As an alternative to passing sensitive information via environment variables, _FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in /run/secrets/<secret_name> files. For example:
+
+```yaml
+version: '3.2'
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+    secrets:
+      - postgres_password
+  app:
+    image: nextcloud
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - NEXTCLOUD_ADMIN_USER=superuser
+      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/admin_password
+    depends_on:
+      - db
+    secrets:
+      - postgres_password
+      - admin_password
+  cron:
+    image: nextcloud
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+volumes:
+  db:
+  nextcloud:
+
+secrets:
+  postgres_password:
+    file: ./postgres_password.txt # put postgresql password to this file
+  admin_password:
+    file: ./admin_password.txt # put admin password to this file
+```
+Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `MYSQL_PASSWORD`, `POSTGRES_PASSWORD`.
+
 # Make your Nextcloud available from the internet
 Until here your Nextcloud is just available from you docker host. If you want you Nextcloud available from the internet adding SSL encryption is mandatory.
 
@@ -271,7 +327,7 @@ $ docker stop <your_nextcloud_container>
 $ docker rm <your_nextcloud_container>
 $ docker run <OPTIONS> -d nextcloud
 ```
-Beware that you have to run the same command with the options that you used to initially start your Nextcloud. That includes  volumes, port mapping.
+Beware that you have to run the same command with the options that you used to initially start your Nextcloud. That includes volumes, port mapping.
 
 When using docker-compose your compose file takes care of your configuration, so you just have to run:
 
