@@ -25,7 +25,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         echo "Configuring Redis as session handler"
         {
             echo 'session.save_handler = redis'
-            echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
+            if [[ ${REDIS_HOST:0:1} == "/" ]] ; then
+                echo "session.save_path = \"unix://${REDIS_HOST}?persistent=1&weight=1&database=0\""
+            else
+                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
+            fi
         } > /usr/local/etc/php/conf.d/redis-session.ini
     fi
 
