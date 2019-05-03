@@ -122,7 +122,7 @@ If you want you can set the data directory and table prefix, otherwise default v
 - `NEXTCLOUD_DATA_DIR` (default: _/var/www/html/data_) Configures the data directory where nextcloud stores all files from the users.
 - `NEXTCLOUD_TABLE_PREFIX` (default: _""_) Optional prefix for the tables. Used to be `oc_` in the past
 
-One or more trusted domains can be set by environemnt variable, too. They will be added to the configuration after install.
+One or more trusted domains can be set by environment variable, too. They will be added to the configuration after install.
 
 - `NEXTCLOUD_TRUSTED_DOMAINS` (not set by default) Optional space-separated list of domains
 
@@ -130,12 +130,26 @@ The install and update script is only triggered when a default command is used (
 
 - `NEXTCLOUD_UPDATE` (default: _0_)
 
-If you want to use Redis you have to create a seperate [Redis](https://hub.docker.com/_/redis/) container in your setup / in your docker-compose file. To inform Nextcloud about the Redis container add:
+If you want to use Redis you have to create a separate [Redis](https://hub.docker.com/_/redis/) container in your setup / in your docker-compose file. To inform Nextcloud about the Redis container add:
 
 - `REDIS_HOST` (not set by default) Name of Redis container
 - `REDIS_HOST_PORT` (default: _6379_) Optional port for Redis, only use for external Redis servers that run on non-standard ports.
 
 The use of Redis is recommended to prevent file locking problems. See the examples for further instructions.
+
+To use a external SMTP server you have to provide the conection details. To configure Nextcloud to use SMTP add:
+
+- `SMTP_HOST` (not set by default) hostname of the SMTP server
+- `SMTP_SECURE` (empty by default) set to 'ssl' to use SSL on the connection.
+- `SMTP_PORT` (default: _465_ for SSL and _25_ for non-secure connection) Optional port for SMTP connection.
+- `SMTP_AUTHTYPE` (default: _LOGIN_) The method used for authentication.
+- `SMTP_NAME` (empty by default) Username for the authentication.
+- `SMTP_PASSWORD` (empty by default) Password for the authentication.
+- `MAIL_FROM_ADDRESS` (not set by default) Use this address for the 'from' field in the mail envelopes sent by Nextcloud.
+- `MAIL_DOMAIN` (not set by default) Set a different domain for the emails than the domain where Nextcloud is installed.
+
+Check the [Nextcloud documentation](https://docs.nextcloud.com/server/15/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
+
 
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for.
@@ -245,7 +259,11 @@ In our [examples](https://github.com/nextcloud/docker/tree/master/.examples) sec
 When you first access your Nextcloud, the setup wizard will appear and ask you to choose an administrator account, password and the database connection. For the database use `db` as host and `nextcloud` as table and user name. Also enter the password you chose in your `docker-compose.yml` file.
 
 # Update to a newer version
-Updating the Nextcloud container is done by pulling the new image, throwing away the old container and starting the new one. Since all data is stored in volumes, nothing gets lost. The startup script will check for the version in your volume and the installed docker version. If it finds a mismatch, it automatically starts the upgrade process. Don't forget to add all the volumes to your new container, so it works as expected.
+Updating the Nextcloud container is done by pulling the new image, throwing away the old container and starting the new one.
+
+**It is only possible to upgrade one major version at a time. For example, if you want to upgrade from version 14 to 16, you will have to upgrade from version 14 to 15, then from 15 to 16.**
+
+Since all data is stored in volumes, nothing gets lost. The startup script will check for the version in your volume and the installed docker version. If it finds a mismatch, it automatically starts the upgrade process. Don't forget to add all the volumes to your new container, so it works as expected.
 
 ```console
 $ docker pull nextcloud

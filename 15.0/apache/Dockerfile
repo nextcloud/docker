@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.2-apache-stretch
+FROM php:7.3-apache-stretch
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -16,7 +16,7 @@ RUN set -ex; \
     echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
-# see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
+# see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 RUN set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
@@ -35,6 +35,7 @@ RUN set -ex; \
         libpq-dev \
         libxml2-dev \
         libmagickwand-dev \
+        libzip-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -55,7 +56,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.17; \
     pecl install memcached-3.1.3; \
-    pecl install redis-4.2.0; \
+    pecl install redis-4.3.0; \
     pecl install imagick-3.4.3; \
     \
     docker-php-ext-enable \
@@ -110,7 +111,7 @@ RUN a2enmod rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 15.0.5
+ENV NEXTCLOUD_VERSION 15.0.7
 
 RUN set -ex; \
     fetchDeps=" \

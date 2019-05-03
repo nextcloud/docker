@@ -12,7 +12,7 @@ RUN set -ex; \
     echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
-# see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
+# see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 RUN set -ex; \
     \
     apk add --no-cache --virtual .build-deps \
@@ -49,7 +49,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.17; \
     pecl install memcached-3.1.3; \
-    pecl install redis-4.2.0; \
+    pecl install redis-4.3.0; \
     pecl install imagick-3.4.3; \
     \
     docker-php-ext-enable \
@@ -91,7 +91,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 14.0.8
+ENV NEXTCLOUD_VERSION 14.0.10
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
