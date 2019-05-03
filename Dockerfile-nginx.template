@@ -1,6 +1,32 @@
-# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.2-apache-stretch
+FROM php:%%PHP_VERSION%%-apache-stretch
 
+# ##
+# It's bad idea to use FROM nginx:latest, we will not be aligned
+# We can't use 7.3-nginx-stretch - it's not valid PHP upstream image
+# Tricky part....
+# I have to figure out howto handle it
+# Error message from generate-stackbrew-library: tag not found in manifest for "php": "7.3-nginx-stretch"
+# Potential solution: Custom tag in dockerfile template replaced with Nginx stuff
+# ##
+
+# ##
+# Install Nginx & standard troubleshooting utils
+# We can't remove apache2 - it brokes build for fpm/apache containers
+# ##
+RUN set -ex; \
+    \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        nginx \
+        vim \
+        net-tools \
+        iproute2 \
+        iputils-ping \
+        wget \
+        psmisc \
+        procps \
+    ; \
+    rm -rf /var/lib/apt/lists/*;
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
@@ -35,6 +61,7 @@ RUN set -ex; \
         libpq-dev \
         libxml2-dev \
         libmagickwand-dev \
+        libzip-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -53,10 +80,10 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.17; \
-    pecl install memcached-3.1.3; \
-    pecl install redis-4.3.0; \
-    pecl install imagick-3.4.3; \
+    pecl install APCu-%%APCU_VERSION%%; \
+    pecl install memcached-%%MEMCACHED_VERSION%%; \
+    pecl install redis-%%REDIS_VERSION%%; \
+    pecl install imagick-%%IMAGICK_VERSION%%; \
     \
     docker-php-ext-enable \
         apcu \
@@ -100,17 +127,9 @@ RUN { \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
+%%VARIANT_EXTRAS%%
 
-RUN a2enmod rewrite remoteip ;\
-    {\
-     echo RemoteIPHeader X-Real-IP ;\
-     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
-     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
-     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
-    } > /etc/apache2/conf-available/remoteip.conf;\
-    a2enconf remoteip
-
-ENV NEXTCLOUD_VERSION 14.0.10
+ENV NEXTCLOUD_VERSION %%VERSION%%
 
 RUN set -ex; \
     fetchDeps=" \
@@ -121,9 +140,9 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends $fetchDeps; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "%%BASE_DOWNLOAD_URL%%/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
+        "%%BASE_DOWNLOAD_URL%%/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
@@ -142,5 +161,26 @@ RUN set -ex; \
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
+# ##
+# Remove Nginx default website and add support for php
+# ##
+RUN set -ex; \
+\
+  rm /etc/nginx/sites-enabled/default; \
+  sed -i '/types {/a\ \ \ \ application\/x-httpd-php\t\tphp;' '/etc/nginx/mime.types';
+
+# ##
+# COPY Nextcloud vhost cfg for Nginx
+# ##
+COPY nextcloud.conf /etc/nginx/conf.d/
+# ##
+# COPY new entrypoint for nginx
+# ##
+COPY nginx-foreground /usr/local/bin/
+# ##
+# COPY Dockerfile for verification purposes
+# ##
+COPY Dockerfile /
+
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["%%CMD%%"]

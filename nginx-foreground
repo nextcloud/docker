@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# ##
+# file name: /usr/local/bin/nginx-foreground 
+# Author: Malanik Jan
+# Email: malanik (_dot_) jan (_at_) gmail (_dot_) com
+# Description: start Nginx in foreground
+# ## 
+set -xe
+exec nginx -g 'daemon off;'

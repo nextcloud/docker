@@ -1,40 +1,73 @@
-# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.3-fpm-alpine3.9
+# DO NOT EDIT: created by update.sh from Dockerfile-nginx.template
+FROM php:7.3-apache-stretch
 
+# ##
+# It's bad idea to use FROM nginx:latest, we will not be aligned
+# We can't use 7.3-nginx-stretch - it's not valid PHP upstream image
+# Tricky part....
+# I have to figure out howto handle it
+# Error message from generate-stackbrew-library: tag not found in manifest for "php": "7.3-nginx-stretch"
+# Potential solution: Custom tag in dockerfile template replaced with Nginx stuff
+# ##
+
+# ##
+# Install Nginx & standard troubleshooting utils
+# We can't remove apache2 - it brokes build for fpm/apache containers
+# ##
+RUN set -ex; \
+    \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        nginx \
+        vim \
+        net-tools \
+        iproute2 \
+        iputils-ping \
+        wget \
+        psmisc \
+        procps \
+    ; \
+    rm -rf /var/lib/apt/lists/*;
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
-    apk add --no-cache \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
         rsync \
+        bzip2 \
+        busybox-static \
     ; \
+    rm -rf /var/lib/apt/lists/*; \
     \
-    rm /var/spool/cron/crontabs/root; \
+    mkdir -p /var/spool/cron/crontabs; \
     echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 RUN set -ex; \
     \
-    apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS \
-        autoconf \
-        freetype-dev \
-        icu-dev \
+    savedAptMark="$(apt-mark showmanual)"; \
+    \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        libcurl4-openssl-dev \
         libevent-dev \
-        libjpeg-turbo-dev \
+        libfreetype6-dev \
+        libicu-dev \
+        libjpeg-dev \
+        libldap2-dev \
         libmcrypt-dev \
-        libpng-dev \
         libmemcached-dev \
+        libpng-dev \
+        libpq-dev \
         libxml2-dev \
+        libmagickwand-dev \
         libzip-dev \
-        openldap-dev \
-        pcre-dev \
-        postgresql-dev \
-        imagemagick-dev \
     ; \
     \
+    debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr; \
-    docker-php-ext-configure ldap; \
+    docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
     docker-php-ext-install \
         exif \
         gd \
@@ -51,7 +84,7 @@ RUN set -ex; \
     pecl install APCu-5.1.17; \
     pecl install memcached-3.1.3; \
     pecl install redis-4.3.0; \
-    pecl install imagick-3.4.3; \
+    pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
         apcu \
@@ -60,14 +93,19 @@ RUN set -ex; \
         imagick \
     ; \
     \
-    runDeps="$( \
-        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
-            | tr ',' '\n' \
-            | sort -u \
-            | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
-    )"; \
-    apk add --virtual .nextcloud-phpext-rundeps $runDeps; \
-    apk del .build-deps
+# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+    apt-mark auto '.*' > /dev/null; \
+    apt-mark manual $savedAptMark; \
+    ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual; \
+    \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+    rm -rf /var/lib/apt/lists/*
 
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
@@ -95,10 +133,12 @@ VOLUME /var/www/html
 ENV NEXTCLOUD_VERSION 16.0.0
 
 RUN set -ex; \
-    apk add --no-cache --virtual .fetch-deps \
-        bzip2 \
+    fetchDeps=" \
         gnupg \
-    ; \
+        dirmngr \
+    "; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends $fetchDeps; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
         "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
@@ -115,10 +155,33 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
-    apk del .fetch-deps
+    \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
+    rm -rf /var/lib/apt/lists/*
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
+# ##
+# Remove Nginx default website and add support for php
+# ##
+RUN set -ex; \
+\
+  rm /etc/nginx/sites-enabled/default; \
+  sed -i '/types {/a\ \ \ \ application\/x-httpd-php\t\tphp;' '/etc/nginx/mime.types';
+
+# ##
+# COPY Nextcloud vhost cfg for Nginx
+# ##
+COPY nextcloud.conf /etc/nginx/conf.d/
+# ##
+# COPY new entrypoint for nginx
+# ##
+COPY nginx-foreground /usr/local/bin/
+# ##
+# COPY Dockerfile for verification purposes
+# ##
+COPY Dockerfile /
+
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["nginx-foreground"]

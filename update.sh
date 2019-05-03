@@ -1,27 +1,39 @@
 #!/bin/bash
-set -eo pipefail
+set -xeo pipefail
 
 declare -A php_version=(
 	[default]='7.3'
 	[14.0]='7.2'
 )
 
+# ##
+# Introduce nginx entrycmd
+# ##
 declare -A cmd=(
 	[apache]='apache2-foreground'
 	[fpm]='php-fpm'
 	[fpm-alpine]='php-fpm'
+	[nginx]='nginx-foreground'
 )
 
+# ##
+# Set Nginx base image(not updated in Dockerfile)
+# ##
 declare -A base=(
 	[apache]='debian'
 	[fpm]='debian'
 	[fpm-alpine]='alpine'
+	[nginx]='nginx'
 )
 
+# ##
+# Configure extras for nginx
+# ##
 declare -A extras=(
 	[apache]='\nRUN a2enmod rewrite remoteip ;\\\n    {\\\n     echo RemoteIPHeader X-Real-IP ;\\\n     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\\\n     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\\\n     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\\\n    } > /etc/apache2/conf-available/remoteip.conf;\\\n    a2enconf remoteip'
 	[fpm]=''
 	[fpm-alpine]=''
+	[nginx]=''
 )
 
 apcu_version="$(
@@ -66,11 +78,13 @@ declare -A pecl_versions=(
 	[redis]="$redis_version"
 	[imagick]="$imagick_version"
 )
-
+# ##
+# Introduce new variant - Nginx
+# ##
 variants=(
 	apache
 	fpm
-	fpm-alpine
+	nginx
 )
 
 min_version='14.0'
@@ -103,14 +117,23 @@ function create_variant() {
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
-
+	echo "updating $fullversion [$1] $variant"
+# ##
+# Create new Dockerfile
+# ##
 	template="Dockerfile-${base[$variant]}.template"
 	echo "# DO NOT EDIT: created by update.sh from $template" > "$dir/Dockerfile"
 	cat "$template" >> "$dir/Dockerfile"
 
-	echo "updating $fullversion [$1] $variant"
-
-	# Replace the variables.
+	if [ "${variant}" == 'nginx' ]; then
+# ##
+# Upload Nginx config files & scripts
+# ##
+		for name in nextcloud.conf nginx-foreground; do
+			cp "${name}" "${dir}/${name}"
+		done
+	fi
+# Replace the variables.
 	sed -ri -e '
 		s/%%PHP_VERSION%%/'"$phpVersion"'/g;
 		s/%%VARIANT%%/'"$variant"'/g;
@@ -145,7 +168,9 @@ function create_variant() {
 	if [ "$variant" != "apache" ]; then
 		rm "$dir/config/apache-pretty-urls.config.php"
 	fi
-
+# ##
+# Limit archs of builded images for easier CI
+# ##
 	for arch in i386 amd64; do
 		travisEnv='    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH='"$arch"'\n'"$travisEnv"
 	done
@@ -158,6 +183,11 @@ fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |
 	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' | \
 	sort -urV ) )
 versions=( $( printf '%s\n' "${fullversions[@]}" | cut -d. -f1-2 | sort -urV ) )
+# ##
+# Limit version of builded images to current for easier CI
+# TODO: introduce Nginx minimal version, put code "for version in versions" in function, handle params
+# ##
+versions=('16.0')
 for version in "${versions[@]}"; do
 	fullversion="$( printf '%s\n' "${fullversions[@]}" | grep -E "^$version" | head -1 )"
 
@@ -183,8 +213,8 @@ for version in "${versions_rc[@]}"; do
 		if ! check_released "$fullversion"; then
 
 			for variant in "${variants[@]}"; do
-
-				create_variant "$version-rc" "https:\/\/download.nextcloud.com\/server\/prereleases"
+        echo "skipping ${version}"
+				#create_variant "$version-rc" "https:\/\/download.nextcloud.com\/server\/prereleases"
 			done
 		fi
 	fi
@@ -203,8 +233,8 @@ for version in "${versions_beta[@]}"; do
 		if ! check_rc_released "$fullversion"; then
 
 			for variant in "${variants[@]}"; do
-
-				create_variant "$version-beta" "https:\/\/download.nextcloud.com\/server\/prereleases"
+        echo "skipping ${version}"
+				#create_variant "$version-beta" "https:\/\/download.nextcloud.com\/server\/prereleases"
 			done
 		fi
 	fi
@@ -223,8 +253,8 @@ for version in "${versions_alpha[@]}"; do
 		if ! check_beta_released "$fullversion"; then
 
 			for variant in "${variants[@]}"; do
-
-				create_variant "$version-alpha" "https:\/\/download.nextcloud.com\/server\/prereleases"
+        echo "skipping ${version}"
+				#create_variant "$version-alpha" "https:\/\/download.nextcloud.com\/server\/prereleases"
 			done
 		fi
 	fi

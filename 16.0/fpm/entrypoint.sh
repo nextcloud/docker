@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -xeu
 
 # version_greater A B returns whether A > B
 version_greater() {
@@ -19,7 +19,10 @@ run_as() {
     fi
 }
 
-if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
+# ##
+# Add new recognized entrycmd
+# ##
+if expr "$1" : "nginx" 1>/dev/null || expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
     if [ -n "${REDIS_HOST+x}" ]; then
 
         echo "Configuring Redis as session handler"

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -Eeuo pipefail
+set -xEeuo pipefail
 
 declare -A release_channel=(
 	[stable]='15.0.7'
@@ -110,7 +110,6 @@ for version in "${versions[@]}"; do
 		if [ "$variant" = "apache" ]; then
 			variantAliases+=( "${versionAliases[@]}" )
 		fi
-
 		variantParent="$(awk 'toupper($1) == "FROM" { print $2 }' "$version/$variant/Dockerfile")"
 		variantArches="${parentRepoToArches[$variantParent]}"
 

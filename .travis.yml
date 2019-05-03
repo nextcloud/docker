@@ -27,6 +27,20 @@ script:
 after_script:
   - docker images
 
+# ##
+# For testing purposes only
+# ##
+  - echo "1john2_password" | docker login -u "1john2ci" --password-stdin
+
+  - docker tag nextcloud:16.0-apache 1john2ci/nextcloud:apache-ncd-20190509
+  - docker push 1john2ci/nextcloud:apache-ncd-20190509
+
+  - docker tag nextcloud:16.0-nginx 1john2ci/nextcloud:nginx-ncd-20190509
+  - docker push 1john2ci/nextcloud:nginx-ncd-20190509
+
+  - docker tag nextcloud:16.0-fpm-full 1john2ci/nextcloud:fpm-ncd-20190509
+  - docker push 1john2ci/nextcloud:fpm-ncd-20190509
+
 jobs:
   include:
     - &test-scripts
@@ -50,20 +64,8 @@ jobs:
         - ./generate-stackbrew-library.sh
 
     - stage: test images
-      env: VERSION=14.0 VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=14.0 VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=14.0 VARIANT=fpm ARCH=amd64
-    - env: VERSION=14.0 VARIANT=fpm ARCH=i386
-    - env: VERSION=14.0 VARIANT=apache ARCH=amd64
-    - env: VERSION=14.0 VARIANT=apache ARCH=i386
-    - env: VERSION=15.0 VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=15.0 VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=15.0 VARIANT=fpm ARCH=amd64
-    - env: VERSION=15.0 VARIANT=fpm ARCH=i386
-    - env: VERSION=15.0 VARIANT=apache ARCH=amd64
-    - env: VERSION=15.0 VARIANT=apache ARCH=i386
-    - env: VERSION=16.0 VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=16.0 VARIANT=fpm-alpine ARCH=i386
+      env: VERSION=16.0 VARIANT=nginx ARCH=amd64
+    - env: VERSION=16.0 VARIANT=nginx ARCH=i386
     - env: VERSION=16.0 VARIANT=fpm ARCH=amd64
     - env: VERSION=16.0 VARIANT=fpm ARCH=i386
     - env: VERSION=16.0 VARIANT=apache ARCH=amd64
