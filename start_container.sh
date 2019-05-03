@@ -24,7 +24,7 @@ IMAGE="1john2ci/nextcloud:${NAME}-ncd-${TAG}"
 NAME="${NAME}-ncd"
 
 declare -A PUBLISH=(
-[nginx-ncd]=' -p 80:80 '
+[nginx-ncd]=' -p 127.0.0.1:8060:80 '
 [fpm-ncd]=''
 )
 
@@ -57,5 +57,8 @@ eval "CMD='docker run -dit \
     "${IMAGE}" \
     "${EXECCMD}" \
   '"
+export SQLITE_DATABASE='test'
+export NEXTCLOUD_ADMIN_USER='admin'
+export NEXTCLOUD_ADMIN_PASSWORD='admin'
 
 ${CMD}

@@ -32,14 +32,14 @@ after_script:
 # ##
   - echo "1john2_password" | docker login -u "1john2ci" --password-stdin
 
-  - docker tag nextcloud:16.0-apache 1john2ci/nextcloud:apache-ncd-20190509
-  - docker push 1john2ci/nextcloud:apache-ncd-20190509
+  - docker tag nextcloud:16.0-apache 1john2ci/nextcloud:apache-ncd-20190510
+  - docker push 1john2ci/nextcloud:apache-ncd-20190510
 
-  - docker tag nextcloud:16.0-nginx 1john2ci/nextcloud:nginx-ncd-20190509
-  - docker push 1john2ci/nextcloud:nginx-ncd-20190509
+  - docker tag nextcloud:16.0-nginx 1john2ci/nextcloud:nginx-ncd-20190510
+  - docker push 1john2ci/nextcloud:nginx-ncd-20190510
 
-  - docker tag nextcloud:16.0-fpm-full 1john2ci/nextcloud:fpm-ncd-20190509
-  - docker push 1john2ci/nextcloud:fpm-ncd-20190509
+  - docker tag nextcloud:16.0-fpm-full 1john2ci/nextcloud:fpm-ncd-20190510
+  - docker push 1john2ci/nextcloud:fpm-ncd-20190510
 
 jobs:
   include:

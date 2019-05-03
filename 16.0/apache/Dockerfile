@@ -1,6 +1,24 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:7.3-apache-stretch
 
+# ##
+# Install standard troubleshooting utils
+# We can't remove apache2 - it brokes build for fpm/apache containers
+# ##
+RUN set -ex; \
+    \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        vim \
+        net-tools \
+        iproute2 \
+        iputils-ping \
+        wget \
+        psmisc \
+        procps \
+    ; \
+    rm -rf /var/lib/apt/lists/*;
+
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
