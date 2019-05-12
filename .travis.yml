@@ -4,6 +4,7 @@ services: docker
 branches:
   only:
     - master
+    - Nginx
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
@@ -30,16 +31,16 @@ after_script:
 # ##
 # For testing purposes only
 # ##
-  - echo "1john2_password" | docker login -u "1john2ci" --password-stdin
+  - echo "${DOCKER_PASSWORD}" | docker login -u "1john2" --password-stdin
 
-  - docker tag nextcloud:16.0-apache 1john2ci/nextcloud:16.0-apache
-  - docker push 1john2ci/nextcloud:16.0-apache
+  - docker tag nextcloud:16.0-apache 1john2/nextcloud:16.0-apache
+  - docker push 1john2/nextcloud:16.0-apache
 
-  - docker tag nextcloud:16.0-nginx 1john2ci/nextcloud:16.0-nginx
-  - docker push 1john2ci/nextcloud:16.0-nginx
+  - docker tag nextcloud:16.0-nginx 1john2/nextcloud:16.0-nginx
+  - docker push 1john2/nextcloud:16.0-nginx
 
-  - docker tag nextcloud:16.0-fpm-full 1john2ci/nextcloud:16.0-fpm-full
-  - docker push 1john2ci/nextcloud:16.0-fpm
+  - docker tag nextcloud:16.0-fpm-full 1john2/nextcloud:16.0-fpm-full
+  - docker push 1john2/nextcloud:16.0-fpm-full
 
 jobs:
   include:

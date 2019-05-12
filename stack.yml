@@ -1,54 +1,90 @@
-version: '3.2'
-
+version: '2.0'
+# ##
+# Configure:
+# export COMPOSE_HTTP_TIMEOUT=1000
+# If you experience timeouts in UnixHTTPConnectionPool function during parallel execution
+# This can happen in shared env with high load - VPS
+# ##
 services:
-  db:
-    name: mariadb
-    hostname: db
-    image: mariadb
-    tag: 10.4.4-bionic
+  database:
+    container_name: database
+    hostname: database
+    image: mariadb:10.4.4-bionic
     restart: always
     volumes:
-      - db:/var/lib/mysql
+      - /srv/mariadb:/var/lib/mysql:rprivate
+    networks:
+      nextcloud:
     environment:
       - MYSQL_ROOT_PASSWORD=mariadb_admin
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud_admin
       - MYSQL_PASSWORD=nextcloud_admin
-  fpm:
-    name: fpm
-    hostname: fpm 
-    image: 1john2ci/nextcloud
-    tag: 16.0-fpm-full
+  nextcloud-fpm:
+    container_name: nextcloud-fpm
+    hostname: nextcloud-fpm
+    image: 1john2/nextcloud:16.0-fpm-full
     restart: always
-    volumes:
-      - nextcloud:/var/www/html
-  app:
-    name: nextcloud
-    hostname: nextcloud
-    image: 1john2ci/nextcloud
-    tag: 16.0-nginx
-    restart: always
-    ports:
-      - 127.0.0.1:8080:80
-    volumes:
-      - nextcloud:/var/www/html
     environment:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud_admin
       - MYSQL_PASSWORD=nextcloud_admin
-      - MYSQL_HOST=db
-    depends_on:
-      - db
-      - fpm
-  cron:
-    image: nextcloud
-    restart: always
+      - MYSQL_HOST=database
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=admin
+      - NEXTCLOUD_TRUSTED_DOMAINS=data.malanik.guru
+    networks:
+      nextcloud:
     volumes:
-      - nextcloud:/var/www/html
-    entrypoint: /cron.sh
+      - /srv/nextcloud:/var/www/html:rprivate
     depends_on:
-      - db
+      - database
 
+  nextcloud:
+    container_name: nextcloud
+    hostname: nextcloud
+    image: 1john2/nextcloud:16.0-nginx
+    restart: always
+    networks:
+      nextcloud:
+    ports:
+      - 127.0.0.1:8080:80
+    volumes:
+      - /srv/nextcloud:/var/www/html:rprivate
+    environment:
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud_admin
+      - MYSQL_PASSWORD=nextcloud_admin
+      - MYSQL_HOST=database
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=admin
+      - NEXTCLOUD_TRUSTED_DOMAINS=data.malanik.guru
+    depends_on:
+      - database
+      - nextcloud-fpm
+
+  nextcloud-cron:
+    container_name: nextcloud-cron
+    hostname: nextcloud-cron
+    image: 1john2/nextcloud:16.0-nginx
+    restart: always
+    networks:
+      nextcloud:
+    entrypoint: /cron.sh
+    volumes:
+      - /srv/nextcloud:/var/www/html:rprivate
+    environment:
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud_admin
+      - MYSQL_PASSWORD=nextcloud_admin
+      - MYSQL_HOST=database
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=admin
+      - NEXTCLOUD_TRUSTED_DOMAINS=data.malanik.guru
+    depends_on:
+      - database
 volumes:
   db: /srv/mariadb
   nextcloud: /srv/nextcloud
+networks:
+  nextcloud:
