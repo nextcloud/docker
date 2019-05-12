@@ -178,7 +178,8 @@ function create_variant() {
 
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\|-alpha\)\?' -exec rm -r '{}' \;
 
-fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
+#fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
+fullversions=( $( cat releases |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
 	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' | \
 	sort -urV ) )
@@ -200,7 +201,8 @@ for version in "${versions[@]}"; do
 	fi
 done
 
-fullversions_rc=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
+#fullversions_rc=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
+fullversions_rc=( $( cat prereleases |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}RC[[:digit:]]+' | \
 	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}RC[[:digit:]]+' | \
 	sort -urV ) )
@@ -220,7 +222,8 @@ for version in "${versions_rc[@]}"; do
 	fi
 done
 
-fullversions_beta=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
+#fullversions_beta=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
+fullversions_beta=( $( cat prereleases |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
 	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
 	sort -urV ) )
@@ -240,7 +243,8 @@ for version in "${versions_beta[@]}"; do
 	fi
 done
 
-fullversions_alpha=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
+#fullversions_alpha=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
+fullversions_alpha=( $( cat prereleases |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}alpha[[:digit:]]+' | \
 	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}alpha[[:digit:]]+' | \
 	sort -urV ) )

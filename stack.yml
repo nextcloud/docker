@@ -2,30 +2,44 @@ version: '3.2'
 
 services:
   db:
-    image: postgres
+    name: mariadb
+    hostname: db
+    image: mariadb
+    tag: 10.4.4-bionic
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data
+      - db:/var/lib/mysql
     environment:
-      - POSTGRES_DB=nextcloud
-      - POSTGRES_USER=nextcloud
-      - POSTGRES_PASSWORD=nextcloud
-
+      - MYSQL_ROOT_PASSWORD=mariadb_admin
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud_admin
+      - MYSQL_PASSWORD=nextcloud_admin
+  fpm:
+    name: fpm
+    hostname: fpm 
+    image: 1john2ci/nextcloud
+    tag: 16.0-fpm-full
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
   app:
-    image: nextcloud
+    name: nextcloud
+    hostname: nextcloud
+    image: 1john2ci/nextcloud
+    tag: 16.0-nginx
     restart: always
     ports:
-      - 8080:80
+      - 127.0.0.1:8080:80
     volumes:
       - nextcloud:/var/www/html
     environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_DB=nextcloud
-      - POSTGRES_USER=nextcloud
-      - POSTGRES_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud_admin
+      - MYSQL_PASSWORD=nextcloud_admin
+      - MYSQL_HOST=db
     depends_on:
       - db
-
+      - fpm
   cron:
     image: nextcloud
     restart: always
@@ -36,5 +50,5 @@ services:
       - db
 
 volumes:
-  db:
-  nextcloud:
+  db: /srv/mariadb
+  nextcloud: /srv/nextcloud
