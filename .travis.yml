@@ -37,7 +37,7 @@ jobs:
       before_script: skip
       script:
         - hash_before=$(git write-tree)
-        - ./update.sh
+        - travis_retry ./update.sh
         - bash -c "[[ $hash_before = $(git add -A && git write-tree) ]]"
       after_script: skip
 
@@ -47,7 +47,7 @@ jobs:
         - wget -O "$HOME/bin/bashbrew" https://doi-janky.infosiftr.net/job/bashbrew/lastSuccessfulBuild/artifact/bin/bashbrew-amd64
         - chmod +x "$HOME/bin/bashbrew"
       script:
-        - ./generate-stackbrew-library.sh
+        - travis_retry ./generate-stackbrew-library.sh
 
     - stage: test images
       env: VERSION=14.0-rc VARIANT=fpm-alpine ARCH=amd64
