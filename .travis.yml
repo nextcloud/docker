@@ -19,7 +19,7 @@ script:
     (
       set -Eeuo pipefail
       set -x
-      docker build -t "$image" "${VERSION}/${VARIANT}"
+      travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
       ~/official-images/test/run.sh "$image"
       .travis/test-example-dockerfiles.sh "$image"
     )
