@@ -85,6 +85,7 @@ RUN { \
     \
     echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini; \
     \
+    chown www-data:root /usr/local/etc/php/conf.d; \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
