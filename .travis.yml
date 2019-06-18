@@ -5,6 +5,11 @@ branches:
   only:
     - master
 
+# preload images to avoid timeouts in tests
+before_install:
+  - docker pull mariadb:10
+  - docker pull postgres:11-alpine
+
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
@@ -20,7 +25,7 @@ script:
       set -Eeuo pipefail
       set -x
       travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
-      ~/official-images/test/run.sh "$image"
+      travis_retry ~/official-images/test/run.sh "$image"
       .travis/test-example-dockerfiles.sh "$image"
     )
 
@@ -28,6 +33,10 @@ after_script:
   - docker images
 
 jobs:
+  # https://github.com/docker-library/php/issues/822
+  allow_failures:
+    - env: VERSION=15.0 VARIANT=apache ARCH=i386
+    - env: VERSION=16.0 VARIANT=apache ARCH=i386
   include:
     - &test-scripts
       stage: test scripts
