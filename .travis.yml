@@ -32,15 +32,11 @@ script:
 after_script:
   - docker images
 
-# https://github.com/docker-library/php/issues/822
-matrix:
-  allow_failures:
-    - env: ARCH=i386
-    - env: VARIANT=apache
-      env: VERSION=15.0
-      env: VERSION=16.0
-
 jobs:
+  # https://github.com/docker-library/php/issues/822
+  allow_failures:
+    - env: VERSION=15.0 VARIANT=apache ARCH=i386
+    - env: VERSION=16.0 VARIANT=apache ARCH=i386
   include:
     - &test-scripts
       stage: test scripts
