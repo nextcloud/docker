@@ -36,7 +36,7 @@ RUN set -ex; \
     \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
     docker-php-ext-configure ldap; \
-    docker-php-ext-install \
+    docker-php-ext-install -j "$(nproc)" \
         exif \
         gd \
         intl \
