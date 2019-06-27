@@ -30,9 +30,10 @@ RUN set -ex; \
         pcre-dev \
         postgresql-dev \
         imagemagick-dev \
+        libwebp-dev \
     ; \
     \
-    docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr; \
+    docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
     docker-php-ext-configure ldap; \
     docker-php-ext-install \
         exif \
