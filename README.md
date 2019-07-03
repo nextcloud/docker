@@ -32,7 +32,6 @@ $ docker run -d -p 8080:80 nextcloud
 
 Now you can access Nextcloud at http://localhost:8080/ from your host system.
 
-
 ## Using the fpm image
 To use the fpm image you need an additional web server that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases you might want use another container or your host as proxy.
 If you use your host you can address your Nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file).
@@ -144,7 +143,7 @@ If you want to use Redis you have to create a separate [Redis](https://hub.docke
 
 The use of Redis is recommended to prevent file locking problems. See the examples for further instructions.
 
-To use a external SMTP server you have to provide the conection details. To configure Nextcloud to use SMTP add:
+To use a external SMTP server you have to provide the connection details. To configure Nextcloud to use SMTP add:
 
 - `SMTP_HOST` (not set by default) hostname of the SMTP server
 - `SMTP_SECURE` (empty by default) set to 'ssl' to use SSL on the connection.
@@ -156,7 +155,6 @@ To use a external SMTP server you have to provide the conection details. To conf
 - `MAIL_DOMAIN` (not set by default) Set a different domain for the emails than the domain where Nextcloud is installed.
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/15/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
-
 
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples what you have to look for.
@@ -287,7 +285,6 @@ $ docker-compose pull
 $ docker-compose up -d
 ```
 
-
 # Adding Features
 A lot of people want to use additional functionality inside their Nextcloud installation. If the image does not include the packages you need, you can easily build your own image on top of it.
 Start your derived image with the `FROM` statement and add whatever you like.
@@ -325,7 +322,6 @@ ENV NEXTCLOUD_UPDATE=1
 
 CMD ["/usr/bin/supervisord"]
 ```
-
 
 **Updating** your own derived image is also very simple. When a new version of the Nextcloud image is available run:
 
