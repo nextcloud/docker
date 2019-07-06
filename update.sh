@@ -63,7 +63,7 @@ imagick_version="$(
 declare -A pecl_versions=(
 	[APCu]="$apcu_version"
 	[memcached]="$memcached_version"
-	[redis]="$redis_version"
+	[redis]="4.3.0"
 	[imagick]="$imagick_version"
 )
 
