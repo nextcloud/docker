@@ -5,6 +5,11 @@ branches:
   only:
     - master
 
+# preload images to avoid timeouts in tests
+before_install:
+  - docker pull mariadb:10
+  - docker pull postgres:11-alpine
+
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
@@ -19,8 +24,8 @@ script:
     (
       set -Eeuo pipefail
       set -x
-      docker build -t "$image" "${VERSION}/${VARIANT}"
-      ~/official-images/test/run.sh "$image"
+      travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
+      travis_retry ~/official-images/test/run.sh "$image"
       .travis/test-example-dockerfiles.sh "$image"
     )
 
@@ -28,6 +33,12 @@ after_script:
   - docker images
 
 jobs:
+  # https://github.com/docker-library/php/issues/822
+  allow_failures:
+    - env: VERSION=15.0 VARIANT=apache ARCH=i386
+    - env: VERSION=16.0 VARIANT=apache ARCH=i386
+    - env: VERSION=15.0-rc VARIANT=apache ARCH=i386
+    - env: VERSION=16.0-rc VARIANT=apache ARCH=i386
   include:
     - &test-scripts
       stage: test scripts
@@ -37,7 +48,7 @@ jobs:
       before_script: skip
       script:
         - hash_before=$(git write-tree)
-        - ./update.sh
+        - travis_retry ./update.sh
         - bash -c "[[ $hash_before = $(git add -A && git write-tree) ]]"
       after_script: skip
 
@@ -47,10 +58,16 @@ jobs:
         - wget -O "$HOME/bin/bashbrew" https://doi-janky.infosiftr.net/job/bashbrew/lastSuccessfulBuild/artifact/bin/bashbrew-amd64
         - chmod +x "$HOME/bin/bashbrew"
       script:
-        - ./generate-stackbrew-library.sh
+        - travis_retry ./generate-stackbrew-library.sh
 
     - stage: test images
-      env: VERSION=14.0 VARIANT=fpm-alpine ARCH=amd64
+      env: VERSION=14.0-rc VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=14.0-rc VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=14.0-rc VARIANT=fpm ARCH=amd64
+    - env: VERSION=14.0-rc VARIANT=fpm ARCH=i386
+    - env: VERSION=14.0-rc VARIANT=apache ARCH=amd64
+    - env: VERSION=14.0-rc VARIANT=apache ARCH=i386
+    - env: VERSION=14.0 VARIANT=fpm-alpine ARCH=amd64
     - env: VERSION=14.0 VARIANT=fpm-alpine ARCH=i386
     - env: VERSION=14.0 VARIANT=fpm ARCH=amd64
     - env: VERSION=14.0 VARIANT=fpm ARCH=i386

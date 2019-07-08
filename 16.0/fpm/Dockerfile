@@ -36,12 +36,13 @@ RUN set -ex; \
         libxml2-dev \
         libmagickwand-dev \
         libzip-dev \
+        libwebp-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
-    docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr; \
+    docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
-    docker-php-ext-install \
+    docker-php-ext-install -j "$(nproc)" \
         exif \
         gd \
         intl \
@@ -57,7 +58,7 @@ RUN set -ex; \
     pecl install APCu-5.1.17; \
     pecl install memcached-3.1.3; \
     pecl install redis-4.3.0; \
-    pecl install imagick-3.4.3; \
+    pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
         apcu \
@@ -84,7 +85,6 @@ RUN set -ex; \
 # see https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 RUN { \
         echo 'opcache.enable=1'; \
-        echo 'opcache.enable_cli=1'; \
         echo 'opcache.interned_strings_buffer=8'; \
         echo 'opcache.max_accelerated_files=10000'; \
         echo 'opcache.memory_consumption=128'; \
@@ -103,7 +103,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 16.0.0
+ENV NEXTCLOUD_VERSION 16.0.2
 
 RUN set -ex; \
     fetchDeps=" \
