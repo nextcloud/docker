@@ -1,4 +1,4 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%-stretch
+FROM php:%%PHP_VERSION%%-%%VARIANT%%-buster
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
