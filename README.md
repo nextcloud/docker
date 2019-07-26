@@ -133,6 +133,11 @@ One or more trusted domains can be set through environment variable, too. They w
 
 - `NEXTCLOUD_TRUSTED_DOMAINS` (not set by default) Optional space-separated list of domains
 
+Reverse proxy configuration according to [Admin Manual] (https://docs.nextcloud.com/server/13/admin_manual/configuration_server/reverse_proxy_configuration.html) can be achieved using:
+- `NEXTCLOUD_OVERWRITEPROTOCOL` (not set by default) Optional overwrite protocol (e.g. https)
+- `NEXTCLOUD_OVERWRITEHOST` (not set by default) Optional overwrite host (e.g. nextcloud.examle.com)
+- `NEXTCLOUD_OVERWRITEWEBROOT` (not set by default) Optional overwrite webroot (e.g. /cloud)
+
 The install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
 
 - `NEXTCLOUD_UPDATE` (default: _0_)

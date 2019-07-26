@@ -125,6 +125,18 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                             NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
                         done
                     fi
+					if [ -n "${NEXTCLOUD_OVERWRITEPROTOCOL+x}" ]; then
+                        echo "setting overwriteprotocol"
+                        run_as "php /var/www/html/occ config:system:set overwriteprotocol --value=$NEXTCLOUD_OVERWRITEPROTOCOL"
+                    fi
+					if [ -n "${NEXTCLOUD_OVERWRITEHOST+x}" ]; then
+                        echo "setting overwritehost"
+                        run_as "php /var/www/html/occ config:system:set overwritehost --value=$NEXTCLOUD_OVERWRITEHOST"
+                    fi
+					if [ -n "${NEXTCLOUD_OVERWRITEWEBROOT+x}" ]; then
+                        echo "setting overwritewebroot…"
+                        run_as "php /var/www/html/occ config:system:set overwritewebroot --value=$NEXTCLOUD_OVERWRITEWEBROOT"
+                    fi
                 else
                     echo "running web-based installer on first connect!"
                 fi
