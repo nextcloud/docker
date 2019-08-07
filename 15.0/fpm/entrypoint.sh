@@ -116,27 +116,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         echo "installing of nextcloud failed!"
                         exit 1
                     fi
-                    if [ -n "${NEXTCLOUD_TRUSTED_DOMAINS+x}" ]; then
-                        echo "setting trusted domains…"
-                        NC_TRUSTED_DOMAIN_IDX=1
-                        for DOMAIN in $NEXTCLOUD_TRUSTED_DOMAINS ; do
-                            DOMAIN=$(echo "$DOMAIN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-                            run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
-                            NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
-                        done
-                    fi
-					if [ -n "${NEXTCLOUD_OVERWRITEPROTOCOL+x}" ]; then
-                        echo "setting overwriteprotocol"
-                        run_as "php /var/www/html/occ config:system:set overwriteprotocol --value=$NEXTCLOUD_OVERWRITEPROTOCOL"
-                    fi
-					if [ -n "${NEXTCLOUD_OVERWRITEHOST+x}" ]; then
-                        echo "setting overwritehost"
-                        run_as "php /var/www/html/occ config:system:set overwritehost --value=$NEXTCLOUD_OVERWRITEHOST"
-                    fi
-					if [ -n "${NEXTCLOUD_OVERWRITEWEBROOT+x}" ]; then
-                        echo "setting overwritewebroot…"
-                        run_as "php /var/www/html/occ config:system:set overwritewebroot --value=$NEXTCLOUD_OVERWRITEWEBROOT"
-                    fi
                 else
                     echo "running web-based installer on first connect!"
                 fi
@@ -152,6 +131,38 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
         fi
     fi
+fi
+
+#settings in config.php:
+if [ -n "${NEXTCLOUD_TRUSTED_DOMAINS+x}" ]; then
+    echo "setting trusted domains…"
+    NC_TRUSTED_DOMAIN_IDX=1
+    for DOMAIN in $NEXTCLOUD_TRUSTED_DOMAINS ; do
+        DOMAIN=$(echo "$DOMAIN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+        run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
+        NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
+    done
+fi
+if [ -n "${NEXTCLOUD_TRUSTED_PROXIES+x}" ]; then
+    echo "setting trusted proxies…"
+    NC_TRUSTED_PROXY_IDX=1
+    for PROXY in $NEXTCLOUD_TRUSTED_PROXIES ; do
+        PROXY=$(echo "$PROXY" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+        run_as "php /var/www/html/occ config:system:set trusted_proxies $NC_TRUSTED_PROXY_IDX --value=$PROXY"
+        NC_TRUSTED_PROXY_IDX=$(($NC_TRUSTED_PROXY_IDX+1))
+    done
+fi
+if [ -n "${NEXTCLOUD_OVERWRITEPROTOCOL+x}" ]; then
+    echo "setting overwriteprotocol"
+    run_as "php /var/www/html/occ config:system:set overwriteprotocol --value=$NEXTCLOUD_OVERWRITEPROTOCOL"
+fi
+if [ -n "${NEXTCLOUD_OVERWRITEHOST+x}" ]; then
+    echo "setting overwritehost"
+    run_as "php /var/www/html/occ config:system:set overwritehost --value=$NEXTCLOUD_OVERWRITEHOST"
+fi
+if [ -n "${NEXTCLOUD_OVERWRITEWEBROOT+x}" ]; then
+    echo "setting overwritewebroot…"
+    run_as "php /var/www/html/occ config:system:set overwritewebroot --value=$NEXTCLOUD_OVERWRITEWEBROOT"
 fi
 
 exec "$@"
