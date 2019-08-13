@@ -117,7 +117,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     do
                         echo "retrying install..."
                         try=$((try+1))
-                        sleep 3s
+                        sleep 10s
                     done
                     if [ "$try" -gt "$max_retries" ]; then
                         echo "installing of nextcloud failed!"
