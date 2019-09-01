@@ -32,6 +32,12 @@ $ docker run -d -p 8080:80 nextcloud
 
 Now you can access Nextcloud at http://localhost:8080/ from your host system.
 
+If you set up docker behind a proxy (eg with Apache's `ProxyPass`), you need to override `overwritehost` and possibly `overwriteprotocol` [(reference documentation)](https://docs.nextcloud.com/server/12/admin_manual/configuration_server/config_sample_php_parameters.html#proxy-configurations).
+
+```console
+# docker exec --user www-data CONTAINER_ID php occ config:system:set overwritehost --value nextcloud.yourdomain.net
+# docker exec --user www-data CONTAINER_ID php occ config:system:set overwriteprotocol --value https
+```
 
 ## Using the fpm image
 To use the fpm image you need an additional web server that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases you might want use another container or your host as proxy.
