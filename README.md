@@ -141,6 +141,7 @@ If you want to use Redis you have to create a separate [Redis](https://hub.docke
 
 - `REDIS_HOST` (not set by default) Name of Redis container
 - `REDIS_HOST_PORT` (default: _6379_) Optional port for Redis, only use for external Redis servers that run on non-standard ports.
+- `REDIS_HOST_PASSWORD` (not set by default) Redis password
 
 The use of Redis is recommended to prevent file locking problems. See the examples for further instructions.
 

@@ -6,6 +6,7 @@ if (getenv('REDIS_HOST')) {
     'redis' => array(
       'host' => getenv('REDIS_HOST'),
       'port' => getenv('REDIS_HOST_PORT') ?: 6379,
+      'password' => getenv('REDIS_HOST_PASSWORD'),
     ),
   );
 }
