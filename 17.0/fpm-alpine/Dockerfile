@@ -32,6 +32,7 @@ RUN set -ex; \
         postgresql-dev \
         imagemagick-dev \
         libwebp-dev \
+        gmp-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
@@ -46,11 +47,12 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
+        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.17; \
-    pecl install memcached-3.1.3; \
+    pecl install memcached-3.1.4; \
     pecl install redis-4.3.0; \
     pecl install imagick-3.4.4; \
     \

@@ -37,10 +37,13 @@ RUN set -ex; \
         libmagickwand-dev \
         libzip-dev \
         libwebp-dev \
+        libgmp-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
+    if [ ! -e /usr/include/gmp.h ]; then ln -s /usr/include/$debMultiarch/gmp.h /usr/include/gmp.h; fi;\
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
+    docker-php-ext-configure gmp --with-gmp="/usr/include/$debMultiarch"; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
     docker-php-ext-install -j "$(nproc)" \
         exif \
@@ -52,11 +55,12 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
+        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.17; \
-    pecl install memcached-3.1.3; \
+    pecl install memcached-3.1.4; \
     pecl install redis-4.3.0; \
     pecl install imagick-3.4.4; \
     \

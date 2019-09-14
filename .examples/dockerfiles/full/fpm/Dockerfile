@@ -20,16 +20,13 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         libbz2-dev \
         libc-client-dev \
-        libgmp3-dev \
         libkrb5-dev \
         libsmbclient-dev \
     ; \
     \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
-    ln -s "/usr/include/$(dpkg-architecture --query DEB_BUILD_MULTIARCH)/gmp.h" /usr/include/gmp.h; \
     docker-php-ext-install \
         bz2 \
-        gmp \
         imap \
     ; \
     pecl install smbclient; \
