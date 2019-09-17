@@ -83,6 +83,11 @@ RUN { \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
+    { \
+        echo 'upload_max_filesize = 1G'; \
+        echo 'post_max_size = 1G'; \
+    } > /usr/local/etc/php/conf.d/upload-max-filesize.ini; \
+    \
     echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini; \
     \
     mkdir /var/www/data; \
