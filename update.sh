@@ -23,6 +23,12 @@ declare -A extras=(
 	[fpm-alpine]=''
 )
 
+declare -A crontab_int=(
+	[default]='5'
+	[16.0]='15'
+	[15.0]='15'
+)
+
 apcu_version="$(
 	git ls-remote --tags https://github.com/krakjoe/apcu.git \
 		| cut -d/ -f3 \
@@ -99,6 +105,7 @@ travisEnv=
 function create_variant() {
 	dir="$1/$variant"
 	phpVersion=${php_version[$version]-${php_version[default]}}
+	crontabInt=${crontab_int[$version]-${crontab_int[default]}}
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
@@ -121,6 +128,7 @@ function create_variant() {
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
+		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
 
 	if [[ "$phpVersion" != 7.3 ]]; then
