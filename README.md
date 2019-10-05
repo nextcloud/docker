@@ -148,7 +148,7 @@ The use of Redis is recommended to prevent file locking problems. See the exampl
 To use a external SMTP server you have to provide the conection details. To configure Nextcloud to use SMTP add:
 
 - `SMTP_HOST` (not set by default) hostname of the SMTP server
-- `SMTP_SECURE` (empty by default) set to 'ssl' to use SSL on the connection.
+- `SMTP_SECURE` (empty by default) set to 'ssl' to use SSL on the connection, or 'tls' for STARTTLS.
 - `SMTP_PORT` (default: _465_ for SSL and _25_ for non-secure connection) Optional port for SMTP connection.
 - `SMTP_AUTHTYPE` (default: _LOGIN_) The method used for authentication.
 - `SMTP_NAME` (empty by default) Username for the authentication.
