@@ -133,6 +133,10 @@ One or more trusted domains can be set by environment variable, too. They will b
 
 - `NEXTCLOUD_TRUSTED_DOMAINS` (not set by default) Optional space-separated list of domains
 
+One or more trusted proxies can be set by environemnt variable. You may adjust this value if your docker network uses a different ip block.
+
+- `TRUSTED_PROXIES` (default: 172.16.0.0/12, 192.168.0.0/16, 10.0.0.0/8) Optional space-separated list of IPv4 or IPv6 adresses. CIDR is supported for IPv4 only.
+
 The install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
 
 - `NEXTCLOUD_UPDATE` (default: _0_)
@@ -156,7 +160,7 @@ To use a external SMTP server you have to provide the conection details. To conf
 - `MAIL_FROM_ADDRESS` (not set by default) Use this address for the 'from' field in the mail envelopes sent by Nextcloud.
 - `MAIL_DOMAIN` (not set by default) Set a different domain for the emails than the domain where Nextcloud is installed.
 
-Check the [Nextcloud documentation](https://docs.nextcloud.com/server/15/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
+Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
 
 
 # Running this image with docker-compose
