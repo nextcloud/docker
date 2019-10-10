@@ -378,7 +378,22 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
   -            "writable" => true,
   -    ),
   ```
-  3. Make sure your data directory is set to /var/www/html/data
+  3. Make sure to have the `apps` directory non writable and the `custom_apps` directory writable
+  ```php
+  'apps_paths' => array (
+    0 => array (
+      'path' => '/var/www/html/apps',
+      'url' => '/apps',
+      'writable' => false,
+    ),
+    1 => array (
+      'path' => '/var/www/html/custom_apps',
+      'url' => '/custom_apps',
+      'writable' => true,
+    ),
+  ),
+  ```
+  4. Make sure your data directory is set to /var/www/html/data
   ```php
   'datadirectory' => '/var/www/html/data',
   ```
