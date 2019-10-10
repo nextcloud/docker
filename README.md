@@ -386,16 +386,16 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
 
 4. Copy your data (nextcloud_app_1 is the name of your Nextcloud container):
 ```console
-docker cp ./data/ nextcloud_app_1:/var/www/html/data
+docker cp ./data/ nextcloud_app_1:/var/www/html/
 docker-compose exec app chown -R www-data:www-data /var/www/html/data
-docker cp ./theming/ nextcloud_app_1:/var/www/html/theming
+docker cp ./theming/ nextcloud_app_1:/var/www/html/
 docker-compose exec app chown -R www-data:www-data /var/www/html/theming
 docker cp ./config/config.php nextcloud_app_1:/var/www/html/config
 docker-compose exec app chown -R www-data:www-data /var/www/html/config
 ```
 5. Copy only the custom apps you use (or simply redownload them from the web interface):
 ```console
-docker cp ./apps/ nextcloud_data:/var/www/html/custom_apps
+docker cp ./custom_apps/ nextcloud_data:/var/www/html/
 docker-compose exec app chown -R www-data:www-data /var/www/html/custom_apps
 ```
 
