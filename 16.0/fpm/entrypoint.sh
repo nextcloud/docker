@@ -164,5 +164,9 @@ if [ -n "${NEXTCLOUD_OVERWRITEWEBROOT+x}" ]; then
     echo "setting overwritewebroot…"
     run_as "php /var/www/html/occ config:system:set overwritewebroot --value=$NEXTCLOUD_OVERWRITEWEBROOT"
 fi
+if [ -n "${NEXTCLOUD_OVERWRITE_CLI_URL+x}" ]; then
+    echo "setting overwrite.cli.url"
+    run_as "php /var/www/html/occ config:system:set overwrite.cli.url --value=$NEXTCLOUD_OVERWRITE_CLI_URL"
+fi
 
 exec "$@"

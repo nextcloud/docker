@@ -138,6 +138,7 @@ Reverse proxy configuration according to [Admin Manual](https://docs.nextcloud.c
 - `NEXTCLOUD_OVERWRITEPROTOCOL` (not set by default) Optional overwriteprotocol (e.g. https)
 - `NEXTCLOUD_OVERWRITEHOST` (not set by default) Optional overwritehost (e.g. nextcloud.examle.com)
 - `NEXTCLOUD_OVERWRITEWEBROOT` (not set by default) Optional overwritewebroot (e.g. /cloud)
+- `NEXTCLOUD_OVERWRITE_CLI_URL` (not set by default) Optional overwrite.cli.url (e.g. https://example.com/cloud)
 
 The install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
 
