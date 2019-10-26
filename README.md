@@ -145,19 +145,18 @@ If you want to use Redis you have to create a separate [Redis](https://hub.docke
 
 The use of Redis is recommended to prevent file locking problems. See the examples for further instructions.
 
-To use a external SMTP server you have to provide the conection details. To configure Nextcloud to use SMTP add:
+To use an external SMTP server, you have to provide the connection details. To configure Nextcloud to use SMTP add:
 
-- `SMTP_HOST` (not set by default) hostname of the SMTP server
-- `SMTP_SECURE` (empty by default) set to 'ssl' to use SSL on the connection.
-- `SMTP_PORT` (default: _465_ for SSL and _25_ for non-secure connection) Optional port for SMTP connection.
-- `SMTP_AUTHTYPE` (default: _LOGIN_) The method used for authentication.
-- `SMTP_NAME` (empty by default) Username for the authentication.
-- `SMTP_PASSWORD` (empty by default) Password for the authentication.
-- `MAIL_FROM_ADDRESS` (not set by default) Use this address for the 'from' field in the mail envelopes sent by Nextcloud.
-- `MAIL_DOMAIN` (not set by default) Set a different domain for the emails than the domain where Nextcloud is installed.
+- `SMTP_HOST` (not set by default): The hostname of the SMTP server.
+- `SMTP_SECURE` (empty by default): Set to `ssl` to use SSL, or `tls` to use STARTTLS.
+- `SMTP_PORT` (default: `465` for SSL and `25` for non-secure connections): Optional port for the SMTP connection. Use `587` for an alternative port for STARTTLS.
+- `SMTP_AUTHTYPE` (default: `LOGIN`): The method used for authentication. Use `PLAIN` if no authentication is required.
+- `SMTP_NAME` (empty by default): The username for the authentication.
+- `SMTP_PASSWORD` (empty by default): The password for the authentication.
+- `MAIL_FROM_ADDRESS` (not set by default): Use this address for the 'from' field in the emails sent by Nextcloud.
+- `MAIL_DOMAIN` (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/15/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
-
 
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
