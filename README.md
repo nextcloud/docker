@@ -134,7 +134,7 @@ One or more trusted domains can be set through environment variable, too. They w
 - `NEXTCLOUD_TRUSTED_DOMAINS` (not set by default) Optional space-separated list of domains
 
 Reverse proxy configuration according to [Admin Manual](https://docs.nextcloud.com/server/13/admin_manual/configuration_server/reverse_proxy_configuration.html) can be achieved using:
-- `NEXTCLOUD_TRUSTED_PROXIES` (not set by default) set trusted_proxies  (e.g. 172.0.0.0/24)
+- `NEXTCLOUD_TRUSTED_PROXIES` (not set by default) Optional space-separated list of trusted_proxies  (e.g. 172.0.0.0/24)
 - `NEXTCLOUD_OVERWRITEPROTOCOL` (not set by default) Optional overwriteprotocol (e.g. https)
 - `NEXTCLOUD_OVERWRITEHOST` (not set by default) Optional overwritehost (e.g. nextcloud.examle.com)
 - `NEXTCLOUD_OVERWRITEWEBROOT` (not set by default) Optional overwritewebroot (e.g. /cloud)
