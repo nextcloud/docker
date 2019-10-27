@@ -32,6 +32,7 @@ RUN set -ex; \
         postgresql-dev \
         imagemagick-dev \
         libwebp-dev \
+        gmp-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
@@ -46,6 +47,7 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
+        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
