@@ -125,6 +125,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                             NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
                         done
                     fi
+                    if [ -n "${NEXTCLOUD_TRUSTED_PROXIES+x}" ]; then
+                        echo "setting trusted proxies…"
+                        NC_TRUSTED_PROXIES_IDX=1
+                        for PROXY in $NEXTCLOUD_TRUSTED_PROXIES ; do
+                            PROXY=$(echo "$PROXY" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+                            run_as "php /var/www/html/occ config:system:set trusted_proxies $NC_TRUSTED_PROXIES_IDX --value=$PROXY"
+                            NC_TRUSTED_PROXIES_IDX=$(($NC_TRUSTED_PROXIES_IDX+1))
+                        done
+                    fi
                 else
                     echo "running web-based installer on first connect!"
                 fi
