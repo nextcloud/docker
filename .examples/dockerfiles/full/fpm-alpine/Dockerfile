@@ -5,6 +5,7 @@ RUN set -ex; \
     apk add --no-cache \
         ffmpeg \
         imagemagick \
+        procps \
         samba-client \
         supervisor \
 #       libreoffice \
