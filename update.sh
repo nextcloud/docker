@@ -2,8 +2,7 @@
 set -eo pipefail
 
 declare -A php_version=(
-	[default]='7.2'
-	[12.0]='7.1'
+	[default]='7.3'
 )
 
 declare -A cmd=(
@@ -24,10 +23,53 @@ declare -A extras=(
 	[fpm-alpine]=''
 )
 
+declare -A crontab_int=(
+	[default]='5'
+	[16.0]='15'
+	[15.0]='15'
+)
+
+apcu_version="$(
+	git ls-remote --tags https://github.com/krakjoe/apcu.git \
+		| cut -d/ -f3 \
+		| grep -vE -- '-rc|-b' \
+		| sed -E 's/^v//' \
+		| sort -V \
+		| tail -1
+)"
+
+memcached_version="$(
+	git ls-remote --tags https://github.com/php-memcached-dev/php-memcached.git \
+		| cut -d/ -f3 \
+		| grep -vE -- '-rc|-b' \
+		| sed -E 's/^[rv]//' \
+		| sort -V \
+		| tail -1
+)"
+
+redis_version="$(
+	git ls-remote --tags https://github.com/phpredis/phpredis.git \
+		| cut -d/ -f3 \
+		| grep -viE '[a-z]' \
+		| tr -d '^{}' \
+		| sort -V \
+		| tail -1
+)"
+
+imagick_version="$(
+	git ls-remote --tags https://github.com/mkoppanen/imagick.git \
+		| cut -d/ -f3 \
+		| grep -viE '[a-z]' \
+		| tr -d '^{}' \
+		| sort -V \
+		| tail -1
+)"
+
 declare -A pecl_versions=(
-	[APCu]='5.1.14'
-	[memcached]='3.0.4'
-	[redis]='4.2.0'
+	[APCu]="$apcu_version"
+	[memcached]="$memcached_version"
+	[redis]="4.3.0"
+	[imagick]="$imagick_version"
 )
 
 variants=(
@@ -36,7 +78,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='12.0'
+min_version='15.0'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -53,10 +95,17 @@ function check_rc_released() {
 	printf '%s\n' "${fullversions_rc[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
 }
 
+# checks if the the alpha has already a beta
+function check_beta_released() {
+	printf '%s\n' "${fullversions_beta[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
+}
+
 travisEnv=
 
 function create_variant() {
 	dir="$1/$variant"
+	phpVersion=${php_version[$version]-${php_version[default]}}
+	crontabInt=${crontab_int[$version]-${crontab_int[default]}}
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
@@ -69,7 +118,7 @@ function create_variant() {
 
 	# Replace the variables.
 	sed -ri -e '
-		s/%%PHP_VERSION%%/'"${php_version[$version]-${php_version[default]}}"'/g;
+		s/%%PHP_VERSION%%/'"$phpVersion"'/g;
 		s/%%VARIANT%%/'"$variant"'/g;
 		s/%%VERSION%%/'"$fullversion"'/g;
 		s/%%BASE_DOWNLOAD_URL%%/'"$2"'/g;
@@ -78,7 +127,15 @@ function create_variant() {
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
+		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
+		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
+
+	if [[ "$phpVersion" != 7.3 ]]; then
+		sed -ri \
+			-e '/libzip-dev/d' \
+			"$dir/Dockerfile"
+	fi
 
 	# Copy the shell scripts
 	for name in entrypoint cron; do
@@ -101,7 +158,7 @@ function create_variant() {
 	done
 }
 
-find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\)\?' -exec rm -r '{}' \;
+find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\|-alpha\)\?' -exec rm -r '{}' \;
 
 fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
@@ -155,6 +212,26 @@ for version in "${versions_beta[@]}"; do
 			for variant in "${variants[@]}"; do
 
 				create_variant "$version-beta" "https:\/\/download.nextcloud.com\/server\/prereleases"
+			done
+		fi
+	fi
+done
+
+fullversions_alpha=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
+	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}alpha[[:digit:]]+' | \
+	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}alpha[[:digit:]]+' | \
+	sort -urV ) )
+versions_alpha=( $( printf '%s\n' "${fullversions_alpha[@]}" | cut -d. -f1-2 | sort -urV ) )
+for version in "${versions_alpha[@]}"; do
+	fullversion="$( printf '%s\n' "${fullversions_alpha[@]}" | grep -E "^$version" | head -1 )"
+
+	if version_greater_or_equal "$version" "$min_version"; then
+
+		if ! check_beta_released "$fullversion"; then
+
+			for variant in "${variants[@]}"; do
+
+				create_variant "$version-alpha" "https:\/\/download.nextcloud.com\/server\/prereleases"
 			done
 		fi
 	fi

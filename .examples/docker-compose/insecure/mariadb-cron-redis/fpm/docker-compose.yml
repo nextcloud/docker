@@ -17,12 +17,13 @@ services:
     restart: always
 
   app:
-    build: ./app
+    image: nextcloud:fpm-alpine
     restart: always
     volumes:
       - nextcloud:/var/www/html
     environment:
       - MYSQL_HOST=db
+      - REDIS_HOST=redis
     env_file:
       - db.env
     depends_on:
@@ -40,7 +41,7 @@ services:
       - app
 
   cron:
-    build: ./app
+    image: nextcloud:fpm-alpine
     restart: always
     volumes:
       - nextcloud:/var/www/html

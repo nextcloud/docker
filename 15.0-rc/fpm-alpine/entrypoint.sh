@@ -20,6 +20,20 @@ run_as() {
 }
 
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
+    if [ -n "${REDIS_HOST+x}" ]; then
+
+        echo "Configuring Redis as session handler"
+        {
+            echo 'session.save_handler = redis'
+            # check if redis password has been set
+            if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
+            else
+                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
+            fi
+        } > /usr/local/etc/php/conf.d/redis-session.ini
+    fi
+
     installed_version="0.0.0.0"
     if [ -f /var/www/html/version.php ]; then
         # shellcheck disable=SC2016
@@ -51,6 +65,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
             fi
         done
+        rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
         echo "Initializing finished"
 
         #install
@@ -63,8 +78,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 if [ -n "${NEXTCLOUD_TABLE_PREFIX+x}" ]; then
                     # shellcheck disable=SC2016
                     install_options=$install_options' --database-table-prefix "$NEXTCLOUD_TABLE_PREFIX"'
-                else
-                    install_options=$install_options' --database-table-prefix ""'
                 fi
                 if [ -n "${NEXTCLOUD_DATA_DIR+x}" ]; then
                     # shellcheck disable=SC2016
@@ -72,7 +85,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 fi
 
                 install=false
-                if [  -n "${SQLITE_DATABASE+x}" ]; then
+                if [ -n "${SQLITE_DATABASE+x}" ]; then
                     echo "Installing with SQLite database"
                     # shellcheck disable=SC2016
                     install_options=$install_options' --database-name "$SQLITE_DATABASE"'
@@ -90,7 +103,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 fi
 
                 if [ "$install" = true ]; then
-                    echo "starting nexcloud installation"
+                    echo "starting nextcloud installation"
                     max_retries=10
                     try=0
                     until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]

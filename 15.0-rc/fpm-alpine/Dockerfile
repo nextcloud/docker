@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.2-fpm-alpine3.8
+FROM php:7.3-fpm-alpine3.10
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -12,7 +12,7 @@ RUN set -ex; \
     echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
-# see https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html
+# see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 RUN set -ex; \
     \
     apk add --no-cache --virtual .build-deps \
@@ -20,19 +20,24 @@ RUN set -ex; \
         autoconf \
         freetype-dev \
         icu-dev \
+        libevent-dev \
         libjpeg-turbo-dev \
         libmcrypt-dev \
         libpng-dev \
         libmemcached-dev \
         libxml2-dev \
+        libzip-dev \
         openldap-dev \
         pcre-dev \
         postgresql-dev \
+        imagemagick-dev \
+        libwebp-dev \
+        gmp-dev \
     ; \
     \
-    docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr; \
+    docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
     docker-php-ext-configure ldap; \
-    docker-php-ext-install \
+    docker-php-ext-install -j "$(nproc)" \
         exif \
         gd \
         intl \
@@ -42,17 +47,20 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
+        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.14; \
-    pecl install memcached-3.0.4; \
-    pecl install redis-4.2.0; \
+    pecl install APCu-5.1.18; \
+    pecl install memcached-3.1.4; \
+    pecl install redis-4.3.0; \
+    pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
         apcu \
         memcached \
         redis \
+        imagick \
     ; \
     \
     runDeps="$( \
@@ -68,7 +76,6 @@ RUN set -ex; \
 # see https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 RUN { \
         echo 'opcache.enable=1'; \
-        echo 'opcache.enable_cli=1'; \
         echo 'opcache.interned_strings_buffer=8'; \
         echo 'opcache.max_accelerated_files=10000'; \
         echo 'opcache.memory_consumption=128'; \
@@ -87,7 +94,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 15.0.0RC1
+ENV NEXTCLOUD_VERSION 15.0.13RC1
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
