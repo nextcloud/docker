@@ -1,0 +1,6 @@
+Evolven Change analytics
+Validates scope modifications in DHCP
+Verifies Changes are Authorized and then leads the deployment
+
+
+Uses Agent controller mechanism
