@@ -158,6 +158,66 @@ To use an external SMTP server, you have to provide the connection details. To c
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/15/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
 
+## Docker secrets
+As an alternative to passing sensitive information via environment variables, _FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in /run/secrets/<secret_name> files. For example:
+
+```yaml
+version '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+    secrets:
+      - postgres_password
+  app:
+    image: nextcloud
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - NEXTCLOUD_ADMIN_USER=superuser
+      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/admin_password
+    depends_on:
+      - db
+    secrets:
+      - postgres_password
+      - admin_password
+  cron:
+    image: nextcloud
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+volumes:
+  db:
+  nextcloud:
+
+secrets:
+  postgres_password:
+    # file: ./postgres_password.txt # put postgresql password to this file (only for local testing)
+    external: true
+  admin_password:
+    # file: ./admin_password.txt # put admin password to this file  (only for local testing)
+    external: true # For use in prodcution, create secret via the docker secret create command
+
+```
+
+Currently, this is supported for NEXTCLOUD_ADMIN_PASSWORD, MYSQL_PASSWORD and POSTGRES_PASSWORD.
+
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
 

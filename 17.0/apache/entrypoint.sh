@@ -19,6 +19,36 @@ run_as() {
     fi
 }
 
+# usage: env_secret_expand VAR [DEFAULT]
+# example: env_secret_expand 'XYZ_DB_PASSWORD_FILE' 'password'
+# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+env_secret_expand() {
+    envVar="$1"
+    fileVar="${envVar}_FILE"
+    
+    eval env=\$"$envVar"                # Contains the value of the environment variable
+    eval secretFilepath=\$"$fileVar"    # Contains the filepath to the secret with the value
+
+    if [ -n "$env" ] && [ -n "$secretFilepath" ]; then
+        echo >&2 "error: both $env and $secretFilepath are set (but are exclusive)"
+        exit 1
+    fi
+
+    val=$2 # Set to default
+
+    if [ -n "$secretFilepath" ] && [ -f "$secretFilepath" ]; then 
+        val=$(cat "${secretFilepath}")
+    elif [ -n "$env" ]; then 
+        val="$env"
+    fi
+
+    export "$envVar"="$val"
+
+    unset fileVar
+    unset env
+    unset secretFilepath
+}
+
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
     if [ -n "${REDIS_HOST+x}" ]; then
 
@@ -71,6 +101,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         #install
         if [ "$installed_version" = "0.0.0.0" ]; then
             echo "New nextcloud instance"
+
+            env_secret_expand NEXTCLOUD_ADMIN_PASSWORD
+            env_secret_expand MYSQL_PASSWORD
+            env_secret_expand POSTGRES_PASSWORD
 
             if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
                 # shellcheck disable=SC2016
