@@ -25,8 +25,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         echo "Configuring Redis as session handler"
         {
             echo 'session.save_handler = redis'
+            # check if redis host is an unix socket path
+            if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
+              if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+                echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_HOST_PASSWORD}\""
+              else
+                echo "session.save_path = \"unix://${REDIS_HOST}\""
+              fi
             # check if redis password has been set
-            if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+            elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
                 echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
             else
                 echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
