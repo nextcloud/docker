@@ -56,10 +56,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
     if version_greater "$image_version" "$installed_version"; then
         echo "Initializing nextcloud $image_version ..."
-        if [ "$installed_version" != "0.0.0.0" ]; then
-            echo "Upgrading nextcloud from $installed_version ..."
-            run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
-        fi
         if [ "$(id -u)" = 0 ]; then
             rsync_options="-rlDog --chown www-data:root"
         else
@@ -139,12 +135,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         #upgrade
         else
             run_as 'php /var/www/html/occ upgrade'
-
-            run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
-            echo "The following apps have been disabled:"
-            diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
-            rm -f /tmp/list_before /tmp/list_after
-
         fi
     fi
 fi
