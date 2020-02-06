@@ -26,7 +26,6 @@ declare -A extras=(
 declare -A crontab_int=(
 	[default]='5'
 	[16.0]='15'
-	[15.0]='15'
 )
 
 apcu_version="$(
@@ -78,7 +77,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='15.0'
+min_version='16.0'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
