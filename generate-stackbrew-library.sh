@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 declare -A release_channel=(
 	[stable]='17.0.3'
-	[production]='16.0.7'
+	[production]='16.0.8'
 )
 
 self="$(basename "$BASH_SOURCE")"
