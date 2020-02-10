@@ -67,13 +67,7 @@ jobs:
         - travis_retry ./generate-stackbrew-library.sh
 
     - stage: test images
-      env: VERSION=18.0-rc VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=18.0-rc VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=18.0-rc VARIANT=fpm ARCH=amd64
-    - env: VERSION=18.0-rc VARIANT=fpm ARCH=i386
-    - env: VERSION=18.0-rc VARIANT=apache ARCH=amd64
-    - env: VERSION=18.0-rc VARIANT=apache ARCH=i386
-    - env: VERSION=16.0 VARIANT=fpm-alpine ARCH=amd64
+      env: VERSION=16.0 VARIANT=fpm-alpine ARCH=amd64
     - env: VERSION=16.0 VARIANT=fpm-alpine ARCH=i386
     - env: VERSION=16.0 VARIANT=fpm ARCH=amd64
     - env: VERSION=16.0 VARIANT=fpm ARCH=i386
@@ -91,3 +85,9 @@ jobs:
     - env: VERSION=18.0 VARIANT=fpm ARCH=i386
     - env: VERSION=18.0 VARIANT=apache ARCH=amd64
     - env: VERSION=18.0 VARIANT=apache ARCH=i386
+    - env: VERSION=19.0 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=19.0 VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=19.0 VARIANT=fpm ARCH=amd64
+    - env: VERSION=19.0 VARIANT=fpm ARCH=i386
+    - env: VERSION=19.0 VARIANT=apache ARCH=amd64
+    - env: VERSION=19.0 VARIANT=apache ARCH=i386

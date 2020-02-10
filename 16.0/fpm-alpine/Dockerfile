@@ -91,10 +91,9 @@ RUN { \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 16.0.8
+ENV NEXTCLOUD_VERSION 16.0.11
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -110,17 +109,22 @@ RUN set -ex; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
     gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
+    tar -xjf nextcloud.tar.bz2 -C /var/www/; \
+    rm -rf /var/www/html; \
+    mv /var/www/nextcloud /var/www/html; \
     gpgconf --kill all; \
-    rm -r "$GNUPGHOME" nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    rm -rf /usr/src/nextcloud/updater; \
-    mkdir -p /usr/src/nextcloud/data; \
-    mkdir -p /usr/src/nextcloud/custom_apps; \
-    chmod +x /usr/src/nextcloud/occ; \
-    apk del .fetch-deps
+    rm -r "$GNUPGHOME"; \
+    rm -rf /var/www/html/updater; \
+    mkdir -p /var/www/html/data; \
+    mkdir -p /var/www/html/custom_apps; \
+    chmod +x /var/www/html/occ; \
+    apk del .fetch-deps; \
+    touch /var/www/html/data/.ocdata; \
+    touch /var/www/html/config/config.php; \
+    chown -R www-data:root /var/www/html
 
-COPY *.sh upgrade.exclude /
-COPY config/* /usr/src/nextcloud/config/
+COPY *.sh /
+COPY --chown=www-data:root config/* /var/www/html/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
