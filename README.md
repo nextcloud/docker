@@ -158,6 +158,8 @@ To use an external SMTP server, you have to provide the connection details. To c
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/15/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
 
+To insert custom config for nextcloud, you can insert a seed config.php into the image (for example, you might mount a secret), and set `NEXTCLOUD_CONFIG_BOOTSTRAP_FILE` to the filename of your seed config file. The config file must be valid PHP, in the same format as the normal config.php file. The config file will only be used on new installations - it will not override config on update, or when restarting the container.
+
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
 

@@ -79,6 +79,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         if [ "$installed_version" = "0.0.0.0" ]; then
             echo "New nextcloud instance"
 
+            if [ -n "${NEXTCLOUD_CONFIG_BOOTSTRAP_FILE+x}" ] ; then
+                cp "${NEXTCLOUD_CONFIG_BOOTSTRAP_FILE}" /var/www/html/config/config.php
+            fi
+
             if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
                 # shellcheck disable=SC2016
                 install_options='-n --admin-user "$NEXTCLOUD_ADMIN_USER" --admin-pass "$NEXTCLOUD_ADMIN_PASSWORD"'
