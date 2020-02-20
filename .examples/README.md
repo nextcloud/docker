@@ -50,7 +50,7 @@ The required steps for each optional/recommended package that is not already in 
 `apt install ffmpeg`
 
 #### imagemagick SVG support
-`apt install libmagickcore-6.q16-3-extra`
+`apt install libmagickcore-6.q16-6-extra`
 
 #### LibreOffice
 `apt install libreoffice`
