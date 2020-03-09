@@ -115,7 +115,7 @@ RUN a2enmod rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 16.0.9RC1
+ENV NEXTCLOUD_VERSION 16.0.9RC2
 
 RUN set -ex; \
     fetchDeps=" \
