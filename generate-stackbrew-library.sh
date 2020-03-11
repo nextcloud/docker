@@ -67,11 +67,7 @@ join() {
 	echo "${out#$sep}"
 }
 
-latest=$( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
-	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
-	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' | \
-	sort -uV | \
-	tail -1 )
+latest=$( cat latest.txt )
 
 # Generate each of the tags.
 versions=( */ )

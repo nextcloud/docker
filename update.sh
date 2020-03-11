@@ -157,6 +157,12 @@ function create_variant() {
 	done
 }
 
+curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
+	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
+	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' | \
+	sort -uV | \
+	tail -1 > latest.txt
+
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\|-alpha\)\?' -exec rm -r '{}' \;
 
 fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
