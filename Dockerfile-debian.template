@@ -37,7 +37,6 @@ RUN set -ex; \
         libzip-dev \
         libwebp-dev \
         libgmp-dev \
-        php-oauth \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -55,11 +54,11 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
-        gmp \
-        oauth \
+        gmp
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
+    pecl install oauth-%%OAUTH_VERSION%%; \
     pecl install APCu-%%APCU_VERSION%%; \
     pecl install memcached-%%MEMCACHED_VERSION%%; \
     pecl install redis-%%REDIS_VERSION%%; \
@@ -70,6 +69,7 @@ RUN set -ex; \
         memcached \
         redis \
         imagick \
+        oauth \
     ; \
     \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
