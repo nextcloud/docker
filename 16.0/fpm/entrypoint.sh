@@ -104,6 +104,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             echo "New nextcloud instance"
 
             file_env NEXTCLOUD_ADMIN_PASSWORD
+            file_env NEXTCLOUD_ADMIN_USER
 
             if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
                 # shellcheck disable=SC2016
@@ -118,7 +119,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 fi
 
                 file_env MYSQL_PASSWORD
+                file_env POSTGRES_DB
                 file_env POSTGRES_PASSWORD
+                file_env POSTGRES_USER
 
                 install=false
                 if [ -n "${SQLITE_DATABASE+x}" ]; then
