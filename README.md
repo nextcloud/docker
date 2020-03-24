@@ -264,11 +264,13 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=nextcloud
-      - POSTGRES_USER=nextcloud
+      - POSTGRES_DB_FILE=/run/secrets/postgres_db
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user
       - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
     secrets:
+      - postgres_db
       - postgres_password
+      - postgres_user
 
   app:
     image: nextcloud
@@ -279,28 +281,38 @@ services:
       - nextcloud:/var/www/html
     environment:
       - POSTGRES_HOST=db
-      - POSTGRES_DB=nextcloud
-      - POSTGRES_USER=nextcloud
+      - POSTGRES_DB_FILE=/run/secrets/postgres_db
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user
       - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
-      - NEXTCLOUD_ADMIN_USER=superuser
-      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/admin_password
+      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/nextcloud_admin_password
+      - NEXTCLOUD_ADMIN_USER_FILE=/run/secrets/nextcloud_admin_user
     depends_on:
       - db
     secrets:
+      - nextcloud_admin_password
+      - nextcloud_admin_user
+      - postgres_db
       - postgres_password
-      - admin_password
+      - postgres_user
 
 volumes:
   db:
   nextcloud:
-  
+
 secrets:
+  nextcloud_admin_password:
+    file: ./nextcloud_admin_password.txt # put admin password to this file
+  nextcloud_admin_user:
+    file: ./nextcloud_admin_user.txt # put admin username to this file
+  postgres_db:
+    file: ./postgres_db.txt # put postgresql db name to this file
   postgres_password:
     file: ./postgres_password.txt # put postgresql password to this file
-  admin_password:  
-    file: ./admin_password.txt # put admin password to this file  
+  postgres_user:
+    file: ./postgres_user.txt # put postgresql username to this file
 ```
-Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `MYSQL_PASSWORD`, `POSTGRES_PASSWORD`.
+
+Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DB`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER`.
 
 # Make your Nextcloud available from the internet
 Until here, your Nextcloud is just available from you docker host. If you want your Nextcloud available from the internet adding SSL encryption is mandatory.

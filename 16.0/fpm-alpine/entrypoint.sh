@@ -118,7 +118,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     install_options=$install_options' --data-dir "$NEXTCLOUD_DATA_DIR"'
                 fi
 
+                file_env MYSQL_DATABASE
                 file_env MYSQL_PASSWORD
+                file_env MYSQL_USER
                 file_env POSTGRES_DB
                 file_env POSTGRES_PASSWORD
                 file_env POSTGRES_USER
