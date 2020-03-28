@@ -158,6 +158,16 @@ To use an external SMTP server, you have to provide the connection details. To c
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/15/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
 
+To use Nextcloud behind a reverse proxy you can use the following environment variables:
+
+- `OVERWRITEHOST` (not set by default): Set the hostname of the proxy. Can also specify a port.
+- `OVERWRITEPROTOCOL` (not set by default): Set the protocol of the proxy, http or https.
+- `OVERWRITEWEBROOT` (not set by default): Set the absolute path of the proxy.
+- `OVERWRITECONDADDR` (not set by default): Regex to overwrite the values dependent on the remote address.
+- `TRUSTED_PROXIES` (not set by default): A comma separated list of IPv4 addresses, IPv4 ranges in CIDR notation or IPv6 addresses of proxies Nextcloud should trust.
+
+Check the [Nexcloud documentation](https://docs.nextcloud.com/server/18/admin_manual/configuration_server/reverse_proxy_configuration.html) for more details.
+
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
 
