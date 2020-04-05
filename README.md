@@ -156,7 +156,7 @@ To use an external SMTP server, you have to provide the connection details. To c
 - `MAIL_FROM_ADDRESS` (not set by default): Use this address for the 'from' field in the emails sent by Nextcloud.
 - `MAIL_DOMAIN` (not set by default): Set a different domain for the emails than the domain where Nextcloud is installed.
 
-Check the [Nextcloud documentation](https://docs.nextcloud.com/server/15/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
+Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
 
 To use Nextcloud behind a reverse proxy you can use the following environment variables:
 
