@@ -43,6 +43,12 @@ file_env() {
     unset "$fileVar"
 }
 
+if expr "$1" : "apache" 1>/dev/null; then
+    if [ -n "${APACHE_DISABLE_REWRITE_IP+x}" ]; then
+        a2disconf remoteip
+    fi
+fi
+
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
     if [ -n "${REDIS_HOST+x}" ]; then
 
