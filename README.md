@@ -92,7 +92,7 @@ nextcloud
 ```
 
 ## Using the Nextcloud command-line interface
-To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/12/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
+To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
 ```console
 $ docker exec --user www-data CONTAINER_ID php occ
 ```
