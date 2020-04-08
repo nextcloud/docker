@@ -1,35 +1,35 @@
 <?php
-$overwritehost = getenv('OVERWRITEHOST');
-if ($overwritehost) {
-  $CONFIG['overwritehost'] = $overwritehost;
+$overwriteHost = getenv('OVERWRITEHOST');
+if ($overwriteHost) {
+  $CONFIG['overwritehost'] = $overwriteHost;
 } else {
   $CONFIG['overwritehost'] = null;
 }
 
-$overwriteprotocol = getenv('OVERWRITEPROTOCOL');
-if ($overwriteprotocol) {
-  $CONFIG['overwriteprotocol'] = $overwriteprotocol;
+$overwriteProtocol = getenv('OVERWRITEPROTOCOL');
+if ($overwriteProtocol) {
+  $CONFIG['overwriteprotocol'] = $overwriteProtocol;
 } else {
   $CONFIG['overwriteprotocol'] = null;
 }
 
-$overwritewebroot = getenv('OVERWRITEWEBROOT');
-if ($overwritewebroot) {
-  $CONFIG['overwritewebroot'] = $overwritewebroot;
+$overwriteWebRoot = getenv('OVERWRITEWEBROOT');
+if ($overwriteWebRoot) {
+  $CONFIG['overwritewebroot'] = $overwriteWebRoot;
 } else {
   $CONFIG['overwritewebroot'] = null;
 }
 
-$overwritecondaddr = getenv('OVERWRITECONDADDR');
-if ($overwritecondaddr) {
-  $CONFIG['overwritecondaddr'] = $overwritecondaddr;
+$overwriteCondAddr = getenv('OVERWRITECONDADDR');
+if ($overwriteCondAddr) {
+  $CONFIG['overwritecondaddr'] = $overwriteCondAddr;
 } else {
   $CONFIG['overwritecondaddr'] = null;
 }
 
-$trusted_proxies = getenv('TRUSTED_PROXIES');
-if ($trusted_proxies) {
-  $CONFIG['trusted_proxies'] = explode(',', $trusted_proxies);
+$trustedProxies = getenv('TRUSTED_PROXIES');
+if ($trustedProxies) {
+  $CONFIG['trusted_proxies'] = array_filter(array_map('trim', explode(' ', $trustedProxies)));
 } else {
   $CONFIG['trusted_proxies'] = null;
 }
