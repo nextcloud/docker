@@ -19,6 +19,36 @@ run_as() {
     fi
 }
 
+# usage: file_env VAR [DEFAULT]
+#    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
+#  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+file_env() {
+    local var="$1"
+    local fileVar="${var}_FILE"
+    local def="${2:-}"
+    local varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
+    local fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
+    if [ -n "${varValue}" ] && [ -n "${fileVarValue}" ]; then
+        echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+        exit 1
+    fi
+    if [ -n "${varValue}" ]; then
+        export "$var"="${varValue}"
+    elif [ -n "${fileVarValue}" ]; then
+        export "$var"="$(cat "${fileVarValue}")"
+    elif [ -n "${def}" ]; then
+        export "$var"="$def"
+    fi
+    unset "$fileVar"
+}
+
+if expr "$1" : "apache" 1>/dev/null; then
+    if [ -n "${APACHE_DISABLE_REWRITE_IP+x}" ]; then
+        a2disconf remoteip
+    fi
+fi
+
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
     if [ -n "${REDIS_HOST+x}" ]; then
 
@@ -79,6 +109,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         if [ "$installed_version" = "0.0.0.0" ]; then
             echo "New nextcloud instance"
 
+            file_env NEXTCLOUD_ADMIN_PASSWORD
+            file_env NEXTCLOUD_ADMIN_USER
+
             if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
                 # shellcheck disable=SC2016
                 install_options='-n --admin-user "$NEXTCLOUD_ADMIN_USER" --admin-pass "$NEXTCLOUD_ADMIN_PASSWORD"'
@@ -90,6 +123,13 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     # shellcheck disable=SC2016
                     install_options=$install_options' --data-dir "$NEXTCLOUD_DATA_DIR"'
                 fi
+
+                file_env MYSQL_DATABASE
+                file_env MYSQL_PASSWORD
+                file_env MYSQL_USER
+                file_env POSTGRES_DB
+                file_env POSTGRES_PASSWORD
+                file_env POSTGRES_USER
 
                 install=false
                 if [ -n "${SQLITE_DATABASE+x}" ]; then
