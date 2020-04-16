@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.3-apache-buster
+FROM php:7.3-fpm-buster
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -13,7 +13,7 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*; \
     \
     mkdir -p /var/spool/cron/crontabs; \
-    echo '*/5 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
@@ -106,16 +106,8 @@ RUN { \
 
 VOLUME /var/www/html
 
-RUN a2enmod headers rewrite remoteip ;\
-    {\
-     echo RemoteIPHeader X-Real-IP ;\
-     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
-     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
-     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
-    } > /etc/apache2/conf-available/remoteip.conf;\
-    a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 19.0.0beta4
+ENV NEXTCLOUD_VERSION 16.0.10RC1
 
 RUN set -ex; \
     fetchDeps=" \
@@ -148,4 +140,4 @@ COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]
