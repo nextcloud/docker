@@ -7,7 +7,7 @@ branches:
 
 # preload images to avoid timeouts in tests
 before_install:
-  - docker pull mariadb:10
+  - docker pull mariadb:10.3
   - docker pull postgres:11-alpine
 
 install:
