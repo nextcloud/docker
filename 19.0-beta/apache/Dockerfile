@@ -106,7 +106,7 @@ RUN { \
 
 VOLUME /var/www/html
 
-RUN a2enmod rewrite remoteip ;\
+RUN a2enmod headers rewrite remoteip ;\
     {\
      echo RemoteIPHeader X-Real-IP ;\
      echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
