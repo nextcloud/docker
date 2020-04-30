@@ -62,7 +62,7 @@ jobs:
     - <<: *test-scripts
       env: SCRIPT=generate-stackbrew-library.sh
       install:
-        - wget -O "$HOME/bin/bashbrew" https://doi-janky.infosiftr.net/job/bashbrew/lastSuccessfulBuild/artifact/bin/bashbrew-amd64
+        - wget -O "$HOME/bin/bashbrew" https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
         - chmod +x "$HOME/bin/bashbrew"
       script:
         - travis_retry ./generate-stackbrew-library.sh
