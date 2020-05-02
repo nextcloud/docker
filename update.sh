@@ -70,7 +70,7 @@ imagick_version="$(
 declare -A pecl_versions=(
 	[APCu]="$apcu_version"
 	[memcached]="$memcached_version"
-	[redis]="4.3.0"
+	[redis]="$redis_version"
 	[imagick]="$imagick_version"
 )
 
@@ -151,6 +151,7 @@ function create_variant() {
 		16.*|17.*|18.* )
 			sed -ri -e '
 				\@bcmath@d;
+				s/'"redis-${pecl_versions[redis]}"'/redis-4.3.0/g;
 				' "$dir/Dockerfile"
 			;;
 
