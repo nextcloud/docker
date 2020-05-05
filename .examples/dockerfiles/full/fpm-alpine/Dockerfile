@@ -17,7 +17,7 @@ RUN set -ex; \
         $PHPIZE_DEPS \
         imap-dev \
         krb5-dev \
-        libressl-dev \
+        openssl-dev \
         samba-dev \
         bzip2-dev \
     ; \
