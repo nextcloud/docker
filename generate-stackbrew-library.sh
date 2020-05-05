@@ -89,7 +89,7 @@ for version in "${versions[@]}"; do
 			versionPostfix="-$( echo "$fullversion_with_extension" | tr '[:upper:]' '[:lower:]' | grep -oE '(beta|rc|alpha)')"
 		fi
 
-		versionAliases+=( "$fullversion$versionPostfix" "${fullversion%.*}$versionPostfix" "${fullversion%.*.*}$versionPostfix" )
+		versionAliases+=( "$fullversion$versionPostfix" "${fullversion%.*}$versionPostfix" "${fullversion%.*.*}$versionPostfix" ${versionPostfix/-})
 		if [ "$fullversion_with_extension" = "$latest" ]; then
 			versionAliases+=( "latest" )
 		fi
