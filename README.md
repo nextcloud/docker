@@ -345,6 +345,8 @@ We recommend using a reverse proxy in front of our Nextcloud installation. Your 
 
 In our [examples](https://github.com/nextcloud/docker/tree/master/.examples) section we have an example for a fully automated setup using a reverse proxy, a container for [Let's Encrypt](https://letsencrypt.org/) certificate handling, database and Nextcloud. It uses the popular [nginx-proxy](https://github.com/jwilder/nginx-proxy) and [docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion) containers. Please check the according documentations before using this setup.
 
+You can also use Traefik 2.0 as a reverse proxy.  You can find sample docker-compose files in [examples](https://github.com/nextcloud/docker/tree/master/.examples) 
+
 # First use
 When you first access your Nextcloud, the setup wizard will appear and ask you to choose an administrator account username, password and the database connection. For the database use `db` as host and `nextcloud` as table and user name. Also enter the password you chose in your `docker-compose.yml` file.
 
