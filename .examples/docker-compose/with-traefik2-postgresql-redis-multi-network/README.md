@@ -4,7 +4,9 @@
 
 ` # docker network  create --driver=bridge --attachable --internal=false traefik `
 
-2. Edit `traefik2/docker-compose.yml` for ACME email
+2. Edit `traefik2/docker-compose.yml`
+    - Change ACME email
+    - Change --providers.docker.network=traefik value if you created different network then `traefik`
 
 3. Deploy traefik
 
