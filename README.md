@@ -176,6 +176,8 @@ The following configurations are for using a compatible S3-implementation servic
 Optionally, the following configurations can also be used in any cases:
 - `S3_AUTOCREATE` (not set by default): Set to `1` to create the bucket if it doesn't exist. This requires that the keys given have permission to do this. 
 
+Check the [Nextcloud Documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html) for more information about using an object store services as primary storage.
+
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
 The apache image will replace the remote addr (ip address visible to Nextcloud) with the ip address from `X-Real-IP` if the request is coming from a proxy in 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16 by default. If you want Nextcloud to pick up the server host (`HTTP_X_FORWARDED_HOST`), protocol (`HTTP_X_FORWARDED_PROTO`) and client ip (`HTTP_X_FORWARDED_FOR`) from a trusted proxy disable rewrite ip and the reverse proxies ip address to `TRUSTED_PROXIES`.
