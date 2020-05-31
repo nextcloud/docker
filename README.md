@@ -159,6 +159,22 @@ To use an external SMTP server, you have to provide the connection details. To c
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
 
+Nextcloud allows to configure object storages like OpenStack Swift or Amazon Simple Storage Service (S3) or any compatible S3-implementation (e.g. Minio or Ceph Object Gateway) as primary storage replacing the default storage of files. The minimum required configuration for using S3 are:
+
+- `S3_ACCESS_KEY` (not set by default): Access key to authenticating access to the service.
+- `S3_SECRET_KEY` (not set by default): Secret key to authentication access to the service.
+- `S3_BUCKETNAME` (not set by default): The name of the bucket to use as primary storage.
+- `S3_REGION` (not set by default): Required for AWS S3; the region where the bucket is located in.
+
+The following configurations are for using a compatible S3-implementation service:
+
+- `S3_HOST` (not set by default): The hostname of the S3-implementation service.
+- `S3_PORT` (not set by default): The port to the S3-implementation service.
+- `S3_USE_SSL` (not set by default): Set to `1` to use SSL, set to `0` to use as unencrypted.
+- `S3_USE_PATH_STYLE` (not set by default): Set to `1` to use path-based URI to connect to the bucket, i.e.: `http://HOST/BUCKET`.  Set to `0` to use AWS S3-style subdomain-based URI: `http://BUCKET.HOST/`.
+
+Optionally, the following configurations can also be used in any cases:
+- `S3_AUTOCREATE` (not set by default): Set to `1` to create the bucket if it doesn't exist. This requires that the keys given have permission to do this. 
 
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
