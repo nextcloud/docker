@@ -45,6 +45,7 @@ RUN set -ex; \
     docker-php-ext-configure gmp --with-gmp="/usr/include/$debMultiarch"; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
     docker-php-ext-install -j "$(nproc)" \
+        bcmath \
         exif \
         gd \
         intl \
