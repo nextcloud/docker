@@ -54,6 +54,7 @@ RUN set -ex; \
         pdo_pgsql \
         zip \
         gmp \
+        bcmath \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
