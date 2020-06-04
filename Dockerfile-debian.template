@@ -47,6 +47,7 @@ RUN set -ex; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
         exif \
+        fileinfo \
         gd \
         intl \
         ldap \
