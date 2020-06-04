@@ -147,6 +147,15 @@ function create_variant() {
 			;;
 	esac
 
+	case "$version" in
+		16.*|17.*|18.* )
+			sed -ri -e '
+				\@bcmath@d;
+				' "$dir/Dockerfile"
+			;;
+
+	esac
+
 	# Copy the shell scripts
 	for name in entrypoint cron; do
 		cp "docker-$name.sh" "$dir/$name.sh"
