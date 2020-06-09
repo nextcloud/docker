@@ -23,9 +23,5 @@ if (getenv('SQLITE_DATABASE')) {
 }
 
 if ($autoconfig_enabled) {
-    if (getenv('NEXTCLOUD_TABLE_PREFIX')) {
-        $AUTOCONFIG["dbtableprefix"] = getenv('NEXTCLOUD_TABLE_PREFIX');
-    }
-
     $AUTOCONFIG["directory"] = getenv('NEXTCLOUD_DATA_DIR') ?: "/var/www/html/data";
 }
