@@ -5,7 +5,7 @@ if (getenv('OBJECTSTORE_S3_HOST')) {
       'class' => '\\OC\\Files\\ObjectStore\\S3',
       'arguments' => array(
         'bucket' => getenv('OBJECTSTORE_S3_BUCKET'),
-        'autocreate' => getenv('OBJECTSTORE_S3_AUTOCREATE') ?: true,
+        'autocreate' => getenv('OBJECTSTORE_S3_AUTOCREATE') ?: false,
         'key'    => getenv('OBJECTSTORE_S3_KEY'),
         'secret' => getenv('OBJECTSTORE_S3_SECRET'),
         'hostname' => getenv('OBJECTSTORE_S3_HOST'),
