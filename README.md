@@ -92,6 +92,8 @@ $ docker run -d \
 nextcloud
 ```
 
+Please note that anything inside `/var/www/html` will be removed by the installation script, except for `config`, `data`, `custom_apps`, `themes` and `version.php`. So make sure you do not leave other important files inside.
+
 ## Using the Nextcloud command-line interface
 To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
 ```console
@@ -478,6 +480,10 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
   4. Make sure your data directory is set to /var/www/html/data
   ```php
   'datadirectory' => '/var/www/html/data',
+  ```
+  5. Make sure your Nextcloud lives at the web root. Look for lines like
+  ```php
+  'overwrite.cli.url' => 'https://localhost/nextcloud',
   ```
 
 
