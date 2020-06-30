@@ -100,8 +100,6 @@ function check_beta_released() {
 	printf '%s\n' "${fullversions_beta[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
 }
 
-travisEnv=
-
 function create_variant() {
 	dir="$1/$variant"
 	phpVersion=${php_version[$version]-${php_version[default]}}
@@ -170,10 +168,6 @@ function create_variant() {
 	if [ "$variant" != "apache" ]; then
 		rm "$dir/config/apache-pretty-urls.config.php"
 	fi
-
-	for arch in i386 amd64; do
-		travisEnv='    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH='"$arch"'\n'"$travisEnv"
-	done
 }
 
 curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
@@ -260,11 +254,3 @@ for version in "${versions_alpha[@]}"; do
 		fi
 	fi
 done
-
-# remove everything after '- stage: test images'
-travis="$(awk '!p; /- stage: test images/ {p=1}' .travis.yml)"
-echo "$travis" > .travis.yml
-
-# replace the fist '-' with ' '
-travisEnv="$(echo "$travisEnv" | sed '0,/-/{s/-/ /}')"
-printf "$travisEnv" >> .travis.yml
