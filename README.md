@@ -133,7 +133,7 @@ One or more trusted domains can be set through environment variable, too. They w
 
 - `NEXTCLOUD_TRUSTED_DOMAINS` (not set by default) Optional space-separated list of domains
 
-The install and update script is only triggered when a default command is used (`apache2-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
+The install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
 
 - `NEXTCLOUD_UPDATE` (default: _0_)
 
