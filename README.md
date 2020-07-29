@@ -183,6 +183,8 @@ The easiest way to get a fully featured and functional setup is using a `docker-
 
 At first, make sure you have chosen the right base image (fpm or apache) and added features you wanted (see below). In every case, you  would want to add a database container and docker volumes to get easy access to your persistent data. When you want to have your server reachable from the internet, adding HTTPS-encryption is mandatory! See below for more information.
 
+The examples here use docker-compose on the same machine as the reverse gatway is assumed. If the nextclouod installation and the reverse gateway are on different machines or you are using a docker swarm, you need to relax the access restrictions a bit.
+
 ## Base version - apache
 This version will use the apache image and add a mariaDB container. The volumes are set to keep your data persistent. This setup provides **no ssl encryption** and is intended to run behind a proxy.
 
@@ -211,7 +213,7 @@ services:
   app:
     image: nextcloud
     ports:
-      - 8080:80
+      - 127.0.0.1:8080:80
     links:
       - db
     volumes:
@@ -220,7 +222,7 @@ services:
 
 ```
 
-Then run `docker-compose up -d`, now you can access Nextcloud at http://localhost:8080/ from your host system.
+Then run `docker-compose up -d`, now you can access Nextcloud at http://127.0.0.1:8080/ from your host system.
 
 ## Base version - FPM
 When using the FPM image, you need another container that acts as web server on port 80 and proxies the requests to the Nextcloud container. In this example a simple nginx container is combined with the Nextcloud-fpm image and a MariaDB database container. The data is stored in docker volumes. The nginx container also needs access to static files from your Nextcloud installation. It gets access to all the volumes mounted to Nextcloud via the `volumes_from` option.The configuration for nginx is stored in the configuration file `nginx.conf`, that is mounted into the container. An example can be found in the examples section [here](https://github.com/nextcloud/docker/tree/master/.examples).
@@ -260,7 +262,7 @@ services:
   web:
     image: nginx
     ports:
-      - 8080:80
+      - 127.0.0.1:8080:80
     links:
       - app
     volumes:
@@ -270,7 +272,7 @@ services:
     restart: always
 ```
 
-Then run `docker-compose up -d`, now you can access Nextcloud at http://localhost:8080/ from your host system.
+Then run `docker-compose up -d`, now you can access Nextcloud at http://127.0.0.1:8080/ from your host system.
 
 # Docker Secrets
 As an alternative to passing sensitive information via environment variables, _FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in /run/secrets/<secret_name> files. For example:
@@ -296,7 +298,7 @@ services:
     image: nextcloud
     restart: always
     ports:
-      - 8080:80
+      - 127.0.0.1:8080:80
     volumes:
       - nextcloud:/var/www/html
     environment:
@@ -335,7 +337,7 @@ secrets:
 Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DB`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER`.
 
 # Make your Nextcloud available from the internet
-Until here, your Nextcloud is just available from you docker host. If you want your Nextcloud available from the internet adding SSL encryption is mandatory.
+Until here, your Nextcloud is just available from you docker host as 127.0.0.1 using port 8080. If you want your Nextcloud available from the internet adding SSL encryption is mandatory.
 
 ## HTTPS - SSL encryption
 There are many different possibilities to introduce encryption depending on your setup.
