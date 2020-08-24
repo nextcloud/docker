@@ -5,7 +5,8 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         ffmpeg \
-        libmagickcore-6.q16-3-extra \
+        libmagickcore-6.q16-6-extra \
+        procps \
         smbclient \
         supervisor \
 #       libreoffice \
@@ -20,16 +21,13 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         libbz2-dev \
         libc-client-dev \
-        libgmp3-dev \
         libkrb5-dev \
         libsmbclient-dev \
     ; \
     \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
-    ln -s "/usr/include/$(dpkg-architecture --query DEB_BUILD_MULTIARCH)/gmp.h" /usr/include/gmp.h; \
     docker-php-ext-install \
         bz2 \
-        gmp \
         imap \
     ; \
     pecl install smbclient; \
@@ -54,8 +52,8 @@ RUN mkdir -p \
     /var/run/supervisord \
 ;
 
-COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY supervisord.conf /
 
 ENV NEXTCLOUD_UPDATE=1
 
-CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]

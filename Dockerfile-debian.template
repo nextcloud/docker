@@ -1,4 +1,4 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%-stretch
+FROM php:%%PHP_VERSION%%-%%VARIANT%%-buster
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -12,7 +12,7 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*; \
     \
     mkdir -p /var/spool/cron/crontabs; \
-    echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    echo '*/%%CRONTAB_INT%% * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
@@ -36,12 +36,16 @@ RUN set -ex; \
         libmagickwand-dev \
         libzip-dev \
         libwebp-dev \
+        libgmp-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
-    docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
+    if [ ! -e /usr/include/gmp.h ]; then ln -s /usr/include/$debMultiarch/gmp.h /usr/include/gmp.h; fi;\
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
+    docker-php-ext-configure gmp --with-gmp="/usr/include/$debMultiarch"; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
     docker-php-ext-install -j "$(nproc)" \
+        bcmath \
         exif \
         gd \
         intl \
@@ -51,6 +55,7 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
+        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
@@ -122,8 +127,8 @@ RUN set -ex; \
     gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
     gpgconf --kill all; \
-    rm -r "$GNUPGHOME" nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    rm -rf /usr/src/nextcloud/updater; \
+    rm nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
+    rm -rf "$GNUPGHOME" /usr/src/nextcloud/updater; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \

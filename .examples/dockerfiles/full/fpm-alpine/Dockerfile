@@ -5,6 +5,7 @@ RUN set -ex; \
     apk add --no-cache \
         ffmpeg \
         imagemagick \
+        procps \
         samba-client \
         supervisor \
 #       libreoffice \
@@ -16,16 +17,14 @@ RUN set -ex; \
         $PHPIZE_DEPS \
         imap-dev \
         krb5-dev \
-        libressl-dev \
+        openssl-dev \
         samba-dev \
         bzip2-dev \
-        gmp-dev \
     ; \
     \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install \
         bz2 \
-        gmp \
         imap \
     ; \
     pecl install smbclient; \
@@ -45,8 +44,8 @@ RUN mkdir -p \
     /var/run/supervisord \
 ;
 
-COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY supervisord.conf /
 
 ENV NEXTCLOUD_UPDATE=1
 
-CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]

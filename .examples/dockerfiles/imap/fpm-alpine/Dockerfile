@@ -6,7 +6,7 @@ RUN set -ex; \
         $PHPIZE_DEPS \
         imap-dev \
         krb5-dev \
-        libressl-dev \
+        openssl-dev \
     ; \
     \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \

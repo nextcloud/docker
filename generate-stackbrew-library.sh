@@ -2,8 +2,8 @@
 set -Eeuo pipefail
 
 declare -A release_channel=(
-	[stable]='16.0.1'
-	[production]='15.0.8'
+	[stable]='18.0.7'
+	[production]='17.0.8'
 )
 
 self="$(basename "$BASH_SOURCE")"
@@ -67,11 +67,7 @@ join() {
 	echo "${out#$sep}"
 }
 
-latest=$( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
-	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
-	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' | \
-	sort -uV | \
-	tail -1 )
+latest=$( cat latest.txt )
 
 # Generate each of the tags.
 versions=( */ )

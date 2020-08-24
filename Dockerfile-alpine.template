@@ -1,4 +1,4 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%3.10
+FROM php:%%PHP_VERSION%%-%%VARIANT%%3.12
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -8,7 +8,7 @@ RUN set -ex; \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
-    echo '*/15 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    echo '*/%%CRONTAB_INT%% * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
@@ -31,11 +31,13 @@ RUN set -ex; \
         postgresql-dev \
         imagemagick-dev \
         libwebp-dev \
+        gmp-dev \
     ; \
     \
-    docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
     docker-php-ext-configure ldap; \
     docker-php-ext-install -j "$(nproc)" \
+        bcmath \
         exif \
         gd \
         intl \
@@ -45,6 +47,7 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
+        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
@@ -109,8 +112,8 @@ RUN set -ex; \
     gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
     gpgconf --kill all; \
-    rm -r "$GNUPGHOME" nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    rm -rf /usr/src/nextcloud/updater; \
+    rm nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
+    rm -rf "$GNUPGHOME" /usr/src/nextcloud/updater; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \

@@ -2,8 +2,9 @@
 set -eo pipefail
 
 declare -A php_version=(
-	[default]='7.3'
-	[14.0]='7.2'
+	[default]='7.4'
+	[18.0]='7.3'
+	[17.0]='7.3'
 )
 
 declare -A cmd=(
@@ -19,9 +20,13 @@ declare -A base=(
 )
 
 declare -A extras=(
-	[apache]='\nRUN a2enmod rewrite remoteip ;\\\n    {\\\n     echo RemoteIPHeader X-Real-IP ;\\\n     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\\\n     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\\\n     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\\\n    } > /etc/apache2/conf-available/remoteip.conf;\\\n    a2enconf remoteip'
+	[apache]='\nRUN a2enmod headers rewrite remoteip ;\\\n    {\\\n     echo RemoteIPHeader X-Real-IP ;\\\n     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\\\n     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\\\n     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\\\n    } > /etc/apache2/conf-available/remoteip.conf;\\\n    a2enconf remoteip'
 	[fpm]=''
 	[fpm-alpine]=''
+)
+
+declare -A crontab_int=(
+	[default]='5'
 )
 
 apcu_version="$(
@@ -63,7 +68,7 @@ imagick_version="$(
 declare -A pecl_versions=(
 	[APCu]="$apcu_version"
 	[memcached]="$memcached_version"
-	[redis]="4.3.0"
+	[redis]="$redis_version"
 	[imagick]="$imagick_version"
 )
 
@@ -73,7 +78,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='14.0'
+min_version='17.0'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -95,11 +100,10 @@ function check_beta_released() {
 	printf '%s\n' "${fullversions_beta[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
 }
 
-travisEnv=
-
 function create_variant() {
 	dir="$1/$variant"
 	phpVersion=${php_version[$version]-${php_version[default]}}
+	crontabInt=${crontab_int[$version]-${crontab_int[default]}}
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
@@ -122,13 +126,32 @@ function create_variant() {
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
+		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
 
-	if [[ "$phpVersion" != 7.3 ]]; then
-		sed -ri \
-			-e '/libzip-dev/d' \
-			"$dir/Dockerfile"
-	fi
+	case "$phpVersion" in
+		7.4 )
+			sed -ri -e '
+				\@docker-php-ext-configure gmp --with-gmp@d;
+				\@/usr/include/gmp.h@d;
+				' "$dir/Dockerfile"
+			;;
+		7.3 )
+			sed -ri -e '
+				s@gd --with-freetype --with-jpeg --with-webp@gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr@g;
+				' "$dir/Dockerfile"
+			;;
+	esac
+
+	case "$version" in
+		17.*|18.* )
+			sed -ri -e '
+				\@bcmath@d;
+				s/'"redis-${pecl_versions[redis]}"'/redis-4.3.0/g;
+				' "$dir/Dockerfile"
+			;;
+
+	esac
 
 	# Copy the shell scripts
 	for name in entrypoint cron; do
@@ -145,11 +168,13 @@ function create_variant() {
 	if [ "$variant" != "apache" ]; then
 		rm "$dir/config/apache-pretty-urls.config.php"
 	fi
-
-	for arch in i386 amd64; do
-		travisEnv='    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH='"$arch"'\n'"$travisEnv"
-	done
 }
+
+curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
+	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
+	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' | \
+	sort -uV | \
+	tail -1 > latest.txt
 
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\|-alpha\)\?' -exec rm -r '{}' \;
 
@@ -229,11 +254,3 @@ for version in "${versions_alpha[@]}"; do
 		fi
 	fi
 done
-
-# remove everything after '- stage: test images'
-travis="$(awk '!p; /- stage: test images/ {p=1}' .travis.yml)"
-echo "$travis" > .travis.yml
-
-# replace the fist '-' with ' '
-travisEnv="$(echo "$travisEnv" | sed '0,/-/{s/-/ /}')"
-printf "$travisEnv" >> .travis.yml

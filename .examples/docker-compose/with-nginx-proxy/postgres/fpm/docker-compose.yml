@@ -16,7 +16,6 @@ services:
       - nextcloud:/var/www/html
     environment:
       - POSTGRES_HOST=db
-      - POSTGRES_DB=nextcloud
     env_file:
       - db.env
     depends_on:
