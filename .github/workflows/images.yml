@@ -2,9 +2,11 @@ name: Images
 
 on:
   pull_request:
-  push:
-  schedule:
-    - cron: 0 0 * * *
+  workflow_run:
+    workflows: ["update.sh"]
+    branches: [master]
+    types: 
+      - completed
 
 defaults:
   run:
