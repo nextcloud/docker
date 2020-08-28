@@ -20,7 +20,7 @@ jobs:
         git config --local user.email "workflow@github.com"
         git config --local user.name "GitHub Workflow"
         git add ./*
-        git commit -m "Runs update.sh"
+        git commit -m "Runs update.sh" || echo "Nothing to update"
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
