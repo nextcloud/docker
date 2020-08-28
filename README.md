@@ -158,18 +158,6 @@ To use an external SMTP server, you have to provide the connection details. To c
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
 
-To use an external S3 compatible object store as primary storage, set the following variables:
-- `OBJECTSTORE_S3_HOST`: The hostname of the object storage server
-- `OBJECTSTORE_S3_BUCKET`: The name of the bucket that Nextcloud should store the data in
-- `OBJECTSTORE_S3_KEY`: AWS style access key
-- `OBJECTSTORE_S3_SECRET`: AWS style secret access key
-- `OBJECTSTORE_S3_PORT`: The port that the object storage server is being served over
-- `OBJECTSTORE_S3_SSL` (default: `true`): Whether or not SSL/TLS should be used to communicate with object storage server
-- `OBJECTSTORE_S3_REGION`: The region that the S3 bucket resides in.
-- `OBJECTSTORE_S3_USEPATH_STYLE` (default: `false`): Not required for AWS S3
-
-Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#simple-storage-service-s3) for more information.
-
 
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
