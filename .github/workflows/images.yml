@@ -37,6 +37,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Prepare Environment
         run: ${{ matrix.runs.prepare }}
+      - name: Run update.sh script
+        run: ./update.sh
       - name: Pull Dependencies
         run: ${{ matrix.runs.pull }}
       - name: Build ${{ matrix.name }}
