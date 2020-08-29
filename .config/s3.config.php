@@ -1,4 +1,3 @@
-
 <?php
 if (getenv('OBJECTSTORE_S3_BUCKET')) {
   $use_ssl = getenv('OBJECTSTORE_S3_SSL');
