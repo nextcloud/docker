@@ -12,10 +12,10 @@ services:
       - POSTGRES_PASSWORD=nextcloud
 
   app:
-    image: nextcloud
+    image: nextcloud:unprivileged
     restart: always
     ports:
-      - 8080:80
+      - 8080:8080
     volumes:
       - nextcloud:/var/www/html
     environment:
@@ -27,7 +27,7 @@ services:
       - db
 
   cron:
-    image: nextcloud
+    image: nextcloud:unprivileged
     restart: always
     volumes:
       - nextcloud:/var/www/html

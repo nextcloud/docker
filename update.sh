@@ -7,22 +7,40 @@ declare -A php_version=(
 	[17.0]='7.3'
 )
 
+declare -A image_tag=(
+	[apache]='apache'
+	[apache-unprivileged]='apache'
+	[fpm]='fpm'
+	[fpm-unprivileged]='fpm'
+	[fpm-alpine]='fpm-alpine'
+	[fpm-alpine-unprivileged]='fpm-alpine'
+)
+
 declare -A cmd=(
 	[apache]='apache2-foreground'
+	[apache-unprivileged]='apache2-foreground'
 	[fpm]='php-fpm'
+	[fpm]='php-fpm'
+	[fpm-alpine]='php-fpm'
 	[fpm-alpine]='php-fpm'
 )
 
 declare -A base=(
 	[apache]='debian'
+	[apache-unprivileged]='debian'
 	[fpm]='debian'
+	[fpm-unprivileged]='debian'
 	[fpm-alpine]='alpine'
+	[fpm-alpine-unprivileged]='alpine'
 )
 
 declare -A extras=(
 	[apache]='\nRUN a2enmod headers rewrite remoteip ;\\\n    {\\\n     echo RemoteIPHeader X-Real-IP ;\\\n     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\\\n     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\\\n     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\\\n    } > /etc/apache2/conf-available/remoteip.conf;\\\n    a2enconf remoteip'
+	[apache-unprivileged]='\nRUN a2enmod headers rewrite remoteip ;\\\n    {\\\n     echo RemoteIPHeader X-Real-IP ;\\\n     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\\\n     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\\\n     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\\\n    } > /etc/apache2/conf-available/remoteip.conf;\\\n    a2enconf remoteip\n\nRUN set -ex; \\\n    sed -i "s/Listen 80/Listen 8080/" /etc/apache2/ports.conf; \\\n    sed -i "s/VirtualHost *:80/VirtualHost *:8080/" /etc/apache2/sites-available/*.conf\n\nEXPOSE 8080'
 	[fpm]=''
+	[fpm-unprivileged]=''
 	[fpm-alpine]=''
+	[fpm-alpine-unprivileged]=''
 )
 
 declare -A crontab_int=(
@@ -74,8 +92,11 @@ declare -A pecl_versions=(
 
 variants=(
 	apache
+	apache-unprivileged
 	fpm
+	fpm-unprivileged
 	fpm-alpine
+	fpm-alpine-unprivileged
 )
 
 min_version='17.0'
@@ -114,10 +135,16 @@ function create_variant() {
 
 	echo "updating $fullversion [$1] $variant"
 
+	if [[ "$variant" == *-unprivileged ]]; then
+		unprivileged_user="\nUSER www-data\n"
+	else
+		unprivileged_user=""
+	fi
+
 	# Replace the variables.
 	sed -ri -e '
 		s/%%PHP_VERSION%%/'"$phpVersion"'/g;
-		s/%%VARIANT%%/'"$variant"'/g;
+		s/%%VARIANT%%/'"${image_tag[$variant]}"'/g;
 		s/%%VERSION%%/'"$fullversion"'/g;
 		s/%%BASE_DOWNLOAD_URL%%/'"$2"'/g;
 		s/%%CMD%%/'"${cmd[$variant]}"'/g;
@@ -125,8 +152,9 @@ function create_variant() {
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
-		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
-		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
+    s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
+    s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
+		s/%%USER%%/'"$unprivileged_user"'/g;
 	' "$dir/Dockerfile"
 
 	case "$phpVersion" in
@@ -165,7 +193,7 @@ function create_variant() {
 	cp -rT .config "$dir/config"
 
 	# Remove Apache config if we're not an Apache variant.
-	if [ "$variant" != "apache" ]; then
+	if [ "$variant" != "apache" ] && [ "$variant" != "apache-unprivileged" ]; then
 		rm "$dir/config/apache-pretty-urls.config.php"
 	fi
 }
