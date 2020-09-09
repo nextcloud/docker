@@ -170,6 +170,20 @@ To use an external S3 compatible object store as primary storage, set the follow
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#simple-storage-service-s3) for more information.
 
+To use an external OpenStack Swift object store as primary storage, set the following variables:
+- `OBJECTSTORE_SWIFT_URL`: The Swift identity (Keystone) endpoint
+- `OBJECTSTORE_SWIFT_AUTOCREATE` (default: `false`): Whether or not Nextcloud should automatically create the Swift container
+- `OBJECTSTORE_SWIFT_USER_NAME`: Swift username
+- `OBJECTSTORE_SWIFT_USER_PASSWORD`: Swift user password
+- `OBJECTSTORE_SWIFT_USER_DOMAIN` (default: `Default`): Swift user domain 
+- `OBJECTSTORE_SWIFT_PROJECT_NAME`: OpenStack project name
+- `OBJECTSTORE_SWIFT_PROJECT_DOMAIN` (default: `Default`): OpenStack project domain
+- `OBJECTSTORE_SWIFT_SERVICE_NAME` (default: `swift`): Swift service name
+- `OBJECTSTORE_SWIFT_SERVICE_REGION`: Swift endpoint region
+- `OBJECTSTORE_SWIFT_CONTAINER_NAME`: Swift container (bucket) that Nextcloud should store the data in
+
+Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#openstack-swift) for more information.
+
 
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
