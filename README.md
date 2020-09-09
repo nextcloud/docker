@@ -120,6 +120,11 @@ __PostgreSQL__:
 - `POSTGRES_PASSWORD` Password for the database user using postgres.
 - `POSTGRES_HOST` Hostname of the database server using postgres.
 
+__CRON__:  
+If you want to use the built-in cron-service, then just the following variable:  
+* `START_CRON` to `true`
+
+
 If you set any values, they will not be asked in the install page on first run. With a complete configuration by using all variables for your database type, you can additionally configure your Nextcloud instance by setting admin user and password (only works if you set both):
 
 - `NEXTCLOUD_ADMIN_USER` Name of the Nextcloud admin user.

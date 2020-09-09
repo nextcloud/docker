@@ -187,6 +187,7 @@ fi
 
 
 if [ "${START_CRON}" = "true" ]; then
+  echo "Starting CRON."
   sh /cron.sh &
 fi
 
