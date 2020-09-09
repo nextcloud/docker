@@ -185,4 +185,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     fi
 fi
 
+if [ "${START_CRON}" = "true" ]; then
+  echo "Starting CRON."
+  sh /cron.sh &
+fi
+
+
 exec "$@"
