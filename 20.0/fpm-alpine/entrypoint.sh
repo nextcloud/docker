@@ -168,6 +168,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                             NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
                         done
                     fi
+
+                    if [ -n "${NEXTCLOUD_CUSTOM_INSTALL_SCRIPT+x}" ]; then
+                        run_as "${NEXTCLOUD_CUSTOM_INSTALL_SCRIPT}"
+                    fi
                 else
                     echo "running web-based installer on first connect!"
                 fi

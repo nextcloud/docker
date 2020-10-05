@@ -133,6 +133,10 @@ One or more trusted domains can be set through environment variable, too. They w
 
 - `NEXTCLOUD_TRUSTED_DOMAINS` (not set by default) Optional space-separated list of domains
 
+To install custom apps, or execute occ commands, you can provide the path to a script that is run in the context of the www-data user.
+
+- `NEXTCLOUD_CUSTOM_INSTALL_SCRIPT` (not set by default) The path to a script that is mounted as volume.
+
 The install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
 
 - `NEXTCLOUD_UPDATE` (default: _0_)
