@@ -170,7 +170,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     fi
 
                     if [ -n "${NEXTCLOUD_CUSTOM_INSTALL_SCRIPT+x}" ]; then
-                        run_as "${NEXTCLOUD_CUSTOM_INSTALL_SCRIPT}"
+                        run_as "/bin/sh ${NEXTCLOUD_CUSTOM_INSTALL_SCRIPT}"
                     fi
                 else
                     echo "running web-based installer on first connect!"
