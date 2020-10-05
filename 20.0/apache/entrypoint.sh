@@ -168,6 +168,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                             NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
                         done
                     fi
+                    if [ -n "${NEXTCLOUD_INSTALL_APPS+x}" ]; then
+                        echo "Install apps…"
+                        echo "$NEXTCLOUD_INSTALL_APPS" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr " " \\n | while read APP; do
+                            run_as "php /var/www/html/occ app:install -n $APP"
+                        done
+                    fi
                 else
                     echo "running web-based installer on first connect!"
                 fi
