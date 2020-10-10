@@ -151,7 +151,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     try=0
                     
                     file_env NEXTCLOUD_TRUSTED_DOMAINS
-
+                    
                     until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]
                     do
                         echo "retrying install..."
