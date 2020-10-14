@@ -12,6 +12,7 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     \
+    busybox --install -s; \
     mkdir -p /var/spool/cron/crontabs; \
     echo '*/5 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
