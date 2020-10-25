@@ -14,6 +14,7 @@ services:
 
   redis:
     image: redis:alpine
+    command: redis-server --requirepass secretredispassword
     restart: always
 
   app:
