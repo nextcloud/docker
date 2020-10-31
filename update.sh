@@ -4,7 +4,6 @@ set -eo pipefail
 declare -A php_version=(
 	[default]='7.4'
 	[18.0]='7.3'
-	[17.0]='7.3'
 )
 
 declare -A cmd=(
@@ -78,7 +77,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='17.0'
+min_version='18.0'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -144,7 +143,7 @@ function create_variant() {
 	esac
 
 	case "$version" in
-		17.*|18.* )
+		18.* )
 			sed -ri -e '
 				\@bcmath@d;
 				s/'"redis-${pecl_versions[redis]}"'/redis-4.3.0/g;
