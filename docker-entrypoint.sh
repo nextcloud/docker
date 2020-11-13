@@ -6,6 +6,11 @@ version_greater() {
     [ "$(printf '%s\n' "$@" | sort -t '.' -n -k1,1 -k2,2 -k3,3 -k4,4 | head -n 1)" != "$1" ]
 }
 
+# illegal_upgrade will notify if the major versions are too far apart
+illegal_upgrade() {
+    [ $(( 1 + "$( echo $1 | cut -d. -f1 - )" )) -lt "$(echo $2 | cut -d. -f1 -)" ]
+}
+
 # return true if specified directory is empty
 directory_empty() {
     [ -z "$(ls -A "$1/")" ]
@@ -87,6 +92,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     if version_greater "$image_version" "$installed_version"; then
         echo "Initializing nextcloud $image_version ..."
         if [ "$installed_version" != "0.0.0.0" ]; then
+            if illegal_upgrade "$installed_version" "$image_version"; then
+                echo "Can only upgrade Nextcloud one major version at a time. Please upgrade your installation incrementally."
+                exit 1
+            fi
             echo "Upgrading nextcloud from $installed_version ..."
             run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
         fi
