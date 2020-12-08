@@ -106,7 +106,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 19.0.6RC1
+ENV NEXTCLOUD_VERSION 19.0.6RC2
 
 RUN set -ex; \
     fetchDeps=" \
