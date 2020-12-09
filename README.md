@@ -285,9 +285,14 @@ services:
     image: nextcloud:fpm
     links:
       - db
+    restart: always
     volumes:
       - nextcloud:/var/www/html
-    restart: always
+    environment:
+      - MYSQL_PASSWORD=
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
 
   web:
     image: nginx
