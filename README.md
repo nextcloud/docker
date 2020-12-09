@@ -241,9 +241,14 @@ services:
       - 8080:80
     links:
       - db
+    restart: always
     volumes:
       - nextcloud:/var/www/html
-    restart: always
+    environment:
+      - MYSQL_PASSWORD=
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
 
 ```
 
