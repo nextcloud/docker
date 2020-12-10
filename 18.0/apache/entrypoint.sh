@@ -43,6 +43,22 @@ file_env() {
     unset "$fileVar"
 }
 
+# change uid/gid of www-data
+if [ "$(id -u)" = 0 ]; then
+    CURRENT_UID=$(id -u www-data)
+    CURRENT_GID=$(id -g www-data)
+    if [ -n "${UID+x}" ] && [ "$UID" -ne $CURRENT_UID ]; then
+        echo "Change UID of www-data from $CURRENT_UID to $UID"
+        usermod -u $UID www-data
+        find / -xdev -user $CURRENT_UID -exec chown -h www-data {} \;
+    fi
+    if [ -n "${GID+x}" ] && [ "$GID" -ne $CURRENT_GID ]; then
+        echo "Change GID of www-data from $CURRENT_GID to $GID"
+        groupmod -g $GID www-data
+        find / -xdev -group $CURRENT_GID -exec chgrp -h www-data {} \;
+    fi
+fi
+
 if expr "$1" : "apache" 1>/dev/null; then
     if [ -n "${APACHE_DISABLE_REWRITE_IP+x}" ]; then
         a2disconf remoteip
