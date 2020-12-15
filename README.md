@@ -309,6 +309,41 @@ services:
 
 Then run `docker-compose up -d`, now you can access Nextcloud at http://localhost:8080/ from your host system.
 
+# Health check and Cron Trigger
+
+Since the Nextcloud Cron jobs can be triggered by calling an URL like for example:
+
+```code
+  http[s]://<domain-of-your-server>/nextcloud/cron.php
+```
+it is possible to combine the Docker Health Check feature (supported from version 2.1 of docker-compose file) with the need to trigger the nexcloud cron jobs regularly without extra efforts like extra Docker containers, external webcron providers or complicated steps to get some internal cron or cron like jobs running. Here is an example how one can trigger the nextcloud Cron jobs and mark the nextcloud container healthy (in case of success) at one time:
+```yaml
+version: '2.3'
+...
+  app:
+    image: nextcloud:fpm
+    links:
+      - db
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_PASSWORD=
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
+    #healthcheck:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/cron.php"]
+      interval: 5m
+      timeout: 5s
+      retries: 2
+      #set depended on the startup time of your installation; added in v2.3
+      start_period: 60s
+...
+```
+Although calling this URL doesn't mean your container is totally healthy, it's already a good hint for it and better then the default, where no healtch check is executed. When using this kind of Cron job trigger, nextcloud should be configured to use the **Webcron** method in the nextcloud settings page.
+
 # Docker Secrets
 As an alternative to passing sensitive information via environment variables, _FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in /run/secrets/<secret_name> files. For example:
 ```yaml
