@@ -36,9 +36,7 @@ Now you can access Nextcloud at http://localhost:8080/ from your host system.
 
 
 ## Using the fpm image
-To use the fpm image, you need an additional web server that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases, you might want use another container or your host as proxy.
-If you use your host you can address your Nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file).
-In both cases you don't want to map the fpm port to your host.
+To use the fpm image, you need an additional web server that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases, you might want use another container or your host as proxy. If you use your host you can address your Nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file). In both cases you don't want to map the fpm port to your host.
 
 ```console
 $ docker run -d nextcloud:fpm
@@ -50,12 +48,12 @@ As the fastCGI-Process is not capable of serving static files (style sheets, ima
 By default, this container uses SQLite for data storage but the Nextcloud setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB or PostgreSQL database. You can also link a database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup. More info is in the docker-compose section.
 
 ## Persistent data
-The Nextcloud installation and all data beyond what lives in the database (file uploads, etc) are stored in the [unnamed docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) volume `/var/www/html`. The docker daemon will store that data within the docker directory `/var/lib/docker/volumes/...`. That means your data is saved even if the container crashes, is stopped or deleted.
+The Nextcloud installation and all data beyond what lives in the database (file uploads, etc.) are stored in the [unnamed docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) volume `/var/www/html`. The docker daemon will store that data within the docker directory `/var/lib/docker/volumes/...`. That means your data is saved even if the container crashes, is stopped or deleted.
 
 A named Docker volume or a mounted host directory should be used for upgrades and backups. To achieve this, you need one volume for your database container and one for Nextcloud.
 
 Nextcloud:
-- `/var/www/html/` folder where all nextcloud data lives
+- `/var/www/html/` folder where all Nextcloud data lives
 ```console
 $ docker run -d \
 -v nextcloud:/var/www/html \
@@ -71,8 +69,7 @@ $ docker run -d \
 mariadb
 ```
 
-If you want to get fine grained access to your individual files, you can mount additional volumes for data, config, your theme and custom apps.
-The `data`, `config` files are stored in respective subfolders inside `/var/www/html/`. The apps are split into core `apps` (which are shipped with Nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use a custom theme it would go into the `themes` subfolder.
+If you want to get fine grained access to your individual files, you can mount additional volumes for data, config, your theme and custom apps. The `data`, `config` files are stored in respective subfolders inside `/var/www/html/`. The apps are split into core `apps` (which are shipped with Nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use a custom theme it would go into the `themes` subfolder.
 
 Overview of the folders that can be mounted as volumes:
 
@@ -104,7 +101,7 @@ $ docker-compose exec --user www-data app php occ
 ```
 
 ## Auto configuration via environment variables
-The nextcloud image supports auto configuration via environment variables. You can preconfigure everything that is asked on the install page on first run. To enable auto configuration, set your database connection via the following environment variables. ONLY use one database type!
+The Nextcloud image supports auto configuration via environment variables. You can preconfigure everything that is asked on the install page on first run. To enable auto configuration, set your database connection via the following environment variables. ONLY use one database type!
 
 __SQLite__:
 - `SQLITE_DATABASE` Name of the database using sqlite
@@ -128,7 +125,7 @@ If you set any values, they will not be asked in the install page on first run. 
 
 If you want, you can set the data directory, otherwise default value will be used.
 
-- `NEXTCLOUD_DATA_DIR` (default: _/var/www/html/data_) Configures the data directory where nextcloud stores all files from the users.
+- `NEXTCLOUD_DATA_DIR` (default: `/var/www/html/data`) Configures the data directory where nextcloud stores all files from the users.
 
 One or more trusted domains can be set through environment variable, too. They will be added to the configuration after install.
 
@@ -136,12 +133,12 @@ One or more trusted domains can be set through environment variable, too. They w
 
 The install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
 
-- `NEXTCLOUD_UPDATE` (default: _0_)
+- `NEXTCLOUD_UPDATE` (default: `0`)
 
 If you want to use Redis you have to create a separate [Redis](https://hub.docker.com/_/redis/) container in your setup / in your docker-compose file. To inform Nextcloud about the Redis container, pass in the following parameters:
 
 - `REDIS_HOST` (not set by default) Name of Redis container
-- `REDIS_HOST_PORT` (default: _6379_) Optional port for Redis, only use for external Redis servers that run on non-standard ports.
+- `REDIS_HOST_PORT` (default: `6379`) Optional port for Redis, only use for external Redis servers that run on non-standard ports.
 - `REDIS_HOST_PASSWORD` (not set by default) Redis password
 
 The use of Redis is recommended to prevent file locking problems. See the examples for further instructions.
@@ -176,7 +173,7 @@ To use an external OpenStack Swift object store as primary storage, set the foll
 - `OBJECTSTORE_SWIFT_AUTOCREATE` (default: `false`): Whether or not Nextcloud should automatically create the Swift container
 - `OBJECTSTORE_SWIFT_USER_NAME`: Swift username
 - `OBJECTSTORE_SWIFT_USER_PASSWORD`: Swift user password
-- `OBJECTSTORE_SWIFT_USER_DOMAIN` (default: `Default`): Swift user domain 
+- `OBJECTSTORE_SWIFT_USER_DOMAIN` (default: `Default`): Swift user domain
 - `OBJECTSTORE_SWIFT_PROJECT_NAME`: OpenStack project name
 - `OBJECTSTORE_SWIFT_PROJECT_DOMAIN` (default: `Default`): OpenStack project domain
 - `OBJECTSTORE_SWIFT_SERVICE_NAME` (default: `swift`): Swift service name
@@ -208,7 +205,7 @@ Keep in mind that once set, removing these environment variables won't remove th
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
 
-At first, make sure you have chosen the right base image (fpm or apache) and added features you wanted (see below). In every case, you  would want to add a database container and docker volumes to get easy access to your persistent data. When you want to have your server reachable from the internet, adding HTTPS-encryption is mandatory! See below for more information.
+At first, make sure you have chosen the right base image (fpm or apache) and added features you wanted (see below). In every case, you would want to add a database container and docker volumes to get easy access to your persistent data. When you want to have your server reachable from the internet, adding HTTPS-encryption is mandatory! See below for more information.
 
 ## Base version - apache
 This version will use the apache image and add a mariaDB container. The volumes are set to keep your data persistent. This setup provides **no ssl encryption** and is intended to run behind a proxy.
@@ -225,8 +222,8 @@ volumes:
 services:
   db:
     image: mariadb
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
     environment:
@@ -237,11 +234,11 @@ services:
 
   app:
     image: nextcloud
+    restart: always
     ports:
       - 8080:80
     links:
       - db
-    restart: always
     volumes:
       - nextcloud:/var/www/html
     environment:
@@ -271,8 +268,8 @@ volumes:
 services:
   db:
     image: mariadb
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
     environment:
@@ -283,9 +280,9 @@ services:
 
   app:
     image: nextcloud:fpm
+    restart: always
     links:
       - db
-    restart: always
     volumes:
       - nextcloud:/var/www/html
     environment:
@@ -296,6 +293,7 @@ services:
 
   web:
     image: nginx
+    restart: always
     ports:
       - 8080:80
     links:
@@ -304,7 +302,6 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     volumes_from:
       - app
-    restart: always
 ```
 
 Then run `docker-compose up -d`, now you can access Nextcloud at http://localhost:8080/ from your host system.
@@ -408,8 +405,7 @@ $ docker-compose up -d
 
 
 # Adding Features
-A lot of people want to use additional functionality inside their Nextcloud installation. If the image does not include the packages you need, you can easily build your own image on top of it.
-Start your derived image with the `FROM` statement and add whatever you like.
+A lot of people want to use additional functionality inside their Nextcloud installation. If the image does not include the packages you need, you can easily build your own image on top of it. Start your derived image with the `FROM` statement and add whatever you like.
 
 ```yaml
 FROM nextcloud:apache
@@ -424,13 +420,13 @@ If you use your own Dockerfile, you need to configure your docker-compose file a
 ```yaml
   app:
     build: .
+    restart: always
     links:
       - db
     volumes:
       - data:/var/www/html/data
       - config:/var/www/html/config
       - apps:/var/www/html/apps
-    restart: always
 ```
 
 If you intend to use another command to run the image, make sure that you set `NEXTCLOUD_UPDATE=1` in your Dockerfile. Otherwise the installation and update will not work.
@@ -490,12 +486,13 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
       ```
   2. Make sure you have no configuration for the `apps_paths`. Delete lines like these
   ```diff
-  - "apps_paths" => array (
-  -    0 => array (
-  -            "path"     => OC::$SERVERROOT."/apps",
-  -            "url"      => "/apps",
-  -            "writable" => true,
-  -    ),
+  - 'apps_paths' => array (
+  -     0 => array (
+  -         'path' => OC::$SERVERROOT.'/apps',
+  -         'url' => '/apps',
+  -         'writable' => true,
+  -     ),
+  - ),
   ```
   3. Make sure to have the `apps` directory non writable and the `custom_apps` directory writable
   ```php
