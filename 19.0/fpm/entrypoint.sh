@@ -54,6 +54,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
         echo "Configuring Redis as session handler"
         {
+            file_env REDIS_HOST_PASSWORD
             echo 'session.save_handler = redis'
             # check if redis host is an unix socket path
             if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
