@@ -146,7 +146,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     install=true
                 fi
 
-                if [ "$install" = true ]; then
+                if [ ! -f "/var/www/html/config/config.php" ] && [ "$install" = true ]; then
                     echo "starting nextcloud installation"
                     max_retries=10
                     try=0
