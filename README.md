@@ -101,7 +101,7 @@ $ docker-compose exec --user www-data app php occ
 ```
 
 ## Auto configuration via environment variables
-The Nextcloud image supports auto configuration via environment variables. You can preconfigure everything that is asked on the install page on first run. To enable auto configuration, set your database connection via the following environment variables. ONLY use one database type!
+The Nextcloud image supports auto configuration via environment variables. You can preconfigure everything that is asked on the install page on first run. To enable auto configuration, set your database connection via the following environment variables. You must specify all of the environment variables for a given database or the database environment variables defaults to SQLITE. ONLY use one database type!
 
 __SQLite__:
 - `SQLITE_DATABASE` Name of the database using sqlite
