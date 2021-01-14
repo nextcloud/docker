@@ -75,6 +75,7 @@ RUN set -ex; \
 
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+ENV PHP_INI_MEMORY_LIMIT %%PHP_INI_MEMORY_LIMIT%%
 RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.interned_strings_buffer=8'; \
@@ -86,7 +87,7 @@ RUN { \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
-    echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini; \
+    touch /usr/local/etc/php/conf.d/memory-limit.ini; \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
