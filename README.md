@@ -185,9 +185,9 @@ Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/adm
 
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
-The apache image will replace the remote addr (ip address visible to Nextcloud) with the ip address from `X-Real-IP` if the request is coming from a proxy in 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16 by default. If you want Nextcloud to pick up the server host (`HTTP_X_FORWARDED_HOST`), protocol (`HTTP_X_FORWARDED_PROTO`) and client ip (`HTTP_X_FORWARDED_FOR`) from a trusted proxy disable rewrite ip and the reverse proxies ip address to `TRUSTED_PROXIES`.
+The apache image will replace the remote addr (ip address visible to Nextcloud) with the ip address from `X-Real-IP` if the request is coming from a proxy in 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16 by default. If you want Nextcloud to pick up the server host (`HTTP_X_FORWARDED_HOST`), protocol (`HTTP_X_FORWARDED_PROTO`) and client IP (`HTTP_X_FORWARDED_FOR`) from a trusted proxy, then disable rewrite IP and add the reverse proxy's IP address to `TRUSTED_PROXIES`.
 
-- `APACHE_DISABLE_REWRITE_IP` (not set by default): Set to 1 to disable rewrite ip.
+- `APACHE_DISABLE_REWRITE_IP` (not set by default): Set to 1 to disable rewrite IP.
 
 - `TRUSTED_PROXIES` (empty by default): A space-separated list of trusted proxies. CIDR notation is supported for IPv4.
 
