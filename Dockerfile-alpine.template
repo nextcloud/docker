@@ -32,10 +32,7 @@ RUN set -ex; \
         imagemagick-dev \
         libwebp-dev \
         gmp-dev \
-    ; \
-    \
-    apk add --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
-	    gnu-libiconv \
+        gnu-libiconv \
 	    php7-iconv \
     ; \
     \
