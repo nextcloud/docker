@@ -182,6 +182,10 @@ To use an external OpenStack Swift object store as primary storage, set the foll
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#openstack-swift) for more information.
 
+To change the PHP memory limit configuration you can simply change the following variable:
+
+- `PHP_INI_MEMORY_LIMIT` (default `512M`) This sets the maximum amount of memory in bytes that a script is allowed to allocate. This is meant to help prevent poorly written scripts from eating up all available memory but it can prevent normal operation if set too tight.
+
 
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
