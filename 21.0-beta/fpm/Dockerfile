@@ -97,7 +97,7 @@ RUN { \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
-    echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini; \
+    touch /usr/local/etc/php/conf.d/memory-limit.ini; \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
@@ -106,7 +106,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 21.0.0beta6
+ENV NEXTCLOUD_VERSION 21.0.0beta7
 
 RUN set -ex; \
     fetchDeps=" \

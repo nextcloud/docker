@@ -43,6 +43,14 @@ file_env() {
     unset "$fileVar"
 }
 
+# Get essential PHP_INI configuration
+file_env PHP_INI_MEMORY_LIMIT 512M
+
+# Set essential PHP_INI configuration
+# It is important to set essential variables like 'memory-limit' before the first start to premvent OOM during installation and statup.
+file_memory_limit=/usr/local/etc/php/conf.d/memory-limit.ini
+[ -s ${file_memory_limit} ] || echo "memory_limit=${PHP_INI_MEMORY_LIMIT}" > ${file_memory_limit}
+
 if expr "$1" : "apache" 1>/dev/null; then
     if [ -n "${APACHE_DISABLE_REWRITE_IP+x}" ]; then
         a2disconf remoteip
