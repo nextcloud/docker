@@ -515,7 +515,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
         ```
 4. Copy your data (nextcloud_app_1 is the name of your Nextcloud container):
     ```console
-    docker cp ./data/ nextcloud_app_1:/var/www/html/
+    docker cp --preserve ./data/ nextcloud_app_1:/var/www/html/
     docker-compose exec app chown -R www-data:www-data /var/www/html/data
     docker cp ./theming/ nextcloud_app_1:/var/www/html/
     docker-compose exec app chown -R www-data:www-data /var/www/html/theming
