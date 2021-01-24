@@ -462,73 +462,71 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
 
 1. Define your whole Nextcloud infrastructure in a `docker-compose` file and run it with `docker-compose up -d` to get the base installation, volumes and database. Work from there.
 2. Restore your database from a mysqldump (nextcloud\_db\_1 is the name of your db container)
-  - To import from a MySQL dump use the following commands
+    - To import from a MySQL dump use the following commands
     ```console
     docker cp ./database.dmp nextcloud_db_1:/dmp
     docker-compose exec db sh -c "mysql -u USER -pPASSWORD nextcloud < /dmp"
     docker-compose exec db rm /dmp
     ```
-  - To import from a PostgreSQL dump use to following commands
+    - To import from a PostgreSQL dump use to following commands
     ```console
     docker cp ./database.dmp nextcloud_db_1:/dmp
     docker-compose exec db sh -c "psql -U USER --set ON_ERROR_STOP=on nextcloud < /dmp"
     docker-compose exec db rm /dmp
     ```
 3. Edit your config.php
-  1. Set database connection
-     - In case of MySQL database
-      ```php
-      'dbhost' => 'db:3306',
-      ```
-     - In case of PostgreSQL database
-      ```php
-      'dbhost' => 'db:5432',
-      ```
-  2. Make sure you have no configuration for the `apps_paths`. Delete lines like these
-  ```diff
-  - 'apps_paths' => array (
-  -     0 => array (
-  -         'path' => OC::$SERVERROOT.'/apps',
-  -         'url' => '/apps',
-  -         'writable' => true,
-  -     ),
-  - ),
-  ```
-  3. Make sure to have the `apps` directory non writable and the `custom_apps` directory writable
-  ```php
-  'apps_paths' => array (
-    0 => array (
-      'path' => '/var/www/html/apps',
-      'url' => '/apps',
-      'writable' => false,
-    ),
-    1 => array (
-      'path' => '/var/www/html/custom_apps',
-      'url' => '/custom_apps',
-      'writable' => true,
-    ),
-  ),
-  ```
-  4. Make sure your data directory is set to /var/www/html/data
-  ```php
-  'datadirectory' => '/var/www/html/data',
-  ```
-
-
+    1. Set database connection
+        - In case of MySQL database
+        ```php
+        'dbhost' => 'db:3306',
+        ```
+        - In case of PostgreSQL database
+        ```php
+        'dbhost' => 'db:5432',
+        ```
+    2. Make sure you have no configuration for the `apps_paths`. Delete lines like these
+        ```diff
+          - 'apps_paths' => array (
+          -     0 => array (
+          -         'path' => OC::$SERVERROOT.'/apps',
+          -         'url' => '/apps',
+          -         'writable' => true,
+          -     ),
+          - ),
+          ```
+    3. Make sure to have the `apps` directory non writable and the `custom_apps` directory writable
+        ```php
+        'apps_paths' => array (
+          0 => array (
+            'path' => '/var/www/html/apps',
+            'url' => '/apps',
+            'writable' => false,
+          ),
+          1 => array (
+            'path' => '/var/www/html/custom_apps',
+            'url' => '/custom_apps',
+            'writable' => true,
+          ),
+        ),
+        ```
+    4. Make sure your data directory is set to /var/www/html/data
+        ```php
+        'datadirectory' => '/var/www/html/data',
+        ```
 4. Copy your data (nextcloud_app_1 is the name of your Nextcloud container):
-```console
-docker cp ./data/ nextcloud_app_1:/var/www/html/
-docker-compose exec app chown -R www-data:www-data /var/www/html/data
-docker cp ./theming/ nextcloud_app_1:/var/www/html/
-docker-compose exec app chown -R www-data:www-data /var/www/html/theming
-docker cp ./config/config.php nextcloud_app_1:/var/www/html/config
-docker-compose exec app chown -R www-data:www-data /var/www/html/config
-```
+    ```console
+    docker cp ./data/ nextcloud_app_1:/var/www/html/
+    docker-compose exec app chown -R www-data:www-data /var/www/html/data
+    docker cp ./theming/ nextcloud_app_1:/var/www/html/
+    docker-compose exec app chown -R www-data:www-data /var/www/html/theming
+    docker cp ./config/config.php nextcloud_app_1:/var/www/html/config
+    docker-compose exec app chown -R www-data:www-data /var/www/html/config
+    ```
 5. Copy only the custom apps you use (or simply redownload them from the web interface):
-```console
-docker cp ./custom_apps/ nextcloud_data:/var/www/html/
-docker-compose exec app chown -R www-data:www-data /var/www/html/custom_apps
-```
+    ```console
+    docker cp ./custom_apps/ nextcloud_data:/var/www/html/
+    docker-compose exec app chown -R www-data:www-data /var/www/html/custom_apps
+    ```
 
 # Questions / Issues
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.
