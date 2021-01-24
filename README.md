@@ -515,12 +515,16 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
         ```
 4. Copy your data (nextcloud_app_1 is the name of your Nextcloud container):
     ```console
-    docker cp --preserve ./data/ nextcloud_app_1:/var/www/html/
+    docker cp ./data/ nextcloud_app_1:/var/www/html/
     docker-compose exec app chown -R www-data:www-data /var/www/html/data
     docker cp ./theming/ nextcloud_app_1:/var/www/html/
     docker-compose exec app chown -R www-data:www-data /var/www/html/theming
     docker cp ./config/config.php nextcloud_app_1:/var/www/html/config
     docker-compose exec app chown -R www-data:www-data /var/www/html/config
+    ```
+    If you want to preserve the metadata of your files like timestamps, copy the data directly on the host to the named volume using plain `cp` like this:
+    ```console
+    cp --preserve --recursive ./data/ /path/to/nextcloudVolume/data
     ```
 5. Copy only the custom apps you use (or simply redownload them from the web interface):
     ```console
