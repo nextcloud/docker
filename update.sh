@@ -3,7 +3,6 @@ set -eo pipefail
 
 declare -A php_version=(
 	[default]='7.4'
-	[18.0]='7.3'
 )
 
 declare -A cmd=(
@@ -77,7 +76,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='18.0'
+min_version='19.0'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -140,16 +139,6 @@ function create_variant() {
 				s@gd --with-freetype --with-jpeg --with-webp@gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr@g;
 				' "$dir/Dockerfile"
 			;;
-	esac
-
-	case "$version" in
-		18.* )
-			sed -ri -e '
-				\@bcmath@d;
-				s/'"redis-${pecl_versions[redis]}"'/redis-4.3.0/g;
-				' "$dir/Dockerfile"
-			;;
-
 	esac
 
 	# Copy the shell scripts
