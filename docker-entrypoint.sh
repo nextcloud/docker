@@ -19,6 +19,21 @@ run_as() {
     fi
 }
 
+#Test for a port in host string, set default port if none provided
+get_host_string() {
+    local host_string="$1"
+    local default_port="$2"
+    local host=""
+    local port=""
+
+    case "$host_string" in
+      (*:*) host="$host_string";;
+      (*)   host="${host_string}:${default_port}";;
+    esac
+
+    echo "$host" 
+}
+
 # usage: file_env VAR [DEFAULT]
 #    ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -139,17 +154,27 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     # shellcheck disable=SC2016
                     install_options=$install_options' --database mysql --database-name "$MYSQL_DATABASE" --database-user "$MYSQL_USER" --database-pass "$MYSQL_PASSWORD" --database-host "$MYSQL_HOST"'
                     install=true
+                    network_db=true
+                    db_host=$(get_host_string $MYSQL_HOST 3306) #Add default port for MySQL to host string if no port is provided
                 elif [ -n "${POSTGRES_DB+x}" ] && [ -n "${POSTGRES_USER+x}" ] && [ -n "${POSTGRES_PASSWORD+x}" ] && [ -n "${POSTGRES_HOST+x}" ]; then
                     echo "Installing with PostgreSQL database"
                     # shellcheck disable=SC2016
                     install_options=$install_options' --database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST"'
                     install=true
+                    network_db=true
+                    db_host=$(get_host_string $POSTGRES_HOST 5432) #Add default port for Postgres to host string if no port is provided
                 fi
 
                 if [ "$install" = true ]; then
                     echo "starting nextcloud installation"
                     max_retries=10
                     try=0
+
+                    if [ "$network_db" = true ]; then
+                        #Wait indefinitely for DB to become available by default, otherwise wait seconds defined by $WAIT_TIMEOUT
+                        wait-for-it -t ${WAIT_TIMEOUT:-0} $db_host -- echo "Database service online"
+                    fi
+
                     until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]
                     do
                         echo "retrying install..."

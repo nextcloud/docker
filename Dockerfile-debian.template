@@ -145,5 +145,8 @@ RUN set -ex; \
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
+# wait-for-it.sh is used for waiting on networked DB's to become available during install
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855a4dc21156cfe1694c31d7d1792e/wait-for-it.sh /usr/bin/wait-for-it
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["%%CMD%%"]
