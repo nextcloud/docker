@@ -149,6 +149,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     # shellcheck disable=SC2016
                     install_options=$install_options' --database-name "$SQLITE_DATABASE"'
                     install=true
+                    network_db=false
                 elif [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ]; then
                     echo "Installing with MySQL database"
                     # shellcheck disable=SC2016
