@@ -179,7 +179,7 @@ To use an external OpenStack Swift object store as primary storage, set the foll
 - `OBJECTSTORE_SWIFT_PROJECT_NAME`: OpenStack project name
 - `OBJECTSTORE_SWIFT_PROJECT_DOMAIN` (default: `Default`): OpenStack project domain
 - `OBJECTSTORE_SWIFT_SERVICE_NAME` (default: `swift`): Swift service name
-- `OBJECTSTORE_SWIFT_SERVICE_REGION`: Swift endpoint region
+- `OBJECTSTORE_SWIFT_REGION`: Swift endpoint region
 - `OBJECTSTORE_SWIFT_CONTAINER_NAME`: Swift container (bucket) that Nextcloud should store the data in
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#openstack-swift) for more information.
