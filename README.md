@@ -165,6 +165,7 @@ To use an external S3 compatible object store as primary storage, set the follow
 - `OBJECTSTORE_S3_SSL` (default: `true`): Whether or not SSL/TLS should be used to communicate with object storage server
 - `OBJECTSTORE_S3_REGION`: The region that the S3 bucket resides in.
 - `OBJECTSTORE_S3_USEPATH_STYLE` (default: `false`): Not required for AWS S3
+- `OBJECTSTORE_S3_LEGACYAUTH` (default: `false`): Not required for AWS S3
 - `OBJECTSTORE_S3_OBJECT_PREFIX` (default: `urn:oid:`): Prefix to prepend to the fileid
 - `OBJECTSTORE_S3_AUTOCREATE` (default: `true`): Create the container if it does not exist
 
