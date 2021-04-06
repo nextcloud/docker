@@ -8,7 +8,9 @@ RUN set -ex; \
         rsync \
     ; \
     \
-    rm /var/spool/cron/crontabs/root
+    rm /var/spool/cron/crontabs/root; \
+    touch /usr/local/etc/php/conf.d/redis-session.ini; \
+    chmod o+rw /usr/local/etc/php/conf.d/redis-session.ini;
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
