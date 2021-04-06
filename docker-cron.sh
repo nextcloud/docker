@@ -1,4 +1,7 @@
 #!/bin/sh
 set -eu
 
-exec busybox crond -f -l 0 -L /dev/stdout
+while [ 1 ]; do
+    (php -f /var/www/html/cron.php &);
+    sleep %%CRONTAB_INT%%m;
+done
