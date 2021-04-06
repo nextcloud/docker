@@ -8,8 +8,7 @@ RUN set -ex; \
         rsync \
     ; \
     \
-    rm /var/spool/cron/crontabs/root; \
-    echo '*/5 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    rm /var/spool/cron/crontabs/root
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
