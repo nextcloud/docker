@@ -1,5 +1,5 @@
 <?php
-if (getenv('SMTP_HOST') && getenv('MAIL_FROM_ADDRESS') && getenv('MAIL_DOMAIN')) {
+if (getenv('SMTP_HOST')) {
   $CONFIG = array (
     'mail_smtpmode' => 'smtp',
     'mail_smtphost' => getenv('SMTP_HOST'),
@@ -9,7 +9,11 @@ if (getenv('SMTP_HOST') && getenv('MAIL_FROM_ADDRESS') && getenv('MAIL_DOMAIN'))
     'mail_smtpauthtype' => getenv('SMTP_AUTHTYPE') ?: 'LOGIN',
     'mail_smtpname' => getenv('SMTP_NAME') ?: '',
     'mail_smtppassword' => getenv('SMTP_PASSWORD') ?: '',
-    'mail_from_address' => getenv('MAIL_FROM_ADDRESS'),
-    'mail_domain' => getenv('MAIL_DOMAIN'),
   );
+  if (getenv('MAIL_FROM_ADDRESS')) {
+    $CONFIG['mail_from_address'] = getenv('MAIL_FROM_ADDRESS');
+  }
+  if (getenv('MAIL_DOMAIN')) {
+    $CONFIG['mail_domain'] = getenv('MAIL_DOMAIN');
+  }
 }
