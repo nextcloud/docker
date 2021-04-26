@@ -12,6 +12,10 @@ services:
     env_file:
       - db.env
 
+  redis:
+    image: redis:alpine
+    restart: always
+
   app:
     image: nextcloud:fpm-alpine
     restart: always
@@ -19,10 +23,12 @@ services:
       - nextcloud:/var/www/html
     environment:
       - MYSQL_HOST=db
+      - REDIS_HOST=redis
     env_file:
       - db.env
     depends_on:
       - db
+      - redis
 
   web:
     build: ./web
@@ -33,6 +39,16 @@ services:
       - nextcloud:/var/www/html:ro
     depends_on:
       - app
+
+  cron:
+    image: nextcloud:fpm-alpine
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - redis
 
 volumes:
   db:
