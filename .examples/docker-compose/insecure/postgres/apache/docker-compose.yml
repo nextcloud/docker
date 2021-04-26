@@ -9,6 +9,10 @@ services:
     env_file:
       - db.env
 
+  redis:
+    image: redis:alpine
+    restart: always
+
   app:
     image: nextcloud:apache
     restart: always
@@ -18,10 +22,22 @@ services:
       - nextcloud:/var/www/html
     environment:
       - POSTGRES_HOST=db
+      - REDIS_HOST=redis
     env_file:
       - db.env
     depends_on:
       - db
+      - redis
+
+  cron:
+    image: nextcloud:apache
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - redis
 
 volumes:
   db:
