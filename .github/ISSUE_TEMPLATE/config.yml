@@ -1,0 +1,7 @@
+contact_links:
+    - name: 🐳 Docker Support and Help
+      url: https://forums.docker.com/
+      about: Configuration, installation, networking and other questions
+    - name: ❓ Nextcloud Support and Help
+      url: https://help.nextcloud.com/
+      about: Configuration, webserver/proxy or performance issues and other questions
