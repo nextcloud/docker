@@ -38,7 +38,7 @@ services:
       - app
 
   cron:
-    image: nextcloud:8fpm-alpine
+    image: nextcloud:fpm-alpine
     restart: always
     volumes:
       - nextcloud:/var/www/html
