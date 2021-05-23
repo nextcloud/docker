@@ -77,6 +77,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         } > /usr/local/etc/php/conf.d/redis-session.ini
     fi
 
+    if [ -n "${APACHE_PORT+x}" ]; then
+        sed -i "s/VirtualHost \*:80/VirtualHost \*:${APACHE_PORT}/" /etc/apache2/sites-enabled/000-default.conf
+        sed -i "s/Listen 80/Listen ${APACHE_PORT}/" /etc/apache2/ports.conf
+    fi
+
     installed_version="0.0.0.0"
     if [ -f /var/www/html/version.php ]; then
         # shellcheck disable=SC2016

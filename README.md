@@ -209,6 +209,9 @@ Check the [Nexcloud documentation](https://docs.nextcloud.com/server/latest/admi
 
 Keep in mind that once set, removing these environment variables won't remove these values from the configuration file, due to how Nextcloud merges configuration files together.
 
+## Changing port of Apache 
+If you want to run Apache on another port e.g. an unprivileged port which might make sense e.g. inside Kubernetes you can set the environment variable `APACHE_PORT`. 
+
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
 
