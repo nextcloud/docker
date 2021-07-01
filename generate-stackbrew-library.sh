@@ -1,7 +1,7 @@
 #!/bin/bash
 set -Eeuo pipefail
 
-stable_channel='20.0.10'
+stable_channel='20.0.11'
 
 self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
