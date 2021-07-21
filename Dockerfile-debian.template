@@ -14,6 +14,10 @@ RUN set -ex; \
     mkdir -p /var/spool/cron/crontabs; \
     echo '*/%%CRONTAB_INT%% * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
+# setting proper locale to prevent encoding issues
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 ENV PHP_MEMORY_LIMIT 512M
