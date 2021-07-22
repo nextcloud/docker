@@ -1,7 +1,6 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:7.4-apache-buster
 
-ENV NEXTCLOUD_VERSION 21.0.3
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 512M
 
@@ -123,7 +122,8 @@ RUN a2enmod headers rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-
+ARG NEXTCLOUD_VERSION=21.0.3
+ENV NEXTCLOUD_VERSION=${NEXTCLOUD_VERSION}
 RUN set -ex; \
     fetchDeps=" \
         gnupg \
