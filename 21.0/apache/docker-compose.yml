@@ -33,7 +33,6 @@ services:
       NEXTCLOUD_ADMIN_USER: administrator
       NEXTCLOUD_ADMIN_PASSWORD: adminpass
       NEXTCLOUD_TRUSTED_DOMAINS: localhost
-      ### Commented out as this will make the entrypoint assume that a clean install is appropriate
       MYSQL_DATABASE: nextcloud
       MYSQL_PASSWORD: nextcloud
       MYSQL_USER: nextcloud
