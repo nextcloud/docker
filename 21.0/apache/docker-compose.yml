@@ -6,7 +6,10 @@ services:
     command: --transaction-isolation=READ-COMMITTED
     volumes:
       - db_data:/var/lib/mysql
+      - /run/mysqld/
+      - /tmp
     restart: unless-stopped
+    read_only: true
     environment:
       MARIADB_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: nextcloud
@@ -17,6 +20,7 @@ services:
     depends_on:
       - db
     image: ${NC_IMAGE_NAME:-nextcloud:latest}
+    read_only: true
     volumes:
       - nextcloud_data:/var/www/html/data
       - nextcloud_apps:/var/www/html/apps
@@ -26,9 +30,10 @@ services:
       - "8000:80"
     restart: always
     environment:
-      NEXTCLOUD_ADMIN_USER: adminstrator
+      NEXTCLOUD_ADMIN_USER: administrator
       NEXTCLOUD_ADMIN_PASSWORD: adminpass
       NEXTCLOUD_TRUSTED_DOMAINS: localhost
+      ### Commented out as this will make the entrypoint assume that a clean install is appropriate
       MYSQL_DATABASE: nextcloud
       MYSQL_PASSWORD: nextcloud
       MYSQL_USER: nextcloud

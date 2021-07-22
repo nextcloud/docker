@@ -79,6 +79,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
     installed_version="0.0.0.0"
     # shellcheck disable=SC2016
+    if [ -f /var/www/html/config/version.php ];then
+        installed_version="$(php -r 'require "/var/www/html/config/version.php"; echo implode(".", $OC_Version);')"
+    fi
     image_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
 
     if version_greater "$installed_version" "$image_version"; then
@@ -175,14 +178,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             fi
         #upgrade
         else
+            chown  -R www-data:root /var/www/html/apps /var/www/html/custom_apps /var/www/html/data
             run_as 'php /var/www/html/occ upgrade'
 
             run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
             echo "The following apps have been disabled:"
             diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
             rm -f /tmp/list_before /tmp/list_after
-
         fi
+        cp /var/www/html/version.php /var/www/html/config/version.php
     fi
 fi
 
