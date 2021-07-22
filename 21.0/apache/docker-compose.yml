@@ -1,0 +1,41 @@
+version: "3.9"
+    
+services:
+  db:
+    image: mariadb:10.5
+    command: --transaction-isolation=READ-COMMITTED
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: nextcloud
+    
+  nextcloud:
+    depends_on:
+      - db
+    image: ${NC_IMAGE_NAME:-nextcloud:latest}
+    volumes:
+      - nextcloud_data:/var/www/html/data
+      - nextcloud_apps:/var/www/html/apps
+      - nextcloud_config:/var/www/html/config
+      - nextcloud_themes:/var/www/html/themes
+    ports:
+      - "8000:80"
+    restart: always
+    environment:
+      NEXTCLOUD_ADMIN_USER: adminstrator
+      NEXTCLOUD_ADMIN_PASSWORD: adminpass
+      NEXTCLOUD_TRUSTED_DOMAINS: localhost
+      MYSQL_DATABASE: nextcloud
+      MYSQL_PASSWORD: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_HOST: db
+volumes:
+  db_data: {}
+  nextcloud_data: {}
+  nextcloud_apps: {}
+  nextcloud_config: {}
+  nextcloud_themes: {}
