@@ -147,4 +147,3 @@ COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
-
