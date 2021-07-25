@@ -76,26 +76,11 @@ variants=(
 	fpm-alpine
 )
 
-min_version='19.0'
+min_version='20.0'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
 	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
-}
-
-# checks if the the rc is already released
-function check_released() {
-	printf '%s\n' "${fullversions[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
-}
-
-# checks if the the beta has already a rc
-function check_rc_released() {
-	printf '%s\n' "${fullversions_rc[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
-}
-
-# checks if the the alpha has already a beta
-function check_beta_released() {
-	printf '%s\n' "${fullversions_beta[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
 }
 
 function create_variant() {
@@ -180,65 +165,5 @@ for version in "${versions[@]}"; do
 
 			create_variant "$version" "https:\/\/download.nextcloud.com\/server\/releases"
 		done
-	fi
-done
-
-fullversions_rc=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
-	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}RC[[:digit:]]+' | \
-	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}RC[[:digit:]]+' | \
-	sort -urV ) )
-versions_rc=( $( printf '%s\n' "${fullversions_rc[@]}" | cut -d. -f1-2 | sort -urV ) )
-for version in "${versions_rc[@]}"; do
-	fullversion="$( printf '%s\n' "${fullversions_rc[@]}" | grep -E "^$version" | head -1 )"
-
-	if version_greater_or_equal "$version" "$min_version"; then
-
-		if ! check_released "$fullversion"; then
-
-			for variant in "${variants[@]}"; do
-
-				create_variant "$version-rc" "https:\/\/download.nextcloud.com\/server\/prereleases"
-			done
-		fi
-	fi
-done
-
-fullversions_beta=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
-	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
-	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}beta[[:digit:]]+' | \
-	sort -urV ) )
-versions_beta=( $( printf '%s\n' "${fullversions_beta[@]}" | cut -d. -f1-2 | sort -urV ) )
-for version in "${versions_beta[@]}"; do
-	fullversion="$( printf '%s\n' "${fullversions_beta[@]}" | grep -E "^$version" | head -1 )"
-
-	if version_greater_or_equal "$version" "$min_version"; then
-
-		if ! check_rc_released "$fullversion"; then
-
-			for variant in "${variants[@]}"; do
-
-				create_variant "$version-beta" "https:\/\/download.nextcloud.com\/server\/prereleases"
-			done
-		fi
-	fi
-done
-
-fullversions_alpha=( $( curl -fsSL 'https://download.nextcloud.com/server/prereleases/' |tac|tac| \
-	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}alpha[[:digit:]]+' | \
-	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}alpha[[:digit:]]+' | \
-	sort -urV ) )
-versions_alpha=( $( printf '%s\n' "${fullversions_alpha[@]}" | cut -d. -f1-2 | sort -urV ) )
-for version in "${versions_alpha[@]}"; do
-	fullversion="$( printf '%s\n' "${fullversions_alpha[@]}" | grep -E "^$version" | head -1 )"
-
-	if version_greater_or_equal "$version" "$min_version"; then
-
-		if ! check_beta_released "$fullversion"; then
-
-			for variant in "${variants[@]}"; do
-
-				create_variant "$version-alpha" "https:\/\/download.nextcloud.com\/server\/prereleases"
-			done
-		fi
 	fi
 done

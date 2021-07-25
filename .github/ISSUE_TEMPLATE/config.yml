@@ -1,0 +1,10 @@
+contact_links:
+    - name: 🐛 Nextcloud issue
+      url: https://github.com/nextcloud/server/issues/new/choose
+      about: Bug reports and feature requests for Nextcloud
+    - name: 🐳 Docker Support and Help
+      url: https://forums.docker.com/
+      about: Configuration, installation, networking and other questions
+    - name: ❓ Nextcloud Support and Help
+      url: https://help.nextcloud.com/
+      about: Configuration, webserver/proxy or performance issues and other questions
