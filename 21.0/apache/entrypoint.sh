@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -eux
 
 # version_greater A B returns whether A > B
 version_greater() {
@@ -78,12 +78,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     fi
 
     installed_version="0.0.0.0"
-    if [ -f /var/www/html/version.php ]; then
-        # shellcheck disable=SC2016
-        installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
-    fi
     # shellcheck disable=SC2016
-    image_version="$(php -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);')"
+    if [ -f /var/www/html/config/version.php ];then
+        installed_version="$(php -r 'require "/var/www/html/config/version.php"; echo implode(".", $OC_Version);')"
+    fi
+    image_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
 
     if version_greater "$installed_version" "$image_version"; then
         echo "Can't start Nextcloud because the version of the data ($installed_version) is higher than the docker image version ($image_version) and downgrading is not supported. Are you sure you have pulled the newest image version?"
@@ -101,14 +100,13 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         else
             rsync_options="-rlD"
         fi
-        rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
-
-        for dir in config data custom_apps themes; do
+        ## Carefully checking whether the persistent volumes we care about are empty.
+        for dir in config themes; do
             if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
-                rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
+                echo ">> Bootstraping '/var/www/html/${dir}'"
+                rsync $rsync_options /usr/src/nextcloud/${dir}/. /var/www/html/${dir}/.
             fi
         done
-        rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
         echo "Initializing finished"
 
         #install
@@ -150,7 +148,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     install_options=$install_options' --database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST"'
                     install=true
                 fi
-
+                chown  -R www-data:root /var/www/html/apps /var/www/html/custom_apps /var/www/html/data
                 if [ "$install" = true ]; then
                     echo "starting nextcloud installation"
                     max_retries=10
@@ -180,15 +178,22 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             fi
         #upgrade
         else
+            chown  -R www-data:root /var/www/html/apps /var/www/html/custom_apps /var/www/html/data
             run_as 'php /var/www/html/occ upgrade'
 
             run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
             echo "The following apps have been disabled:"
             diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
             rm -f /tmp/list_before /tmp/list_after
-
         fi
+        cp /var/www/html/version.php /var/www/html/config/version.php
     fi
 fi
+
+chown  -R www-data:root \
+    /var/www/html/apps \
+    /var/www/html/custom_apps \
+    /var/www/html/data \
+    /var/www/html/themes
 
 exec "$@"

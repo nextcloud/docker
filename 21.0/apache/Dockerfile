@@ -1,6 +1,9 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:7.4-apache-buster
 
+ENV PHP_MEMORY_LIMIT 512M
+ENV PHP_UPLOAD_LIMIT 512M
+
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
@@ -17,8 +20,6 @@ RUN set -ex; \
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
-ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 512M
 RUN set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
@@ -121,8 +122,8 @@ RUN a2enmod headers rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 21.0.3
-
+ARG NEXTCLOUD_VERSION=21.0.3
+ENV NEXTCLOUD_VERSION=${NEXTCLOUD_VERSION}
 RUN set -ex; \
     fetchDeps=" \
         gnupg \
@@ -139,19 +140,44 @@ RUN set -ex; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
     gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
-    gpgconf --kill all; \
+    tar -xjf nextcloud.tar.bz2 --strip-components=1 -C . \
+&& gpgconf --kill all; \
     rm nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    rm -rf "$GNUPGHOME" /usr/src/nextcloud/updater; \
-    mkdir -p /usr/src/nextcloud/data; \
-    mkdir -p /usr/src/nextcloud/custom_apps; \
-    chmod +x /usr/src/nextcloud/occ; \
+    rm -rf "$GNUPGHOME" /var/www/html/updater; \
+    chmod +x /var/www/html/occ; \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* \
+ && mkdir -p /usr/src/nextcloud \
+ && mv /var/www/html/themes /usr/src/nextcloud/ \
+ && mv /var/www/html/config /usr/src/nextcloud/
 
-COPY *.sh upgrade.exclude /
+### Volumes
+# to store the pid
+VOLUME /run/apache2
+# /tmp for session data
+VOLUME /tmp
+#######
+# A volume for each directory within the nextcloud installation, so that
+# 1/ each one can be swapped out with a persistent volume 
+# 2/ file access is faster as it is not part of the overlay file-system
+# 3/ if 2/ is crafted carefully it will eventually allow the container FS to be mounted read-only, which helps security
+VOLUME /var/www/html/3rdparty
+VOLUME /var/www/html/apps
+VOLUME /var/www/html/config
+VOLUME /var/www/html/core
+VOLUME /var/www/html/custom_apps
+VOLUME /var/www/html/data
+VOLUME /var/www/html/lib
+VOLUME /var/www/html/ocm-provider
+VOLUME /var/www/html/ocs
+VOLUME /var/www/html/ocs-provider
+VOLUME /var/www/html/resources
+VOLUME /var/www/html/themes
+
+COPY entrypoint.sh /usr/local/bin/
+COPY cron.sh /
 COPY config/* /usr/src/nextcloud/config/
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
+ENTRYPOINT []
+CMD ["/usr/local/bin/entrypoint.sh", "apache2-foreground"]
