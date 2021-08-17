@@ -21,5 +21,5 @@ if ($overwriteCondAddr) {
 
 $trustedProxies = getenv('TRUSTED_PROXIES');
 if ($trustedProxies) {
-  $CONFIG['trusted_proxies'] = array_filter(array_map('trim', explode(' ', $trustedProxies)));
+  $CONFIG['trusted_proxies'] = array_values(array_unique(array_map('gethostbyname', array_filter(explode(' ', $trustedProxies)))));
 }
