@@ -110,7 +110,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         done
         rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
         if [ "$(id -u)" = 0 ]; then
-            chown -R www-data:root /var/www/html
+            chown www-data:root /var/www/html/*
         fi
         echo "Initializing finished"
 
