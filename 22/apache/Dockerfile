@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.4-apache-buster
+FROM php:7.4-apache-bullseye
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
