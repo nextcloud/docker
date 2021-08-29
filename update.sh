@@ -2,7 +2,9 @@
 set -eo pipefail
 
 declare -A php_version=(
-	[default]='7.4'
+	[default]='8.0'
+	[20]='7.4'
+	[21]='7.4'
 )
 
 declare -A cmd=(
@@ -113,7 +115,7 @@ function create_variant() {
 	' "$dir/Dockerfile"
 
 	case "$phpVersion" in
-		7.4 )
+		7.4|8.0 )
 			sed -ri -e '
 				\@docker-php-ext-configure gmp --with-gmp@d;
 				\@/usr/include/gmp.h@d;
