@@ -69,7 +69,7 @@ services:
       - proxy-tier
 
   letsencrypt-companion:
-    image: jrcs/letsencrypt-nginx-proxy-companion
+    image: nginxproxy/acme-companion
     restart: always
     volumes:
       - certs:/etc/nginx/certs
