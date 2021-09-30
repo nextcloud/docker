@@ -30,6 +30,7 @@ RUN set -ex; \
         libfreetype6-dev \
         libicu-dev \
         libjpeg-dev \
+        libldap-common \
         libldap2-dev \
         libmcrypt-dev \
         libmemcached-dev \
@@ -113,7 +114,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 20.0.12
+ENV NEXTCLOUD_VERSION 20.0.13
 
 RUN set -ex; \
     fetchDeps=" \
