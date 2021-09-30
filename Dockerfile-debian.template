@@ -29,6 +29,7 @@ RUN set -ex; \
         libfreetype6-dev \
         libicu-dev \
         libjpeg-dev \
+        libldap-common \
         libldap2-dev \
         libmcrypt-dev \
         libmemcached-dev \
