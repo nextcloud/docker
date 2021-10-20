@@ -9,6 +9,7 @@ RUN set -ex; \
         rsync \
         bzip2 \
         busybox-static \
+        libldap-common \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     \
@@ -30,7 +31,6 @@ RUN set -ex; \
         libfreetype6-dev \
         libicu-dev \
         libjpeg-dev \
-        libldap-common \
         libldap2-dev \
         libmcrypt-dev \
         libmemcached-dev \
