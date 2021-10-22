@@ -67,6 +67,8 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
       - proxy-tier
+    security_opt:
+      - label:disable
 
   letsencrypt-companion:
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -81,7 +83,9 @@ services:
       - proxy-tier
     depends_on:
       - proxy
-
+    security_opt:
+      - label:disable
+      
 # self signed
 #  omgwtfssl:
 #    image: paulczar/omgwtfssl
