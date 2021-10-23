@@ -88,6 +88,7 @@ services:
       - proxy
     security_opt:
       - label:disable
+      
 # self signed
 #  omgwtfssl:
 #    image: paulczar/omgwtfssl
