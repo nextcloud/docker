@@ -65,12 +65,14 @@ RUN set -ex; \
     pecl install memcached-3.1.5; \
     pecl install redis-5.3.4; \
     pecl install imagick-3.5.1; \
+    pecl installl inotify; \
     \
     docker-php-ext-enable \
         apcu \
         memcached \
         redis \
         imagick \
+        inotify \
     ; \
     rm -r /tmp/pear; \
     \
