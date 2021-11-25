@@ -202,6 +202,7 @@ If the `TRUSTED_PROXIES` approach does not work for you, try using fixed values 
 
 - `OVERWRITEHOST` (empty by default): Set the hostname of the proxy. Can also specify a port.
 - `OVERWRITEPROTOCOL` (empty by default): Set the protocol of the proxy, http or https.
+- `OVERWRITECLIURL` (empty by default): Set the cli url of the proxy (e.g. https://mydnsname.example.com)
 - `OVERWRITEWEBROOT` (empty by default): Set the absolute path of the proxy.
 - `OVERWRITECONDADDR` (empty by default): Regex to overwrite the values dependent on the remote address.
 
