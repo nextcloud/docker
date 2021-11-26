@@ -13,8 +13,8 @@ RUN set -ex; \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     \
-    mkdir -p /var/spool/cron/crontabs; \
-    echo '*/5 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    touch /usr/local/etc/php/conf.d/redis-session.ini; \
+    chmod o+rw /usr/local/etc/php/conf.d/redis-session.ini;
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html

@@ -111,7 +111,6 @@ function create_variant() {
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
-		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
 
 	case "$phpVersion" in
@@ -132,6 +131,10 @@ function create_variant() {
 	for name in entrypoint cron; do
 		cp "docker-$name.sh" "$dir/$name.sh"
 	done
+	# Replace the variable.
+	sed -ri -e '
+		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
+	' "$dir/cron.sh"
 
 	# Copy the upgrade.exclude
 	cp upgrade.exclude "$dir/"
