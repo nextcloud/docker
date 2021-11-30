@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.4-fpm-alpine3.14
+FROM php:8.0-fpm-alpine3.14
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -102,7 +102,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 20.0.14
+ENV NEXTCLOUD_VERSION 23.0.0
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
