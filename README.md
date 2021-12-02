@@ -365,15 +365,15 @@ volumes:
 
 secrets:
   nextcloud_admin_password:
-    file: ./nextcloud_admin_password.txt # put admin password to this file
+    file: ./nextcloud_admin_password.txt # put admin password in this file
   nextcloud_admin_user:
-    file: ./nextcloud_admin_user.txt # put admin username to this file
+    file: ./nextcloud_admin_user.txt # put admin username in this file
   postgres_db:
-    file: ./postgres_db.txt # put postgresql db name to this file
+    file: ./postgres_db.txt # put postgresql db name in this file
   postgres_password:
-    file: ./postgres_password.txt # put postgresql password to this file
+    file: ./postgres_password.txt # put postgresql password in this file
   postgres_user:
-    file: ./postgres_user.txt # put postgresql username to this file
+    file: ./postgres_user.txt # put postgresql username in this file
 ```
 
 Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DATABASE`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER`, `REDIS_HOST_PASSWORD` and `SMTP_PASSWORD`.
