@@ -124,6 +124,7 @@ If you set any group of values (i.e. all of `MYSQL_DATABASE`, `MYSQL_USER`, `MYS
 
 - `NEXTCLOUD_ADMIN_USER` Name of the Nextcloud admin user.
 - `NEXTCLOUD_ADMIN_PASSWORD` Password for the Nextcloud admin user.
+- `NEXTCLOUD_AUTH_TOKEN` Authentication token to access server info.
 
 If you want, you can set the data directory, otherwise default value will be used.
 

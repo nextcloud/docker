@@ -191,6 +191,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                                 NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
                             done
                         fi
+                        file_env NEXTCLOUD_AUTH_TOKEN
+                        if [ -n "${NEXTCLOUD_AUTH_TOKEN+x}" ]; then
+                                echo "setting auth token"
+                                run_as "php /var/www/html/occ config:app:set serverinfo token --value $NEXTCLOUD_AUTH_TOKEN"
+                        fi
                     else
                         echo "Please run the web-based installer on first connect!"
                     fi
