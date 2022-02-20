@@ -43,6 +43,22 @@ file_env() {
     unset "$fileVar"
 }
 
+# change uid/gid of www-data
+if [ "$(id -u)" = 0 ]; then
+    CURRENT_UID=$(id -u www-data)
+    CURRENT_GID=$(id -g www-data)
+    if [ -n "${UID+x}" ] && [ "$UID" -ne $CURRENT_UID ]; then
+        echo "Change UID of www-data from $CURRENT_UID to $UID"
+        usermod -u $UID www-data
+        find / -xdev -user $CURRENT_UID -exec chown -h www-data {} \;
+    fi
+    if [ -n "${GID+x}" ] && [ "$GID" -ne $CURRENT_GID ]; then
+        echo "Change GID of www-data from $CURRENT_GID to $GID"
+        groupmod -g $GID www-data
+        find / -xdev -group $CURRENT_GID -exec chgrp -h www-data {} \;
+    fi
+fi
+
 if expr "$1" : "apache" 1>/dev/null; then
     if [ -n "${APACHE_DISABLE_REWRITE_IP+x}" ]; then
         a2disconf remoteip
@@ -54,7 +70,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
         echo "Configuring Redis as session handler"
         {
-            file_env REDIS_HOST_PASSWORD
             echo 'session.save_handler = redis'
             # check if redis host is an unix socket path
             if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
@@ -69,11 +84,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             else
                 echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
             fi
-            echo "redis.session.locking_enabled = 1"
-            echo "redis.session.lock_retries = -1"
-            # redis.session.lock_wait_time is specified in microseconds.
-            # Wait 10ms before retrying the lock rather than the default 2ms.
-            echo "redis.session.lock_wait_time = 10000"
         } > /usr/local/etc/php/conf.d/redis-session.ini
     fi
 
