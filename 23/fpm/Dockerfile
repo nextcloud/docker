@@ -89,7 +89,7 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*
 
 # set recommended PHP.ini settings
-# see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+# see https://docs.nextcloud.com/server/latest/admin_manual/installation/server_tuning.html#enable-php-opcache
 RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.interned_strings_buffer=8'; \
