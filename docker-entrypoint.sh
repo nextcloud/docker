@@ -70,6 +70,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
         echo "Configuring Redis as session handler"
         {
+            file_env REDIS_HOST_PASSWORD
             echo 'session.save_handler = redis'
             # check if redis host is an unix socket path
             if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
@@ -84,6 +85,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             else
                 echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
             fi
+            echo "redis.session.locking_enabled = 1"
+            echo "redis.session.lock_retries = -1"
+            # redis.session.lock_wait_time is specified in microseconds.
+            # Wait 10ms before retrying the lock rather than the default 2ms.
+            echo "redis.session.lock_wait_time = 10000"
         } > /usr/local/etc/php/conf.d/redis-session.ini
     fi
 
