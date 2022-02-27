@@ -29,8 +29,8 @@ services:
   cron:
     image: nextcloud
     restart: always
-    volumes:
-      - nextcloud:/var/www/html
+    volumes_from:
+      - app
     entrypoint: /cron.sh
     depends_on:
       - db
