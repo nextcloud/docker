@@ -3,7 +3,6 @@ set -eo pipefail
 
 declare -A php_version=(
 	[default]='8.0'
-	[21]='7.4'
 )
 
 declare -A cmd=(
@@ -77,7 +76,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='21'
+min_version='22'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
