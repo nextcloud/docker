@@ -30,7 +30,7 @@ declare -A crontab_int=(
 apcu_version="$(
 	git ls-remote --tags https://github.com/krakjoe/apcu.git \
 		| cut -d/ -f3 \
-		| grep -vE -- '-rc|-b' \
+		| grep -viE -- 'rc|b' \
 		| sed -E 's/^v//' \
 		| sort -V \
 		| tail -1
@@ -39,7 +39,7 @@ apcu_version="$(
 memcached_version="$(
 	git ls-remote --tags https://github.com/php-memcached-dev/php-memcached.git \
 		| cut -d/ -f3 \
-		| grep -vE -- '-rc|-b' \
+		| grep -viE -- 'rc|b' \
 		| sed -E 's/^[rv]//' \
 		| sort -V \
 		| tail -1
