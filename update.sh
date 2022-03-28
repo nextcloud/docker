@@ -110,21 +110,9 @@ function create_variant() {
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
+		\@docker-php-ext-configure gmp --with-gmp@d;
+		\@/usr/include/gmp.h@d;
 	' "$dir/Dockerfile"
-
-	case "$phpVersion" in
-		7.4|8.0 )
-			sed -ri -e '
-				\@docker-php-ext-configure gmp --with-gmp@d;
-				\@/usr/include/gmp.h@d;
-				' "$dir/Dockerfile"
-			;;
-		7.3 )
-			sed -ri -e '
-				s@gd --with-freetype --with-jpeg --with-webp@gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr@g;
-				' "$dir/Dockerfile"
-			;;
-	esac
 
 	# Copy the shell scripts
 	for name in entrypoint cron; do
