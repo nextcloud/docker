@@ -147,6 +147,5 @@ RUN set -ex; \
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
-HEALTHCHECK CMD ["curl", "--fail", "http://localhost/status.php"]
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["%%CMD%%"]
