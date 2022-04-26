@@ -194,7 +194,7 @@ To customize other PHP limits you can simply change the following variables:
 
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
-The apache image will replace the remote addr (ip address visible to Nextcloud) with the ip address from `X-Real-IP` if the request is coming from a proxy in 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16 by default. If you want Nextcloud to pick up the server host (`HTTP_X_FORWARDED_HOST`), protocol (`HTTP_X_FORWARDED_PROTO`) and client IP (`HTTP_X_FORWARDED_FOR`) from a trusted proxy, then disable rewrite IP and add the reverse proxy's IP address to `TRUSTED_PROXIES`.
+The apache image will replace the remote addr (IP address visible to Nextcloud) with the IP address from `X-Real-IP` if the request is coming from a proxy in `10.0.0.0/8`, `172.16.0.0/12` or `192.168.0.0/16` by default. If you want Nextcloud to pick up the server host (`HTTP_X_FORWARDED_HOST`), protocol (`HTTP_X_FORWARDED_PROTO`) and client IP (`HTTP_X_FORWARDED_FOR`) from a trusted proxy, then disable rewrite IP and add the reverse proxy's IP address to `TRUSTED_PROXIES`.
 
 - `APACHE_DISABLE_REWRITE_IP` (not set by default): Set to 1 to disable rewrite IP.
 
@@ -378,7 +378,7 @@ secrets:
 
 Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DATABASE`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER`, `REDIS_HOST_PASSWORD` and `SMTP_PASSWORD`.
 
-If you set any group of values (i.e. all of `MYSQL_DATABASE_FILE`, `MYSQL_USER_FILE`, `MYSQL_PASSWORD_FILE`, `MYSQL_HOST`), the script will not use the corresponding group of environment variables (`MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`)
+If you set any group of values (i.e. all of `MYSQL_DATABASE_FILE`, `MYSQL_USER_FILE`, `MYSQL_PASSWORD_FILE`, `MYSQL_HOST`), the script will not use the corresponding group of environment variables (`MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`).
 
 # Make your Nextcloud available from the internet
 Until here, your Nextcloud is just available from your docker host. If you want your Nextcloud available from the internet adding SSL encryption is mandatory.
@@ -419,7 +419,7 @@ $ docker-compose up -d
 # Adding Features
 A lot of people want to use additional functionality inside their Nextcloud installation. If the image does not include the packages you need, you can easily build your own image on top of it. Start your derived image with the `FROM` statement and add whatever you like.
 
-```yaml
+```dockerfile
 FROM nextcloud:apache
 
 RUN ...
@@ -443,7 +443,7 @@ If you use your own Dockerfile, you need to configure your docker-compose file a
 
 If you intend to use another command to run the image, make sure that you set `NEXTCLOUD_UPDATE=1` in your Dockerfile. Otherwise the installation and update will not work.
 
-```yaml
+```dockerfile
 FROM nextcloud:apache
 
 ...
@@ -497,15 +497,15 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
         'dbhost' => 'db:5432',
         ```
     2. Make sure you have no configuration for the `apps_paths`. Delete lines like these
-        ```diff
-          - 'apps_paths' => array (
-          -     0 => array (
-          -         'path' => OC::$SERVERROOT.'/apps',
-          -         'url' => '/apps',
-          -         'writable' => true,
-          -     ),
-          - ),
-          ```
+        ```php
+        'apps_paths' => array (
+            0 => array (
+                'path' => OC::$SERVERROOT.'/apps',
+                'url' => '/apps',
+                'writable' => true,
+            ),
+        ),
+        ```
     3. Make sure to have the `apps` directory non writable and the `custom_apps` directory writable
         ```php
         'apps_paths' => array (
