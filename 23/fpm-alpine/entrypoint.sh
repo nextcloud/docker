@@ -106,15 +106,20 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         # it to be done, then escape initalization
         lock=/var/www/html/nextcloud-init-sync.lock
         count=0
+        limit=10
 
         if [ -f "$lock" ]; then
-            until [ ! -f "$lock" ]
+            until [ ! -f "$lock" ] || [ "$count" -gt "$limit" ]
             do
                 count=$((count+1))
                 wait=$((count*10))
                 echo "Another process is initializing Nextcloud. Waiting $wait seconds..."
                 sleep $wait
             done
+            if [ "$count" -gt "$limit" ]; then
+                echo "Timeout while waiting for an ongoing initialization"
+                exit 1
+            fi
             echo "The other process is done, assuming complete initialization"
         else
             # Prevent multiple images syncing simultaneously
