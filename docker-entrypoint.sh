@@ -102,14 +102,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             rsync_options="-rlD"
         fi
 
+        # Prevent multiple images syncing simultaneously:
         # If another process is syncing the html folder, wait for
         # it to be done, then escape initalization
-        lock=/var/www/html/nextcloud-init-sync.lock
         count=0
         limit=10
 
-        if [ -f "$lock" ]; then
-            until [ ! -f "$lock" ] || [ "$count" -gt "$limit" ]
+        (
+        if ! flock -n 9; then
+            until flock -n 9 || [ "$count" -gt "$limit" ]
             do
                 count=$((count+1))
                 wait=$((count*10))
@@ -122,8 +123,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             fi
             echo "The other process is done, assuming complete initialization"
         else
-            # Prevent multiple images syncing simultaneously
-            touch $lock
             rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
 
             for dir in config data custom_apps themes; do
@@ -211,10 +210,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
             fi
 
-            # Initialization done, reset lock
-            rm $lock
             echo "Initializing finished"
         fi
+        ) 9> /var/lock/nextcloud-init-sync.lock
     fi
 fi
 
