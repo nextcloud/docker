@@ -195,6 +195,15 @@ To customize other PHP limits you can simply change the following variables:
 - `PHP_MEMORY_LIMIT` (default `512M`) This sets the maximum amount of memory in bytes that a script is allowed to allocate. This is meant to help prevent poorly written scripts from eating up all available memory but it can prevent normal operation if set too tight.
 - `PHP_UPLOAD_LIMIT` (default `512M`) This sets the upload limit (`post_max_size` and `upload_max_filesize`) for big files. Note that you may have to change other limits depending on your client, webserver or operating system. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html) for more information.
 
+To customize the default logging behavior you can simply set the following variables:
+
+- `LOGLEVEL` (default: `2 (WARN)`) Logging verbosity
+- `LOGTIMEZONE` (default: `UTC`) Logging timezone
+- `LOGTAG` (default: `Nextcloud`) Logging identify tag for syslog
+- `LOGFILE` (defaults back to `NEXTCLOUD_DATA_DIR` or if also not set to file `/nextcloud.log`) this sets the logfile variable. It's possible to set this to StdOut with `/dev/stdout`
+
+Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/logging_configuration.html) for more information.
+
 
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
