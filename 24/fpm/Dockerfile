@@ -105,7 +105,7 @@ RUN { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
-    } > ${PHP_INI_DIR}/conf.d/nextcloud.ini; \
+    } > "${PHP_INI_DIR}/conf.d/nextcloud.ini"; \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
