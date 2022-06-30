@@ -99,13 +99,13 @@ RUN { \
         echo 'opcache.revalidate_freq=60'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
-    echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
+    echo 'apc.enable_cli=1' >> "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"; \
     \
     { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
-    } > /usr/local/etc/php/conf.d/nextcloud.ini; \
+    } > "${PHP_INI_DIR}/conf.d/nextcloud.ini"; \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
