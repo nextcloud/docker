@@ -6,7 +6,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         rsync \
-        php8-pecl-imagick \
+        imagemagick \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
