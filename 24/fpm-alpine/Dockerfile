@@ -85,15 +85,15 @@ RUN { \
         echo 'opcache.memory_consumption=128'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
-    } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
+    } > "${PHP_INI_DIR}/conf.d/opcache-recommended.ini"; \
     \
-    echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
+    echo 'apc.enable_cli=1' >> "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"; \
     \
     { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
-    } > /usr/local/etc/php/conf.d/nextcloud.ini; \
+    } > "${PHP_INI_DIR}/conf.d/nextcloud.ini"; \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
@@ -102,7 +102,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 24.0.2
+ENV NEXTCLOUD_VERSION 24.0.3
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
