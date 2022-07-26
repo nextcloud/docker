@@ -223,6 +223,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         run_as 'php /var/www/html/occ maintenance:update:htaccess'
     fi
 
+    # Add phone region if present
+    if [ -n "${NEXTCLOUD_DEFAULT_PHONE_REGION}" ]; then
+      run_as "php /var/www/html/occ config:system:set --value $NEXTCLOUD_DEFAULT_PHONE_REGION default_phone_region"
+    fi
+
 fi
 
 exec "$@"
