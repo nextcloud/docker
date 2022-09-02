@@ -9,6 +9,8 @@ services:
       - db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=
+      - MARIADB_AUTO_UPGRADE=yesplease
+      - MARIADB_DISABLE_UPGRADE_BACKUP=yesplease
     env_file:
       - db.env
 
