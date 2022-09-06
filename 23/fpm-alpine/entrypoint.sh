@@ -13,7 +13,7 @@ directory_empty() {
 
 run_as() {
     if [ "$(id -u)" = 0 ]; then
-        su -p www-data -s /bin/sh -c "$1"
+        su -p "$user" -s /bin/sh -c "$1"
     else
         sh -c "$1"
     fi
@@ -50,6 +50,29 @@ if expr "$1" : "apache" 1>/dev/null; then
 fi
 
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
+    uid="$(id -u)"
+    gid="$(id -g)"
+    if [ "$uid" = '0' ]; then
+        case "$1" in
+            apache2*)
+                user="${APACHE_RUN_USER:-www-data}"
+                group="${APACHE_RUN_GROUP:-www-data}"
+
+                # strip off any '#' symbol ('#1000' is valid syntax for Apache)
+                pound='#'
+                user="${user#$pound}"
+                group="${group#$pound}"
+                ;;
+            *) # php-fpm
+                user='www-data'
+                group='www-data'
+                ;;
+        esac
+    else
+        user="$uid"
+        group="$gid"
+    fi
+
     if [ -n "${REDIS_HOST+x}" ]; then
 
         echo "Configuring Redis as session handler"
@@ -97,7 +120,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
         fi
         if [ "$(id -u)" = 0 ]; then
-            rsync_options="-rlDog --chown www-data:root"
+            rsync_options="-rlDog --chown $user:$group"
         else
             rsync_options="-rlD"
         fi
