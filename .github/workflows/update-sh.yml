@@ -6,6 +6,7 @@ on:
     - master
   schedule:
   - cron:  '15 0 * * *'
+  workflow_dispatch:
 
 jobs:
   run_update_sh:
