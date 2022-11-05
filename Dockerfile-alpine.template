@@ -96,7 +96,9 @@ RUN { \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
-    chmod -R g=u /var/www
+    chmod -R g=u /var/www; \
+# added ServerName in apache conf to remove AH00558 warning in logs
+    echo 'ServerName 127.0.0.1' >>  /etc/apache2/apache2.conf
 
 VOLUME /var/www/html
 %%VARIANT_EXTRAS%%

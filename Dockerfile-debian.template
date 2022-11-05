@@ -142,7 +142,9 @@ RUN set -ex; \
     chmod +x /usr/src/nextcloud/occ; \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*; \
+# added ServerName in apache conf to remove AH00558 warning in logs
+    echo 'ServerName 127.0.0.1' >>  /etc/apache2/apache2.conf
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
