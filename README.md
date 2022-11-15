@@ -145,6 +145,10 @@ You might also want to make sure the htaccess is up to date after each container
 
 - `NEXTCLOUD_INIT_HTACCESS` (not set by default) Set it to true to enable run `occ maintenance:update:htaccess` after container initialization.
 
+To set the default phone region in the configuration you can use this variable
+
+- `NEXTCLOUD_DEFAULT_PHONE_REGION`  (not set by default) set it to a valid [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements) to run `occ config:system:set --value XX default_phone_region` after container initialization. 
+
 If you want to use Redis you have to create a separate [Redis](https://hub.docker.com/_/redis/) container in your setup / in your docker-compose file. To inform Nextcloud about the Redis container, pass in the following parameters:
 
 - `REDIS_HOST` (not set by default) Name of Redis container
