@@ -6,6 +6,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         rsync \
+        imagemagick \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
