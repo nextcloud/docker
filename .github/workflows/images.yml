@@ -20,15 +20,15 @@ jobs:
     outputs:
       strategy: ${{ steps.generate-jobs.outputs.strategy }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: docker-library/bashbrew@v0.1.5
       - id: generate-jobs
         name: Generate Jobs
         run: |
-          git clone --depth 1 https://github.com/docker-library/bashbrew.git -b master ~/bashbrew
-          strategy="$(GITHUB_REPOSITORY=nextcloud ~/bashbrew/scripts/github-actions/generate.sh)"
-          strategy="$(~/bashbrew/scripts/github-actions/munge-i386.sh -c <<<"$strategy")"
+          strategy="$(GITHUB_REPOSITORY=nextcloud "$BASHBREW_SCRIPTS/github-actions/generate.sh")"
+          strategy="$("$BASHBREW_SCRIPTS/github-actions/munge-i386.sh" -c <<<"$strategy")"
+          echo "strategy=$strategy" >> "$GITHUB_OUTPUT"
           jq . <<<"$strategy" # sanity check / debugging aid
-          echo "::set-output name=strategy::$strategy"
 
   test:
     needs: init
@@ -36,7 +36,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Prepare Environment
         run: ${{ matrix.runs.prepare }}
       - name: Run update.sh script
