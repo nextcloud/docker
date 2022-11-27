@@ -59,9 +59,8 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 group="${APACHE_RUN_GROUP:-www-data}"
 
                 # strip off any '#' symbol ('#1000' is valid syntax for Apache)
-                pound='#'
-                user="${user#$pound}"
-                group="${group#$pound}"
+                user="${user#'#'}"
+                group="${group#'#'}"
                 ;;
             *) # php-fpm
                 user='www-data'
@@ -217,7 +216,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                             for DOMAIN in $NEXTCLOUD_TRUSTED_DOMAINS ; do
                                 DOMAIN=$(echo "$DOMAIN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
                                 run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
-                                NC_TRUSTED_DOMAIN_IDX=$(($NC_TRUSTED_DOMAIN_IDX+1))
+                                NC_TRUSTED_DOMAIN_IDX=$((NC_TRUSTED_DOMAIN_IDX+1))
                             done
                         fi
                     else
