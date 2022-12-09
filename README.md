@@ -241,7 +241,7 @@ services:
   db:
     image: mariadb:10.5
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --expire-logs-days=2 --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
     environment:
@@ -287,7 +287,7 @@ services:
   db:
     image: mariadb:10.5
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --expire-logs-days=2 --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
     environment:
