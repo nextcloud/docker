@@ -43,62 +43,7 @@ file_env() {
     unset "$fileVar"
 }
 
-if expr "$1" : "apache" 1>/dev/null; then
-    if [ -n "${APACHE_DISABLE_REWRITE_IP+x}" ]; then
-        a2disconf remoteip
-    fi
-fi
-
-if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
-    uid="$(id -u)"
-    gid="$(id -g)"
-    if [ "$uid" = '0' ]; then
-        case "$1" in
-            apache2*)
-                user="${APACHE_RUN_USER:-www-data}"
-                group="${APACHE_RUN_GROUP:-www-data}"
-
-                # strip off any '#' symbol ('#1000' is valid syntax for Apache)
-                user="${user#'#'}"
-                group="${group#'#'}"
-                ;;
-            *) # php-fpm
-                user='www-data'
-                group='www-data'
-                ;;
-        esac
-    else
-        user="$uid"
-        group="$gid"
-    fi
-
-    if [ -n "${REDIS_HOST+x}" ]; then
-
-        echo "Configuring Redis as session handler"
-        {
-            file_env REDIS_HOST_PASSWORD
-            echo 'session.save_handler = redis'
-            # check if redis host is an unix socket path
-            if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
-              if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_HOST_PASSWORD}\""
-              else
-                echo "session.save_path = \"unix://${REDIS_HOST}\""
-              fi
-            # check if redis password has been set
-            elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
-            else
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
-            fi
-            echo "redis.session.locking_enabled = 1"
-            echo "redis.session.lock_retries = -1"
-            # redis.session.lock_wait_time is specified in microseconds.
-            # Wait 10ms before retrying the lock rather than the default 2ms.
-            echo "redis.session.lock_wait_time = 10000"
-        } > /usr/local/etc/php/conf.d/redis-session.ini
-    fi
-
+do_install_or_upgrade() {
     installed_version="0.0.0.0"
     if [ -f /var/www/html/version.php ]; then
         # shellcheck disable=SC2016
@@ -244,7 +189,65 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     if [ -n "${NEXTCLOUD_INIT_HTACCESS+x}" ] && [ "$installed_version" != "0.0.0.0" ]; then
         run_as 'php /var/www/html/occ maintenance:update:htaccess'
     fi
+}
 
+if expr "$1" : "apache" 1>/dev/null; then
+    if [ -n "${APACHE_DISABLE_REWRITE_IP+x}" ]; then
+        a2disconf remoteip
+    fi
+fi
+
+if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
+    uid="$(id -u)"
+    gid="$(id -g)"
+    if [ "$uid" = '0' ]; then
+        case "$1" in
+            apache2*)
+                user="${APACHE_RUN_USER:-www-data}"
+                group="${APACHE_RUN_GROUP:-www-data}"
+
+                # strip off any '#' symbol ('#1000' is valid syntax for Apache)
+                user="${user#'#'}"
+                group="${group#'#'}"
+                ;;
+            *) # php-fpm
+                user='www-data'
+                group='www-data'
+                ;;
+        esac
+    else
+        user="$uid"
+        group="$gid"
+    fi
+
+    if [ -n "${REDIS_HOST+x}" ]; then
+
+        echo "Configuring Redis as session handler"
+        {
+            file_env REDIS_HOST_PASSWORD
+            echo 'session.save_handler = redis'
+            # check if redis host is an unix socket path
+            if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
+              if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+                echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_HOST_PASSWORD}\""
+              else
+                echo "session.save_path = \"unix://${REDIS_HOST}\""
+              fi
+            # check if redis password has been set
+            elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
+            else
+                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
+            fi
+            echo "redis.session.locking_enabled = 1"
+            echo "redis.session.lock_retries = -1"
+            # redis.session.lock_wait_time is specified in microseconds.
+            # Wait 10ms before retrying the lock rather than the default 2ms.
+            echo "redis.session.lock_wait_time = 10000"
+        } > /usr/local/etc/php/conf.d/redis-session.ini
+    fi
+
+    do_install_or_upgrade
 fi
 
 exec "$@"
