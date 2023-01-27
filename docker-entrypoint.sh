@@ -69,120 +69,93 @@ do_install_or_upgrade() {
             rsync_options="-rlD"
         fi
 
-        # If another process is syncing the html folder, wait for
-        # it to be done, then escape initalization.
-        # You need to define the NEXTCLOUD_INIT_LOCK environment variable
-        lock=/var/www/html/nextcloud-init-sync.lock
-        count=0
-        limit=10
-
-        if [ -f "$lock" ] && [ -n "${NEXTCLOUD_INIT_LOCK+x}" ]; then
-            until [ ! -f "$lock" ] || [ "$count" -gt "$limit" ]
-            do
-                count=$((count+1))
-                wait=$((count*10))
-                echo "Another process is initializing Nextcloud. Waiting $wait seconds..."
-                sleep $wait
-            done
-            if [ "$count" -gt "$limit" ]; then
-                echo "Timeout while waiting for an ongoing initialization"
-                exit 1
+        rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
+        for dir in config data custom_apps themes; do
+            if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
+                rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
             fi
-            echo "The other process is done, assuming complete initialization"
-        else
-            # Prevent multiple images syncing simultaneously
-            touch $lock
-            rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
+        done
+        rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
 
-            for dir in config data custom_apps themes; do
-                if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
-                    rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
-                fi
-            done
-            rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
+        # Install
+        if [ "$installed_version" = "0.0.0.0" ]; then
+            echo "New nextcloud instance"
 
-            # Install
-            if [ "$installed_version" = "0.0.0.0" ]; then
-                echo "New nextcloud instance"
+            file_env NEXTCLOUD_ADMIN_PASSWORD
+            file_env NEXTCLOUD_ADMIN_USER
 
-                file_env NEXTCLOUD_ADMIN_PASSWORD
-                file_env NEXTCLOUD_ADMIN_USER
-
-                if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
+            if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
+                # shellcheck disable=SC2016
+                install_options='-n --admin-user "$NEXTCLOUD_ADMIN_USER" --admin-pass "$NEXTCLOUD_ADMIN_PASSWORD"'
+                if [ -n "${NEXTCLOUD_DATA_DIR+x}" ]; then
                     # shellcheck disable=SC2016
-                    install_options='-n --admin-user "$NEXTCLOUD_ADMIN_USER" --admin-pass "$NEXTCLOUD_ADMIN_PASSWORD"'
-                    if [ -n "${NEXTCLOUD_DATA_DIR+x}" ]; then
-                        # shellcheck disable=SC2016
-                        install_options=$install_options' --data-dir "$NEXTCLOUD_DATA_DIR"'
-                    fi
-
-                    file_env MYSQL_DATABASE
-                    file_env MYSQL_PASSWORD
-                    file_env MYSQL_USER
-                    file_env POSTGRES_DB
-                    file_env POSTGRES_PASSWORD
-                    file_env POSTGRES_USER
-
-                    install=false
-                    if [ -n "${SQLITE_DATABASE+x}" ]; then
-                        echo "Installing with SQLite database"
-                        # shellcheck disable=SC2016
-                        install_options=$install_options' --database-name "$SQLITE_DATABASE"'
-                        install=true
-                    elif [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ]; then
-                        echo "Installing with MySQL database"
-                        # shellcheck disable=SC2016
-                        install_options=$install_options' --database mysql --database-name "$MYSQL_DATABASE" --database-user "$MYSQL_USER" --database-pass "$MYSQL_PASSWORD" --database-host "$MYSQL_HOST"'
-                        install=true
-                    elif [ -n "${POSTGRES_DB+x}" ] && [ -n "${POSTGRES_USER+x}" ] && [ -n "${POSTGRES_PASSWORD+x}" ] && [ -n "${POSTGRES_HOST+x}" ]; then
-                        echo "Installing with PostgreSQL database"
-                        # shellcheck disable=SC2016
-                        install_options=$install_options' --database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST"'
-                        install=true
-                    fi
-
-                    if [ "$install" = true ]; then
-                        echo "Starting nextcloud installation"
-                        max_retries=10
-                        try=0
-                        until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]
-                        do
-                            echo "Retrying install..."
-                            try=$((try+1))
-                            sleep 10s
-                        done
-                        if [ "$try" -gt "$max_retries" ]; then
-                            echo "Installing of nextcloud failed!"
-                            exit 1
-                        fi
-                        if [ -n "${NEXTCLOUD_TRUSTED_DOMAINS+x}" ]; then
-                            echo "Setting trusted domains…"
-                            NC_TRUSTED_DOMAIN_IDX=1
-                            for DOMAIN in $NEXTCLOUD_TRUSTED_DOMAINS ; do
-                                DOMAIN=$(echo "$DOMAIN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-                                run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
-                                NC_TRUSTED_DOMAIN_IDX=$((NC_TRUSTED_DOMAIN_IDX+1))
-                            done
-                        fi
-                    else
-                        echo "Please run the web-based installer on first connect!"
-                    fi
+                    install_options=$install_options' --data-dir "$NEXTCLOUD_DATA_DIR"'
                 fi
-            # Upgrade
-            else
-                run_as 'php /var/www/html/occ upgrade'
 
-                run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
-                echo "The following apps have been disabled:"
-                diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
-                rm -f /tmp/list_before /tmp/list_after
+                file_env MYSQL_DATABASE
+                file_env MYSQL_PASSWORD
+                file_env MYSQL_USER
+                file_env POSTGRES_DB
+                file_env POSTGRES_PASSWORD
+                file_env POSTGRES_USER
 
+                install=false
+                if [ -n "${SQLITE_DATABASE+x}" ]; then
+                    echo "Installing with SQLite database"
+                    # shellcheck disable=SC2016
+                    install_options=$install_options' --database-name "$SQLITE_DATABASE"'
+                    install=true
+                elif [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ]; then
+                    echo "Installing with MySQL database"
+                    # shellcheck disable=SC2016
+                    install_options=$install_options' --database mysql --database-name "$MYSQL_DATABASE" --database-user "$MYSQL_USER" --database-pass "$MYSQL_PASSWORD" --database-host "$MYSQL_HOST"'
+                    install=true
+                elif [ -n "${POSTGRES_DB+x}" ] && [ -n "${POSTGRES_USER+x}" ] && [ -n "${POSTGRES_PASSWORD+x}" ] && [ -n "${POSTGRES_HOST+x}" ]; then
+                    echo "Installing with PostgreSQL database"
+                    # shellcheck disable=SC2016
+                    install_options=$install_options' --database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST"'
+                    install=true
+                fi
+
+                if [ "$install" = true ]; then
+                    echo "Starting nextcloud installation"
+                    max_retries=10
+                    try=0
+                    until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]
+                    do
+                        echo "Retrying install..."
+                        try=$((try+1))
+                        sleep 10s
+                    done
+                    if [ "$try" -gt "$max_retries" ]; then
+                        echo "Installing of nextcloud failed!"
+                        exit 1
+                    fi
+                    if [ -n "${NEXTCLOUD_TRUSTED_DOMAINS+x}" ]; then
+                        echo "Setting trusted domains…"
+                        NC_TRUSTED_DOMAIN_IDX=1
+                        for DOMAIN in $NEXTCLOUD_TRUSTED_DOMAINS ; do
+                            DOMAIN=$(echo "$DOMAIN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+                            run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
+                            NC_TRUSTED_DOMAIN_IDX=$((NC_TRUSTED_DOMAIN_IDX+1))
+                        done
+                    fi
+                else
+                    echo "Please run the web-based installer on first connect!"
+                fi
             fi
+        # Upgrade
+        else
+            run_as 'php /var/www/html/occ upgrade'
 
-            # Initialization done, reset lock
-            rm $lock
-            echo "Initializing finished"
+            run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
+            echo "The following apps have been disabled:"
+            diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
+            rm -f /tmp/list_before /tmp/list_after
+
         fi
+
+        echo "Initializing finished"
     fi
 
     # Update htaccess after init if requested
