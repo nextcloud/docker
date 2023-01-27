@@ -220,7 +220,21 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         } > /usr/local/etc/php/conf.d/redis-session.ini
     fi
 
-    do_install_or_upgrade
+    # If another process is syncing the html folder, wait for
+    # it to be done, then escape initalization.
+    # You need to define the NEXTCLOUD_INIT_LOCK environment variable
+    if [ -n "${NEXTCLOUD_INIT_LOCK+x}" ]; then
+        (
+            if ! flock -n 9; then
+                # If we couldn't get it immediately, show a message, then wait for real
+                echo "Another process is initializing Nextcloud. Waiting..."
+                flock 9
+            fi
+            do_install_or_upgrade
+        ) 9> /var/www/html/nextcloud-init-sync.lock
+    else
+        do_install_or_upgrade
+    fi
 fi
 
 exec "$@"
