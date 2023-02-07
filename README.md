@@ -1,4 +1,4 @@
-# What is Nextcloud?
+# Nextcloud Docker micro-service image
 
 [![GitHub CI build status badge](https://github.com/nextcloud/docker/workflows/Images/badge.svg)](https://github.com/nextcloud/docker/actions?query=workflow%3AImages)
 [![update.sh build status badge](https://github.com/nextcloud/docker/workflows/update.sh/badge.svg)](https://github.com/nextcloud/docker/actions?query=workflow%3Aupdate.sh)
@@ -12,9 +12,11 @@
 [![ppc64le build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/nextcloud.svg?label=ppc64le)](https://doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/nextcloud)
 [![s390x build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/s390x/job/nextcloud.svg?label=s390x)](https://doi-janky.infosiftr.net/job/multiarch/job/s390x/job/nextcloud)
 
-A safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms.
+Nextcloud is a safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms.
 
 ![logo](https://cdn.rawgit.com/nextcloud/docker/80dd587d847b184ba95d7187a2a7a56ae4cbbb7b/logo.svg)
+
+This Docker micro-service image is developed and maintained by the Nextcloud community. Nextcloud GmbH does not maintain nor support this Docker image. When you are looking to get official support, you can become an [enterprise](https://nextcloud.com/enterprise/) customer or use [AIO](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one).
 
 # How to use this image
 This image is designed to be used in a micro-service environment. There are two versions of the image you can choose from.
