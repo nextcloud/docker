@@ -234,7 +234,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
             echo "Initializing finished"
         fi
-        ) 9> /var/lock/nextcloud-init-sync.lock
+        ) 9> /var/www/html/nextcloud-init-sync.lock
     fi
 
     # Update htaccess after init if requested
