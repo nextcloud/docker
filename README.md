@@ -139,10 +139,6 @@ The install and update script is only triggered when a default command is used (
 
 If you share your html folder with multiple docker containers, you might want to avoid multiple processes updating the same shared volume
 
-- `NEXTCLOUD_INIT_LOCK` (not set by default) Set it to true to enable initialization locking. Other containers will wait for the current process to finish updating the html volume to continue.
-
-You might also want to make sure the htaccess is up to date after each container update. Especially on multiple swarm nodes as any discrepancy will make your server unusable.
-
 - `NEXTCLOUD_INIT_HTACCESS` (not set by default) Set it to true to enable run `occ maintenance:update:htaccess` after container initialization.
 
 If you want to use Redis you have to create a separate [Redis](https://hub.docker.com/_/redis/) container in your setup / in your docker-compose file. To inform Nextcloud about the Redis container, pass in the following parameters:
