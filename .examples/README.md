@@ -18,6 +18,9 @@ Example | Description
 [smb](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/smb) | adds dependencies required to use smb shares
 [full](https://github.com/nextcloud/docker/tree/master/.examples/dockerfiles/full) | adds dependencies for ALL optional packages and cron functionality via supervisor (as in the `cron` example Dockerfile).
 
+### cron
+NOTE: [this container must run as root or `cron.php` will not run](https://github.com/nextcloud/docker/issues/1899).
+
 ### full
 The `full` Dockerfile example adds dependencies for all optional packages suggested by nextcloud that may be needed for some features (e.g. Video Preview Generation), as stated in the [Administration Manual](https://docs.nextcloud.com/server/12/admin_manual/installation/source_installation.html).
 
