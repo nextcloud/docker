@@ -126,7 +126,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
         # Prevent multiple images syncing simultaneously:
         # If another process is syncing the html folder, wait for
-        # it to be done, then escape initalization
+        # it to be done, then escape initalization.
         count=0
         limit=10
 
