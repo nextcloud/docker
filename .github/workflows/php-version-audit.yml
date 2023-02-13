@@ -1,0 +1,15 @@
+name: PHP Version Audit
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+  schedule:
+    - cron: '0 0 16 * *' # run arbitrarily once a month
+  workflow_dispatch:
+
+jobs:
+  php-version-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: ./php-version-audit.sh
