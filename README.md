@@ -16,6 +16,8 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 
 ![logo](https://cdn.rawgit.com/nextcloud/docker/80dd587d847b184ba95d7187a2a7a56ae4cbbb7b/logo.svg)
 
+This Docker micro-service image is developed and maintained by the Nextcloud community. Nextcloud GmbH does not offer support for this Docker image. When you are looking to get professional support, you can become an [enterprise](https://nextcloud.com/enterprise/) customer or use [AIO](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one).
+
 # How to use this image
 This image is designed to be used in a micro-service environment. There are two versions of the image you can choose from.
 
@@ -245,7 +247,7 @@ services:
   db:
     image: mariadb:10.5
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
     environment:
@@ -291,7 +293,7 @@ services:
   db:
     image: mariadb:10.5
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
     environment:

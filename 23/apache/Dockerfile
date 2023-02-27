@@ -98,6 +98,8 @@ RUN { \
         echo 'opcache.memory_consumption=128'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
+        echo 'opcache.jit=1255'; \
+        echo 'opcache.jit_buffer_size=128M'; \
     } > "${PHP_INI_DIR}/conf.d/opcache-recommended.ini"; \
     \
     echo 'apc.enable_cli=1' >> "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"; \
@@ -123,7 +125,7 @@ RUN a2enmod headers rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 23.0.11
+ENV NEXTCLOUD_VERSION 23.0.12
 
 RUN set -ex; \
     fetchDeps=" \
