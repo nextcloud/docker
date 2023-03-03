@@ -176,6 +176,7 @@ To use an external S3 compatible object store as primary storage, set the follow
 - `OBJECTSTORE_S3_PORT`: The port that the object storage server is being served over
 - `OBJECTSTORE_S3_SSL` (default: `true`): Whether or not SSL/TLS should be used to communicate with object storage server
 - `OBJECTSTORE_S3_REGION`: The region that the S3 bucket resides in.
+- `OBJECTSTORE_S3_STORAGE_CLASS` (since Nextcloud 26, default: `STANDARD`): The storage class to apply to all objects stored. See S3 [`--storage-class`](https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html#options).
 - `OBJECTSTORE_S3_USEPATH_STYLE` (default: `false`): Not required for AWS S3
 - `OBJECTSTORE_S3_LEGACYAUTH` (default: `false`): Not required for AWS S3
 - `OBJECTSTORE_S3_OBJECT_PREFIX` (default: `urn:oid:`): Prefix to prepend to the fileid
