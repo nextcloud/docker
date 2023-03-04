@@ -91,6 +91,10 @@ $ docker run -d \
 -v theme:/var/www/html/themes/<YOUR_CUSTOM_THEME> \
 nextcloud
 ```
+If mounting additional volumes, you should note that data inside the main folder (`/var/www/html`) may be removed during installation and upgrades, unless listed in [upgrade.exclude](https://github.com/nextcloud/docker/blob/master/upgrade.exclude). You should consider:
+- Confirming that [upgrade.exclude](https://github.com/nextcloud/docker/blob/master/upgrade.exclude) contains the files and folders that should persist during installation and upgrades; or 
+- Mounting storage volumes to locations outside of `/var/www/html`.
+
 
 ## Using the Nextcloud command-line interface
 To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
