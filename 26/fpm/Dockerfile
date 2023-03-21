@@ -6,11 +6,11 @@ RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        rsync \
-        bzip2 \
         busybox-static \
+        bzip2 \
         libldap-common \
         libmagickcore-6.q16-6-extra \
+        rsync \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     \
@@ -30,18 +30,18 @@ RUN set -ex; \
         libcurl4-openssl-dev \
         libevent-dev \
         libfreetype6-dev \
+        libgmp-dev \
         libicu-dev \
         libjpeg-dev \
         libldap2-dev \
+        libmagickwand-dev \
         libmcrypt-dev \
         libmemcached-dev \
         libpng-dev \
         libpq-dev \
-        libxml2-dev \
-        libmagickwand-dev \
-        libzip-dev \
         libwebp-dev \
-        libgmp-dev \
+        libxml2-dev \
+        libzip-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -51,6 +51,7 @@ RUN set -ex; \
         bcmath \
         exif \
         gd \
+        gmp \
         intl \
         ldap \
         opcache \
@@ -58,20 +59,19 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
-        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.22; \
+    pecl install imagick-3.7.0; \
     pecl install memcached-3.2.0; \
     pecl install redis-5.3.7; \
-    pecl install imagick-3.7.0; \
     \
     docker-php-ext-enable \
         apcu \
+        imagick \
         memcached \
         redis \
-        imagick \
     ; \
     rm -r /tmp/pear; \
     \
