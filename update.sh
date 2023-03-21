@@ -2,7 +2,6 @@
 set -eo pipefail
 
 declare -A php_version=(
-	[23]='8.0'
 	[24]='8.0'
 	[default]='8.1'
 )
@@ -78,7 +77,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='23'
+min_version='24'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -112,8 +111,6 @@ function create_variant() {
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
-		\@docker-php-ext-configure gmp --with-gmp@d;
-		\@/usr/include/gmp.h@d;
 	' "$dir/Dockerfile"
 
 	# Copy the shell scripts
