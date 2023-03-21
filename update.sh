@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+declare -A alpine_version=(
+	[24]='3.16'
+	[25]='3.16'
+	[default]='3.17'
+)
+
 declare -A php_version=(
 	[24]='8.0'
 	[default]='8.1'
@@ -86,6 +92,7 @@ function version_greater_or_equal() {
 
 function create_variant() {
 	dir="$1/$variant"
+	alpineVersion=${alpine_version[$version]-${alpine_version[default]}}
 	phpVersion=${php_version[$version]-${php_version[default]}}
 	crontabInt=${crontab_int[$version]-${crontab_int[default]}}
 
@@ -100,6 +107,7 @@ function create_variant() {
 
 	# Replace the variables.
 	sed -ri -e '
+		s/%%ALPINE_VERSION%%/'"$alpineVersion"'/g;
 		s/%%PHP_VERSION%%/'"$phpVersion"'/g;
 		s/%%VARIANT%%/'"$variant"'/g;
 		s/%%VERSION%%/'"$fullversion"'/g;

@@ -1,4 +1,4 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%3.16
+FROM php:%%PHP_VERSION%%-%%VARIANT%%%%ALPINE_VERSION%%
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
