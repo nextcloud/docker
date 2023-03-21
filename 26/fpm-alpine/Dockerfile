@@ -49,6 +49,7 @@ RUN set -ex; \
         pcntl \
         pdo_mysql \
         pdo_pgsql \
+        sysvsem \
         zip \
     ; \
     \
