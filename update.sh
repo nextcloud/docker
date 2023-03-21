@@ -111,8 +111,6 @@ function create_variant() {
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
-		\@docker-php-ext-configure gmp --with-gmp@d;
-		\@/usr/include/gmp.h@d;
 	' "$dir/Dockerfile"
 
 	# Copy the shell scripts
