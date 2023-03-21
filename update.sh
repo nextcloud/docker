@@ -113,6 +113,15 @@ function create_variant() {
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
 
+	# Nextcloud 26+ recommends sysvsem
+	case "$version" in
+		24|25 )
+			sed -ri -e '
+				/sysvsem/d
+			' "$dir/Dockerfile"
+			;;
+	esac
+
 	# Copy the shell scripts
 	for name in entrypoint cron; do
 		cp "docker-$name.sh" "$dir/$name.sh"
