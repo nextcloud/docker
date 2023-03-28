@@ -6,7 +6,7 @@ services:
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     restart: always
     volumes:
-      - db:/var/lib/mysql
+      - db:/var/lib/mysql:Z
     environment:
       - MYSQL_ROOT_PASSWORD=
       - MARIADB_AUTO_UPGRADE=1
@@ -24,7 +24,7 @@ services:
     ports:
       - 127.0.0.1:8080:80
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www/html:z
     environment:
       - MYSQL_HOST=db
       - REDIS_HOST=redis
@@ -38,7 +38,7 @@ services:
     image: nextcloud:apache
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www/html:z
     entrypoint: /cron.sh
     depends_on:
       - db
