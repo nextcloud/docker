@@ -9,8 +9,6 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
       'class' => '\OC\Files\ObjectStore\S3',
       'arguments' => array(
         'bucket' => getenv('OBJECTSTORE_S3_BUCKET'),
-        'key' => getenv('OBJECTSTORE_S3_KEY') ?: '',
-        'secret' => getenv('OBJECTSTORE_S3_SECRET') ?: '',
         'region' => getenv('OBJECTSTORE_S3_REGION') ?: '',
         'hostname' => getenv('OBJECTSTORE_S3_HOST') ?: '',
         'port' => getenv('OBJECTSTORE_S3_PORT') ?: '',
@@ -24,4 +22,20 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
       )
     )
   );
+
+  if (getenv('OBJECTSTORE_S3_KEY_FILE') && file_exists(getenv('OBJECTSTORE_S3_KEY_FILE'))) {
+    $CONFIG['objectstore']['arguments']['key'] = trim(file_get_contents(getenv('OBJECTSTORE_S3_KEY_FILE')));
+  } elseif (getenv('OBJECTSTORE_S3_KEY')) {
+    $CONFIG['objectstore']['arguments']['key'] = getenv('OBJECTSTORE_S3_KEY');
+  } else {
+    $CONFIG['objectstore']['arguments']['key'] = '';
+  }
+
+  if (getenv('OBJECTSTORE_S3_SECRET_FILE') && file_exists(getenv('OBJECTSTORE_S3_SECRET_FILE'))) {
+    $CONFIG['objectstore']['arguments']['secret'] = trim(file_get_contents(getenv('OBJECTSTORE_S3_SECRET_FILE')));
+  } elseif (getenv('OBJECTSTORE_S3_SECRET')) {
+    $CONFIG['objectstore']['arguments']['secret'] = getenv('OBJECTSTORE_S3_SECRET');
+  } else {
+    $CONFIG['objectstore']['arguments']['secret'] = '';
+  }
 } 
