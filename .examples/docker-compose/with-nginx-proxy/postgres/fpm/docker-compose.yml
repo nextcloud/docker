@@ -21,6 +21,7 @@ services:
     environment:
       - POSTGRES_HOST=db
       - REDIS_HOST=redis
+      - OVERWRITEPROTOCOL=https
     env_file:
       - db.env
     depends_on:
