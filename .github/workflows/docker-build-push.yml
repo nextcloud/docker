@@ -33,4 +33,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/nextcloud-full:25-apache:latest
+          tags: glauciocampos/nextcloud-full:25-apache:latest
