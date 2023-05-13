@@ -1,3 +1,10 @@
+# Forked from the official nextcloud docker image
+## [Dockerhub repository ](https://hub.docker.com/repository/docker/glauciocampos/nextcloud-full/tags?page=1&ordering=last_updated)
+
+## Changes:
+### [- Added smbclient to nextcloud:25-apache](https://github.com/glauciocampos/nextcloud-full/blob/master/.examples/README.md)
+
+
 # What is Nextcloud?
 
 [![GitHub CI build status badge](https://github.com/nextcloud/docker/workflows/Images/badge.svg)](https://github.com/nextcloud/docker/actions?query=workflow%3AImages)
