@@ -24,24 +24,26 @@ run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
     local return_code=0
 
-    echo "Searching for scripts to run in the folder: ${hook_folder_path}"
+    echo "=> Searching for scripts to run in the folder: ${hook_folder_path}"
 
     (
         cd "${hook_folder_path}"
-        find . -type f -print | while read script_file_path; do
+        find . -type f -iname '*.sh' -print | sort | while read script_file_path; do
             if ! [ -x "${script_file_path}" ] && [ -f "${script_file_path}" ]; then
-                echo "The script \"${script_file_path}\" in the folder \"${hook_folder_path}\" was skipping, because it didn't have the executable flag"
+                echo "==> The script \"${script_file_path}\" in the folder \"${hook_folder_path}\" was skipping, because it didn't have the executable flag"
                 continue
             fi
 
-            echo "Running the script: \"${script_file_path}\""
+            echo "==> Running the script: \"${script_file_path}\""
 
             run_as "${script_file_path}" || return_code="$?"
 
             if [ "${return_code}" -ne "0" ]; then
-                echo "Failed at executing \"${script_file_path}\". Exit code: ${return_code}"
+                echo "==> Failed at executing \"${script_file_path}\". Exit code: ${return_code}"
                 exit 1
             fi
+
+            echo "==> Finished the script: \"${script_file_path}\""
         done
     )
 }
