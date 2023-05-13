@@ -24,7 +24,7 @@ run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
     local return_code=0
 
-    echo "=> Searching for scripts to run in the folder: ${hook_folder_path}"
+    echo "=> Searching for scripts (*.sh) to run in the folder: ${hook_folder_path}"
 
     (
         cd "${hook_folder_path}"
