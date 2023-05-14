@@ -36,7 +36,7 @@ jobs:
           context: ./24/apache
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: glauciocampos/nextcloud-full:24-apache-latest
+          tags: glauciocampos/nextcloud:24-apache-$(cat /proc/sys/kernel/random/uuid)
           
       - 
         name: Nextcloud 25 Apache
@@ -45,7 +45,7 @@ jobs:
           context: ./25/apache
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: glauciocampos/nextcloud-full:25-apache-latest
+          tags: glauciocampos/nextcloud:25-apache-$(cat /proc/sys/kernel/random/uuid)
           
       - 
         name: Nextcloud 26 Apache
@@ -54,4 +54,4 @@ jobs:
           context: ./26/apache
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: glauciocampos/nextcloud-full:26-apache-latest
+          tags: glauciocampos/nextcloud:26-apache-$(cat /proc/sys/kernel/random/uuid)
