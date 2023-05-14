@@ -214,7 +214,7 @@ There are 5 hooks
 
 To use the hooks triggered by the entrypoint script... either added the script(s) to one/more of the hook folders, which are located at the path `/docker-entrypoint-hooks.d` in the container. It is also possible to use volume(s) to insert the script into the container.
 
-**Remember:** Only the script(s) markted with the executable flag are executed.
+**Remember:** Only the script(s) marked with the executable flag are executed.
 
 **Example:**
 ```yaml
