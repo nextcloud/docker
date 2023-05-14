@@ -2,8 +2,9 @@
 ## [Dockerhub repository ](https://hub.docker.com/repository/docker/glauciocampos/nextcloud-full/tags?page=1&ordering=last_updated)
 
 ## Changes:
+### [- Added smbclient to nextcloud:24-apache](https://github.com/glauciocampos/nextcloud-full/blob/master/.examples/README.md)
 ### [- Added smbclient to nextcloud:25-apache](https://github.com/glauciocampos/nextcloud-full/blob/master/.examples/README.md)
-
+### [- Added smbclient to nextcloud:26-apache](https://github.com/glauciocampos/nextcloud-full/blob/master/.examples/README.md)
 
 # What is Nextcloud?
 
