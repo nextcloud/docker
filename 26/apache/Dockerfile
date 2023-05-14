@@ -7,6 +7,8 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         busybox-static \
+        smbclient \
+        libsmbclient-dev \        
         bzip2 \
         libldap-common \
         libmagickcore-6.q16-6-extra \
@@ -65,12 +67,14 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.22; \
     pecl install imagick-3.7.0; \
+    pecl install smbclient; \
     pecl install memcached-3.2.0; \
     pecl install redis-5.3.7; \
     \
     docker-php-ext-enable \
         apcu \
         imagick \
+        smbclient \        
         memcached \
         redis \
     ; \
