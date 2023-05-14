@@ -1,14 +1,11 @@
 name: Docker Build and Push
 
 on:
-  push:
-    branches:
-      - "main"
-      - "test/*"
   workflow_dispatch:
 
 jobs:
-  docker:
+  docker_env:
+    name: Prepare docker env
     runs-on: ubuntu-latest
     steps:
       -
@@ -26,11 +23,35 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
+
+  build_and_push_nc:
+    name: Build and Push
+    runs-on: backend
+    needs: docker_env
+    steps:    
+      - 
+        name: Nextcloud 24 Apache
+        uses: docker/build-push-action@v4
+        with:
+          context: ./24/apache
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: glauciocampos/nextcloud-full:24-apache-latest
+          
+      - 
+        name: Nextcloud 25 Apache
         uses: docker/build-push-action@v4
         with:
           context: ./25/apache
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/nextcloud-full:25-apache-latest
+          tags: glauciocampos/nextcloud-full:25-apache-latest
+          
+      - 
+        name: Nextcloud 26 Apache
+        uses: docker/build-push-action@v4
+        with:
+          context: ./26/apache
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: glauciocampos/nextcloud-full:26-apache-latest
