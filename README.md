@@ -210,13 +210,15 @@ There are 5 hooks
 - `post-installation` Executed after the Nextcloud is installed/initiated
 - `pre-upgrade` Executed before the Nextcloud is upgraded
 - `post-upgrade` Executed after the Nextcloud is upgraded
-- `before-starting` Executed before the Nextcloud is started
+- `before-starting` Executed before the Nextcloud starts
 
-To use the hooks triggered by the entrypoint script... either added the script(s) to one/more of the hook folders, which are located at the path `/docker-entrypoint-hooks.d` in the container. It is also possible to use volume(s) to insert the script into the container.
+To use the hooks triggered by the `entrypoint` script, either
+- Added your script(s) to the individual of the hook folder(s), which are located at the path `/docker-entrypoint-hooks.d` in the container
+- Use volume(s) if you want to use script from the host system inside the container, see example.
 
-**Remember:** Only the script(s) marked with the executable flag are executed.
+**Note:** Only the script(s) ending with `.sh` and marked as executable will be executed.
 
-**Example:**
+**Example:** Mount using volumes
 ```yaml
 ...
   app:
