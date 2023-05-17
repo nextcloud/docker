@@ -24,7 +24,7 @@ services:
     volumes:
       - nextcloud:/var/www/html:z
     environment:
-      - VIRTUAL_HOST=
+      - VIRTUAL_HOST=${VHOST}
       - LETSENCRYPT_HOST=
       - LETSENCRYPT_EMAIL=
       - MYSQL_HOST=db
@@ -63,6 +63,8 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:z,ro
     networks:
       - proxy-tier
+    environment:
+      DEFAULT_HOST=${VHOST}
 
   letsencrypt-companion:
     image: nginxproxy/acme-companion
@@ -85,11 +87,11 @@ services:
 #    volumes:
 #      - certs:/certs
 #    environment:
-#      - SSL_SUBJECT=servhostname.local
+#      - SSL_SUBJECT=${VHOST}
 #      - CA_SUBJECT=my@example.com
-#      - SSL_KEY=/certs/servhostname.local.key
-#      - SSL_CSR=/certs/servhostname.local.csr
-#      - SSL_CERT=/certs/servhostname.local.crt
+#      - SSL_KEY=/certs/${VHOST}.key
+#      - SSL_CSR=/certs/${VHOST}.csr
+#      - SSL_CERT=/certs/${VHOST}.crt
 #    networks:
 #      - proxy-tier
 
