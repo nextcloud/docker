@@ -1,0 +1,84 @@
+name: Docker Build and Push
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build_and_push_nc:
+    name: Build and Push
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3      
+
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Generate random tag ID
+        id: random_tag
+        run: echo "TAG_RANDOM=$RANDOM" >> $GITHUB_ENV
+
+      - 
+        name: Nextcloud 24 Apache
+        uses: docker/build-push-action@v4
+        with:
+          context: ./24/apache
+          platforms: linux/amd64
+          push: true
+          tags: glauciocampos/nextcloud:24-apache-amd64-${{ env.TAG_RANDOM }}
+
+      - 
+        name: Nextcloud 24 Apache (arm64)
+        uses: docker/build-push-action@v4
+        with:
+          context: ./24/apache
+          push: true
+          tags: glauciocampos/nextcloud:24-apache-arm64-${{ env.TAG_RANDOM }}
+          platforms: linux/arm64
+
+      - 
+        name: Nextcloud 25 Apache (amd64)
+        uses: docker/build-push-action@v4
+        with:
+          context: ./25/apache
+          push: true
+          tags: glauciocampos/nextcloud:25-apache-amd64-${{ env.TAG_RANDOM }}
+          platforms: linux/amd64
+
+      - 
+        name: Nextcloud 25 Apache (arm64)
+        uses: docker/build-push-action@v4
+        with:
+          context: ./25/apache
+          push: true
+          tags: glauciocampos/nextcloud:25-apache-arm64-${{ env.TAG_RANDOM }}
+          platforms: linux/arm64
+
+      - 
+        name: Nextcloud 26 Apache (amd64)
+        uses: docker/build-push-action@v4
+        with:
+          context: ./26/apache
+          push: true
+          tags: glauciocampos/nextcloud:26-apache-amd64-${{ env.TAG_RANDOM }}
+          platforms: linux/amd64
+
+      - 
+        name: Nextcloud 26 Apache (arm64)
+        uses: docker/build-push-action@v4
+        with:
+          context: ./26/apache
+          push: true
+          tags: glauciocampos/nextcloud:26-apache-arm64-${{ env.TAG_RANDOM }}
+          platforms: linux/arm64          

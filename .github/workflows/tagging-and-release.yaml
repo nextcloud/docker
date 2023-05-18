@@ -1,0 +1,32 @@
+name: Tagging and Release
+
+on:
+    workflow_run:
+      workflows: ["Docker Build and Push"]
+      types:
+        - completed
+    pull_request:
+      types:
+        - closed
+      branches:
+        - master
+
+jobs:
+  release:
+    name: Create Tag and Release
+    runs-on: ubuntu-latest
+    steps:    
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Create GitHub release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          draft: false
+          allowUpdates: true
+          prerelease: false
+          makeLatest: true
+          body: Added smbclient
+          generateReleaseNotes: true
