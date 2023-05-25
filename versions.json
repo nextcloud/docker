@@ -9,19 +9,19 @@
         "variant": "apache",
         "base": "debian",
         "baseVersion": "bullseye",
-        "phpVersion": "8.1"
+        "phpVersion": "8.2"
       },
       "fpm": {
         "variant": "fpm",
         "base": "debian",
         "baseVersion": "bullseye",
-        "phpVersion": "8.1"
+        "phpVersion": "8.2"
       },
       "fpm-alpine": {
         "variant": "fpm-alpine",
         "base": "alpine",
-        "baseVersion": "3.17",
-        "phpVersion": "8.1"
+        "baseVersion": "3.18",
+        "phpVersion": "8.2"
       }
     }
   },
