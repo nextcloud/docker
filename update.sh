@@ -2,6 +2,8 @@
 set -eo pipefail
 
 declare -A alpine_version=(
+	# https://github.com/nextcloud/server/issues/32003
+	# Nextcloud 25 requires OpenSSL 1.1
 	[25]='3.16'
 	[default]='3.17'
 )
@@ -121,7 +123,16 @@ function create_variant() {
 
 	# Nextcloud 26+ recommends sysvsem
 	case "$version" in
-		24|25 )
+		25 )
+			case "$variant" in
+				fpm-alpine )
+					# Alpine 3.16 / OpenSSL 1.1 is only available for PHP 8.0
+					sed -ri -e '
+						s/FROM php:8\.1-fpm-alpine/FROM php:8.0-fpm-alpine/
+					' "$dir/Dockerfile"
+					;;
+			esac
+
 			sed -ri -e '
 				/sysvsem/d
 			' "$dir/Dockerfile"
