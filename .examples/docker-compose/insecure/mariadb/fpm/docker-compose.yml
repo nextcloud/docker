@@ -33,7 +33,7 @@ services:
       - redis
 
   web:
-    build: ./web
+    image: nginx:alpine
     restart: always
     ports:
       - 127.0.0.1:8080:80
@@ -41,6 +41,9 @@ services:
       - nextcloud:/var/www/html:z,ro
     depends_on:
       - app
+    configs:
+      - source: web
+        target: /etc/nginx/nginx.conf
 
   cron:
     image: nextcloud:fpm-alpine
@@ -51,6 +54,10 @@ services:
     depends_on:
       - db
       - redis
+
+configs:
+  web:
+    file: nginx.conf
 
 volumes:
   db:

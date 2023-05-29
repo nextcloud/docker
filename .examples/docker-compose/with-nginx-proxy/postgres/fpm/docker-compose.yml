@@ -28,8 +28,11 @@ services:
       - redis
 
   web:
-    build: ./web
+    image: nginx:alpine
     restart: always
+    configs:
+      - source: web
+        target: /etc/nginx/nginx.conf
     volumes:
       - nextcloud:/var/www/html:z,ro
     environment:
@@ -53,13 +56,16 @@ services:
       - redis
 
   proxy:
-    build: ./proxy
+    image: nginxproxy/nginx-proxy:alpine
     restart: always
     ports:
       - 80:80
       - 443:443
     labels:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    configs:
+      - source: proxy
+        target: /etc/nginx/conf.d/uploadsize.conf
     volumes:
       - certs:/etc/nginx/certs:z,ro
       - vhost.d:/etc/nginx/vhost.d:z
@@ -96,6 +102,12 @@ services:
 #      - SSL_CERT=/certs/servhostname.local.crt
 #    networks:
 #      - proxy-tier
+
+configs:
+  proxy:
+    file: uploadsize.conf
+  web:
+    file: nginx.conf
 
 volumes:
   db:
