@@ -112,6 +112,21 @@ function create_variant() {
 
 	echo "updating $fullversion [$1] $variant"
 
+	# Apply version+variant-specific patches
+	case "$version" in
+		25)
+			case "$variant" in
+				fpm-alpine)
+					# Alpine 3.16 / OpenSSL 1.1 is only available for PHP 8.0
+					phpVersion=8.0
+					;;
+			esac
+
+			# Nextcloud 26+ recommends sysvsem
+			sed -ri -e '/sysvsem/d' "$dir/Dockerfile"
+			;;
+	esac
+
 	# Replace the variables.
 	sed -ri -e '
 		s/%%ALPINE_VERSION%%/'"$alpineVersion"'/g;
@@ -130,24 +145,6 @@ function create_variant() {
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
 
-	# Nextcloud 26+ recommends sysvsem
-	case "$version" in
-		25 )
-			case "$variant" in
-				fpm-alpine )
-					# Alpine 3.16 / OpenSSL 1.1 is only available for PHP 8.0
-					sed -ri -e '
-						s/FROM php:8\.1-fpm-alpine/FROM php:8.0-fpm-alpine/
-					' "$dir/Dockerfile"
-					;;
-			esac
-
-			sed -ri -e '
-				/sysvsem/d
-			' "$dir/Dockerfile"
-			;;
-	esac
-
 	# Copy the shell scripts
 	for name in entrypoint cron; do
 		cp "docker-$name.sh" "$dir/$name.sh"
@@ -163,6 +160,16 @@ function create_variant() {
 	if [ "$variant" != "apache" ]; then
 		rm "$dir/config/apache-pretty-urls.config.php"
 	fi
+
+	# Add variant to versions.json
+	[ "${base[$variant]}" == "alpine" ] && baseVersion="$alpineVersion" || baseVersion="$debianVersion"
+	versionVariantsJson="$(jq -e \
+		--arg version "$version" --arg variant "$variant" --arg base "${base[$variant]}" --arg baseVersion "$baseVersion" --arg phpVersion "$phpVersion" \
+		'.[$version].variants[$variant] = {"variant": $variant, "base": $base, "baseVersion": $baseVersion, "phpVersion": $phpVersion}' versions.json)"
+	versionJson="$(jq -e \
+		--arg version "$version" --arg fullversion "$fullversion" --arg url "$url" --arg ascUrl "$ascUrl" --argjson variants "$versionVariantsJson" \
+		'.[$version] = {"branch": $version, "version": $fullversion, "url": $url, "ascUrl": $ascUrl, "variants": $variants[$version].variants}' versions.json)"
+	printf '%s\n' "$versionJson" > versions.json
 }
 
 curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
@@ -172,6 +179,8 @@ curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
 	tail -1 > latest.txt
 
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\|-alpha\)\?' -exec rm -r '{}' \;
+
+printf '%s' "{}" > versions.json
 
 fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
