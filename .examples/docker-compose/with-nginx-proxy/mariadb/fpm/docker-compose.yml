@@ -57,6 +57,7 @@ services:
       - nextcloud:/var/www/html:z
     entrypoint: /cron.sh
     depends_on:
+      - app
       - db
       - redis
 
