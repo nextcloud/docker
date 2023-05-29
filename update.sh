@@ -8,6 +8,10 @@ declare -A alpine_version=(
 	[default]='3.17'
 )
 
+declare -A debian_version=(
+	[default]='bullseye'
+)
+
 declare -A php_version=(
 	[default]='8.1'
 )
@@ -93,6 +97,7 @@ function version_greater_or_equal() {
 function create_variant() {
 	dir="$1/$variant"
 	alpineVersion=${alpine_version[$version]-${alpine_version[default]}}
+	debianVersion=${debian_version[$version]-${debian_version[default]}}
 	phpVersion=${php_version[$version]-${php_version[default]}}
 	crontabInt=${crontab_int[$version]-${crontab_int[default]}}
 
@@ -108,6 +113,7 @@ function create_variant() {
 	# Replace the variables.
 	sed -ri -e '
 		s/%%ALPINE_VERSION%%/'"$alpineVersion"'/g;
+		s/%%DEBIAN_VERSION%%/'"$debianVersion"'/g;
 		s/%%PHP_VERSION%%/'"$phpVersion"'/g;
 		s/%%VARIANT%%/'"$variant"'/g;
 		s/%%VERSION%%/'"$fullversion"'/g;

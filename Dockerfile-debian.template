@@ -1,4 +1,4 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%-bullseye
+FROM php:%%PHP_VERSION%%-%%VARIANT%%-%%DEBIAN_VERSION%%
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
