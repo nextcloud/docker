@@ -1,1 +1,54 @@
-{}
+{
+  "26": {
+    "branch": "26",
+    "version": "26.0.2",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-26.0.2.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-26.0.2.tar.bz2.asc",
+    "variants": {
+      "apache": {
+        "variant": "apache",
+        "base": "debian",
+        "baseVersion": "bullseye",
+        "phpVersion": "8.1"
+      },
+      "fpm": {
+        "variant": "fpm",
+        "base": "debian",
+        "baseVersion": "bullseye",
+        "phpVersion": "8.1"
+      },
+      "fpm-alpine": {
+        "variant": "fpm-alpine",
+        "base": "alpine",
+        "baseVersion": "3.17",
+        "phpVersion": "8.1"
+      }
+    }
+  },
+  "25": {
+    "branch": "25",
+    "version": "25.0.7",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-25.0.7.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-25.0.7.tar.bz2.asc",
+    "variants": {
+      "apache": {
+        "variant": "apache",
+        "base": "debian",
+        "baseVersion": "bullseye",
+        "phpVersion": "8.1"
+      },
+      "fpm": {
+        "variant": "fpm",
+        "base": "debian",
+        "baseVersion": "bullseye",
+        "phpVersion": "8.1"
+      },
+      "fpm-alpine": {
+        "variant": "fpm-alpine",
+        "base": "alpine",
+        "baseVersion": "3.16",
+        "phpVersion": "8.0"
+      }
+    }
+  }
+}
