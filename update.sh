@@ -100,6 +100,8 @@ function create_variant() {
 	debianVersion=${debian_version[$version]-${debian_version[default]}}
 	phpVersion=${php_version[$version]-${php_version[default]}}
 	crontabInt=${crontab_int[$version]-${crontab_int[default]}}
+	url="https://download.nextcloud.com/server/releases/nextcloud-$fullversion.tar.bz2"
+	ascUrl="https://download.nextcloud.com/server/releases/nextcloud-$fullversion.tar.bz2.asc"
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
@@ -117,7 +119,8 @@ function create_variant() {
 		s/%%PHP_VERSION%%/'"$phpVersion"'/g;
 		s/%%VARIANT%%/'"$variant"'/g;
 		s/%%VERSION%%/'"$fullversion"'/g;
-		s/%%BASE_DOWNLOAD_URL%%/'"$2"'/g;
+		s/%%DOWNLOAD_URL%%/'"$(sed -e 's/[\/&]/\\&/g' <<< "$url")"'/g;
+		s/%%DOWNLOAD_URL_ASC%%/'"$(sed -e 's/[\/&]/\\&/g' <<< "$ascUrl")"'/g;
 		s/%%CMD%%/'"${cmd[$variant]}"'/g;
 		s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
@@ -175,14 +178,13 @@ fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |
 	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' | \
 	sort -urV ) )
 versions=( $( printf '%s\n' "${fullversions[@]}" | cut -d. -f1 | sort -urV ) )
+
 for version in "${versions[@]}"; do
 	fullversion="$( printf '%s\n' "${fullversions[@]}" | grep -E "^$version" | head -1 )"
 
 	if version_greater_or_equal "$version" "$min_version"; then
-
 		for variant in "${variants[@]}"; do
-
-			create_variant "$version" "https:\/\/download.nextcloud.com\/server\/releases"
+			create_variant "$version"
 		done
 	fi
 done
