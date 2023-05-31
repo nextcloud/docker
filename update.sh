@@ -2,10 +2,8 @@
 set -eo pipefail
 
 declare -A alpine_version=(
-	# https://github.com/nextcloud/server/issues/32003
-	# Nextcloud 25 requires OpenSSL 1.1
-	[25]='3.16'
 	[default]='3.17'
+	[25]='3.16'
 )
 
 declare -A debian_version=(
@@ -115,13 +113,6 @@ function create_variant() {
 	# Apply version+variant-specific patches
 	case "$version" in
 		25)
-			case "$variant" in
-				fpm-alpine)
-					# Alpine 3.16 / OpenSSL 1.1 is only available for PHP 8.0
-					phpVersion=8.0
-					;;
-			esac
-
 			# Nextcloud 26+ recommends sysvsem
 			sed -ri -e '/sysvsem/d' "$dir/Dockerfile"
 			;;
