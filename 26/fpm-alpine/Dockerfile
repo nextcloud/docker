@@ -73,8 +73,8 @@ RUN set -ex; \
             | sort -u \
             | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
     )"; \
-    apk add --virtual .nextcloud-phpext-rundeps $runDeps; \
-    apk del .build-deps
+    apk add --no-network --virtual .nextcloud-phpext-rundeps $runDeps; \
+    apk del --no-network .build-deps
 
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/latest/admin_manual/installation/server_tuning.html#enable-php-opcache
@@ -127,7 +127,7 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
-    apk del .fetch-deps
+    apk del --no-network .fetch-deps
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
