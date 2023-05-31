@@ -8,6 +8,10 @@ declare -A alpine_version=(
 	[default]='3.17'
 )
 
+declare -A debian_version=(
+	[default]='bullseye'
+)
+
 declare -A php_version=(
 	[default]='8.1'
 )
@@ -93,8 +97,11 @@ function version_greater_or_equal() {
 function create_variant() {
 	dir="$1/$variant"
 	alpineVersion=${alpine_version[$version]-${alpine_version[default]}}
+	debianVersion=${debian_version[$version]-${debian_version[default]}}
 	phpVersion=${php_version[$version]-${php_version[default]}}
 	crontabInt=${crontab_int[$version]-${crontab_int[default]}}
+	url="https://download.nextcloud.com/server/releases/nextcloud-$fullversion.tar.bz2"
+	ascUrl="https://download.nextcloud.com/server/releases/nextcloud-$fullversion.tar.bz2.asc"
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
@@ -105,13 +112,30 @@ function create_variant() {
 
 	echo "updating $fullversion [$1] $variant"
 
+	# Apply version+variant-specific patches
+	case "$version" in
+		25)
+			case "$variant" in
+				fpm-alpine)
+					# Alpine 3.16 / OpenSSL 1.1 is only available for PHP 8.0
+					phpVersion=8.0
+					;;
+			esac
+
+			# Nextcloud 26+ recommends sysvsem
+			sed -ri -e '/sysvsem/d' "$dir/Dockerfile"
+			;;
+	esac
+
 	# Replace the variables.
 	sed -ri -e '
 		s/%%ALPINE_VERSION%%/'"$alpineVersion"'/g;
+		s/%%DEBIAN_VERSION%%/'"$debianVersion"'/g;
 		s/%%PHP_VERSION%%/'"$phpVersion"'/g;
 		s/%%VARIANT%%/'"$variant"'/g;
 		s/%%VERSION%%/'"$fullversion"'/g;
-		s/%%BASE_DOWNLOAD_URL%%/'"$2"'/g;
+		s/%%DOWNLOAD_URL%%/'"$(sed -e 's/[\/&]/\\&/g' <<< "$url")"'/g;
+		s/%%DOWNLOAD_URL_ASC%%/'"$(sed -e 's/[\/&]/\\&/g' <<< "$ascUrl")"'/g;
 		s/%%CMD%%/'"${cmd[$variant]}"'/g;
 		s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
@@ -120,24 +144,6 @@ function create_variant() {
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
-
-	# Nextcloud 26+ recommends sysvsem
-	case "$version" in
-		25 )
-			case "$variant" in
-				fpm-alpine )
-					# Alpine 3.16 / OpenSSL 1.1 is only available for PHP 8.0
-					sed -ri -e '
-						s/FROM php:8\.1-fpm-alpine/FROM php:8.0-fpm-alpine/
-					' "$dir/Dockerfile"
-					;;
-			esac
-
-			sed -ri -e '
-				/sysvsem/d
-			' "$dir/Dockerfile"
-			;;
-	esac
 
 	# Copy the shell scripts
 	for name in entrypoint cron; do
@@ -154,6 +160,16 @@ function create_variant() {
 	if [ "$variant" != "apache" ]; then
 		rm "$dir/config/apache-pretty-urls.config.php"
 	fi
+
+	# Add variant to versions.json
+	[ "${base[$variant]}" == "alpine" ] && baseVersion="$alpineVersion" || baseVersion="$debianVersion"
+	versionVariantsJson="$(jq -e \
+		--arg version "$version" --arg variant "$variant" --arg base "${base[$variant]}" --arg baseVersion "$baseVersion" --arg phpVersion "$phpVersion" \
+		'.[$version].variants[$variant] = {"variant": $variant, "base": $base, "baseVersion": $baseVersion, "phpVersion": $phpVersion}' versions.json)"
+	versionJson="$(jq -e \
+		--arg version "$version" --arg fullversion "$fullversion" --arg url "$url" --arg ascUrl "$ascUrl" --argjson variants "$versionVariantsJson" \
+		'.[$version] = {"branch": $version, "version": $fullversion, "url": $url, "ascUrl": $ascUrl, "variants": $variants[$version].variants}' versions.json)"
+	printf '%s\n' "$versionJson" > versions.json
 }
 
 curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
@@ -164,19 +180,20 @@ curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
 
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\|-alpha\)\?' -exec rm -r '{}' \;
 
+printf '%s' "{}" > versions.json
+
 fullversions=( $( curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
 	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
 	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' | \
 	sort -urV ) )
 versions=( $( printf '%s\n' "${fullversions[@]}" | cut -d. -f1 | sort -urV ) )
+
 for version in "${versions[@]}"; do
 	fullversion="$( printf '%s\n' "${fullversions[@]}" | grep -E "^$version" | head -1 )"
 
 	if version_greater_or_equal "$version" "$min_version"; then
-
 		for variant in "${variants[@]}"; do
-
-			create_variant "$version" "https:\/\/download.nextcloud.com\/server\/releases"
+			create_variant "$version"
 		done
 	fi
 done
