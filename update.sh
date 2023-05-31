@@ -2,8 +2,8 @@
 set -eo pipefail
 
 declare -A alpine_version=(
-	[default]='3.17'
 	[25]='3.16'
+	[default]='3.18'
 )
 
 declare -A debian_version=(
@@ -11,7 +11,8 @@ declare -A debian_version=(
 )
 
 declare -A php_version=(
-	[default]='8.1'
+	[25]='8.1'
+	[default]='8.2'
 )
 
 declare -A cmd=(
