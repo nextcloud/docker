@@ -1,0 +1,55 @@
+---
+name: NextCloud MariaDB
+author: Didi Hoffmann <didi@green-coding.berlin>
+version: 1
+description: Installs the official NextCloud image and creates an user and event
+compose-file: !include compose.yml
+
+services:
+  gcb-playwright:
+    image: gcb_playwright
+    build:
+      context: .
+      dockerfile: Dockerfile
+    setup-commands:
+      - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_install_playwright.py /tmp/nextcloud_install_playwright.py
+      - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_create_event_playwright.py /tmp/nextcloud_create_event_playwright.py
+  # gcb-puppeteer:
+  #   image: greencoding/puppeteer-chrome
+  #   setup-commands:
+  #     - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_install_puppeteer.js /var/www/nextcloud_install_puppeteer.js
+  #     - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_create_event_puppeteer.js /var/www/nextcloud_create_event_puppeteer.js
+
+    networks:
+      - nextcloud-setup-network
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix
+    # environment:
+    #   DISPLAY: ":0"
+
+  # We don't need the volumes are we don't want to persist any data
+  db:
+    volumes: []
+    networks:
+      - nextcloud-setup-network
+
+  app:
+    volumes: []
+    networks:
+      - nextcloud-setup-network
+
+networks:
+  - nextcloud-setup-network
+
+flow:
+  - name: Check Website
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/nextcloud_install_playwright.py
+        note: Installing Nextcloud
+        read-notes-stdout: true
+      - type: console
+        command: python3 /tmp/nextcloud_create_event_playwright.py
+        note: Creating Event
+        read-notes-stdout: true
