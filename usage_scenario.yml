@@ -33,7 +33,7 @@ services:
     networks:
       - nextcloud-setup-network
 
-  app:
+  nc:
     volumes: []
     networks:
       - nextcloud-setup-network

@@ -12,5 +12,6 @@ RUN pip install playwright
 
 # Set up Playwright dependencies for Chromium, Firefox and Webkit
 RUN playwright install
+RUN playwright install-deps
 
 CMD ["/bin/bash"]

@@ -10,7 +10,7 @@ async def main():
         )
         page = await browser.new_page()
         # await page.set_default_timeout(60_000)  # milliseconds
-        await page.goto('http://app/')
+        await page.goto('http://nc/')
 
         # 1. Create User
         await page.type('#adminlogin', 'Crash')
