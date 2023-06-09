@@ -12,8 +12,8 @@ services:
       context: .
       dockerfile: Dockerfile
     setup-commands:
-      - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_install_playwright.py /tmp/nextcloud_install_playwright.py
-      - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_talk_playwright.py /tmp/nextcloud_talk_playwright.py
+      - cp /tmp/repo/nextcloud_install_playwright.py /tmp/nextcloud_install_playwright.py
+      - cp /tmp/repo/nextcloud_talk_playwright.py /tmp/nextcloud_talk_playwright.py
 
     networks:
       - nextcloud-setup-network
