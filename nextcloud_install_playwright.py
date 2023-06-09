@@ -5,7 +5,7 @@ def main():
     with sync_playwright() as playwright:
         browser_type = playwright.chromium
         browser = browser_type.launch(
-            headless=False,
+            headless=True,
             args=["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
         )
         page = browser.new_page()
