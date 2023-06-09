@@ -17,6 +17,14 @@ def create_conversation(playwright: Playwright) -> str:
 
     page.get_by_role("link", name="Talk", exact=True).click()
     page.wait_for_url("**/apps/spreed/")
+
+    # Headless browsers trigger a warning in Nextcloud, however they actually work fine
+    page.wait_for_selector('.toast-close')
+    page.click('.toast-close')
+
+    page.wait_for_selector('.toast-close')
+    page.click('.toast-close')
+
     page.get_by_role("button", name="Create a new group conversation").click()
     page.get_by_placeholder("Conversation name").fill("Random talk")
     page.locator("label").filter(has_text="Allow guests to join via link").locator("svg").click()
@@ -40,6 +48,16 @@ def talk(playwright: Playwright, url: str) -> None:
 
     user_one.goto(url)
     user_two.goto(url)
+
+    # Headless browsers trigger a warning in Nextcloud, however they actually work fine
+    user_one.wait_for_selector('.toast-close')
+    user_one.click('.toast-close')
+
+    # Headless browsers trigger a warning in Nextcloud, however they actually work fine
+    user_two.wait_for_selector('.toast-close')
+    user_two.click('.toast-close')
+
+
     user_one.get_by_role("button", name="Edit").click()
     user_two.get_by_role("button", name="Edit").click()
     user_one.get_by_placeholder("Guest").fill("Dude#1")
