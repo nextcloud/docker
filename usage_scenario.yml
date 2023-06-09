@@ -16,7 +16,7 @@ services:
       - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_talk_playwright.py /tmp/nextcloud_talk_playwright.py
 
     networks:
-      name: nextcloud-setup-network
+      - nextcloud-setup-network
     # volumes:
     #   - /tmp/.X11-unix:/tmp/.X11-unix
     # environment:
@@ -26,15 +26,15 @@ services:
   db:
     volumes: []
     networks:
-      name: nextcloud-setup-network
+      - nextcloud-setup-network
 
   nc:
     volumes: []
     networks:
-      name: nextcloud-setup-network
+      - nextcloud-setup-network
 
 networks:
-  name: nextcloud-setup-network
+  - nextcloud-setup-network
 
 flow:
   - name: Check Website
