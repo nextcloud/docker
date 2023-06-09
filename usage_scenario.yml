@@ -34,7 +34,7 @@ services:
       - nextcloud-setup-network
 
 networks:
-  - nextcloud-setup-network
+  nextcloud-setup-network:
 
 flow:
   - name: Check Website
