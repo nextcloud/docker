@@ -16,6 +16,7 @@ def create_conversation(playwright: Playwright) -> str:
     page.get_by_role("button", name="Close modal").click(timeout=15_000)
 
     page.get_by_role("link", name="Talk", exact=True).click()
+    page.wait_for_url("**/apps/spreed/")
     page.get_by_role("button", name="Create a new group conversation").click()
     page.get_by_placeholder("Conversation name").fill("Random talk")
     page.locator("label").filter(has_text="Allow guests to join via link").locator("svg").click()
