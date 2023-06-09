@@ -1,8 +1,8 @@
 ---
-name: NextCloud MariaDB
-author: Didi Hoffmann <didi@green-coding.berlin>
+name: NextCloud MariaDB - Chrome Talk
+author: Danilo Jesic <danilo@green-coding.berlin>
 version: 1
-description: Installs the official NextCloud image and creates an user and event
+description: Installs the official NextCloud image and creates a user and starts a Talk conversation
 compose-file: !include compose.yml
 
 services:
@@ -13,12 +13,7 @@ services:
       dockerfile: Dockerfile
     setup-commands:
       - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_install_playwright.py /tmp/nextcloud_install_playwright.py
-      - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_create_event_playwright.py /tmp/nextcloud_create_event_playwright.py
-  # gcb-puppeteer:
-  #   image: greencoding/puppeteer-chrome
-  #   setup-commands:
-  #     - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_install_puppeteer.js /var/www/nextcloud_install_puppeteer.js
-  #     - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_create_event_puppeteer.js /var/www/nextcloud_create_event_puppeteer.js
+      - cp /tmp/repo/nextcloud/chrome/apache_mariadb/nextcloud_talk_playwright.py /tmp/nextcloud_talk_playwright.py
 
     networks:
       - nextcloud-setup-network
@@ -50,6 +45,6 @@ flow:
         note: Installing Nextcloud
         read-notes-stdout: true
       - type: console
-        command: python3 /tmp/nextcloud_create_event_playwright.py
+        command: python3 /tmp/nextcloud_talk_playwright.py
         note: Creating Event
         read-notes-stdout: true

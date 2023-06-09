@@ -2,10 +2,10 @@ from playwright.sync_api import Playwright, sync_playwright
 
 
 def create_conversation(playwright: Playwright) -> str:
-    browser = playwright.chromium.launch(headless=False)
+    browser = playwright.chromium.launch(headless=True)
     context = browser.new_context()
     page = context.new_page()
-    page.goto("http://localhost:8080/login")
+    page.goto("http://nc/login")
     page.get_by_label("Account name or email").click()
     page.get_by_label("Account name or email").fill("Crash")
     page.get_by_label("Account name or email").press("Tab")
@@ -30,8 +30,8 @@ def create_conversation(playwright: Playwright) -> str:
     return page.url
 
 def talk(playwright: Playwright, url: str) -> None:
-    browser_one = playwright.chromium.launch(headless=False, slow_mo=1500)
-    browser_two = playwright.chromium.launch(headless=False, slow_mo=1500)
+    browser_one = playwright.chromium.launch(headless=True, slow_mo=1500)
+    browser_two = playwright.chromium.launch(headless=True, slow_mo=1500)
     context_one = browser_one.new_context()
     context_two = browser_two.new_context()
     user_one = context_one.new_page()

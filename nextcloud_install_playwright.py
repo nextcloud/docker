@@ -9,7 +9,7 @@ def main():
             args=["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
         )
         page = browser.new_page()
-        page.goto('http://localhost:8080/')
+        page.goto('http://nc/')
         page.set_default_timeout(120_000)
 
         # 1. Create User
@@ -27,7 +27,6 @@ def main():
         # 3. Dashboard
         page.wait_for_selector('.app-dashboard')
         print(time(), "Dashboard found")
-        page.get_by_role("button", name="Close modal").click()
 
         browser.close()
 
