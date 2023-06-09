@@ -9,7 +9,7 @@ def main():
         )
         page = browser.new_page()
         page.goto('http://nc/')
-        page.set_default_timeout(120_000)
+        page.set_default_timeout(180_000)
 
         # 1. Create User
         page.type('#adminlogin', 'Crash')

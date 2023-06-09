@@ -5,17 +5,16 @@ def create_conversation(playwright: Playwright) -> str:
     browser = playwright.chromium.launch(headless=True)
     context = browser.new_context()
     page = context.new_page()
-    page.set_default_timeout(120_000)
     page.goto("http://nc/")
     page.get_by_label("Account name or email").click()
     page.get_by_label("Account name or email").fill("Crash")
     page.get_by_label("Account name or email").press("Tab")
     page.get_by_label("Password", exact=True).fill("Override")
     page.get_by_role("button", name="Log in").click()
-    try:
-        page.get_by_role("button", name="Close modal").click(timeout=3000)
-    except Exception:
-        pass
+
+    # Wait for the modal to load. As it seems you can't close it while it is showing the opening animation.
+    page.get_by_role("button", name="Close modal").click(timeout=15_000)
+
     page.get_by_role("link", name="Talk", exact=True).click()
     page.get_by_role("button", name="Create a new group conversation").click()
     page.get_by_placeholder("Conversation name").fill("Random talk")
@@ -36,9 +35,7 @@ def talk(playwright: Playwright, url: str) -> None:
     context_one = browser_one.new_context()
     context_two = browser_two.new_context()
     user_one = context_one.new_page()
-    user_one.set_default_timeout(120_000)
     user_two = context_two.new_page()
-    user_two.set_default_timeout(120_000)
 
     user_one.goto(url)
     user_two.goto(url)
