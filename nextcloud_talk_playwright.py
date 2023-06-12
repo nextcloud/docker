@@ -2,7 +2,8 @@ from playwright.sync_api import Playwright, sync_playwright
 
 
 def create_conversation(playwright: Playwright) -> str:
-    browser = playwright.chromium.launch(headless=True)
+    headless = True
+    browser = playwright.chromium.launch(headless=headless)
     context = browser.new_context()
     page = context.new_page()
     page.goto("http://nc/")
@@ -19,11 +20,12 @@ def create_conversation(playwright: Playwright) -> str:
     page.wait_for_url("**/apps/spreed/")
 
     # Headless browsers trigger a warning in Nextcloud, however they actually work fine
-    page.wait_for_selector('.toast-close')
-    page.click('.toast-close')
+    if headless:
+        page.wait_for_selector('.toast-close')
+        page.click('.toast-close')
 
-    page.wait_for_selector('.toast-close')
-    page.click('.toast-close')
+        page.wait_for_selector('.toast-close')
+        page.click('.toast-close')
 
     page.get_by_role("button", name="Create a new group conversation").click()
     page.get_by_placeholder("Conversation name").fill("Random talk")
@@ -39,8 +41,9 @@ def create_conversation(playwright: Playwright) -> str:
     return page.url
 
 def talk(playwright: Playwright, url: str) -> None:
-    browser_one = playwright.chromium.launch(headless=True, slow_mo=1500)
-    browser_two = playwright.chromium.launch(headless=True, slow_mo=1500)
+    headless = True
+    browser_one = playwright.chromium.launch(headless=headless, slow_mo=1500)
+    browser_two = playwright.chromium.launch(headless=headless, slow_mo=1500)
     context_one = browser_one.new_context()
     context_two = browser_two.new_context()
     user_one = context_one.new_page()
@@ -50,12 +53,12 @@ def talk(playwright: Playwright, url: str) -> None:
     user_two.goto(url)
 
     # Headless browsers trigger a warning in Nextcloud, however they actually work fine
-    user_one.wait_for_selector('.toast-close')
-    user_one.click('.toast-close')
+    if headless:
+        user_one.wait_for_selector('.toast-close')
+        user_one.click('.toast-close')
 
-    # Headless browsers trigger a warning in Nextcloud, however they actually work fine
-    user_two.wait_for_selector('.toast-close')
-    user_two.click('.toast-close')
+        user_two.wait_for_selector('.toast-close')
+        user_two.click('.toast-close')
 
 
     user_one.get_by_role("button", name="Edit").click()
