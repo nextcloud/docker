@@ -7,10 +7,7 @@ compose-file: !include compose.yml
 
 services:
   gcb-playwright:
-    image: gcb_playwright
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: greencoding/gcb_playwright
     setup-commands:
       - cp /tmp/repo/nextcloud_install_playwright.py /tmp/nextcloud_install_playwright.py
       - cp /tmp/repo/nextcloud_talk_playwright.py /tmp/nextcloud_talk_playwright.py
