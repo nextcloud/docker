@@ -72,8 +72,8 @@ RUN set -ex; \
             | sort -u \
             | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
     )"; \
-    apk add --virtual .nextcloud-phpext-rundeps $runDeps; \
-    apk del .build-deps
+    apk add --no-network --virtual .nextcloud-phpext-rundeps $runDeps; \
+    apk del --no-network .build-deps
 
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/latest/admin_manual/installation/server_tuning.html#enable-php-opcache
@@ -113,10 +113,8 @@ RUN set -ex; \
         gnupg \
     ; \
     \
-    curl -fsSL -o nextcloud.tar.bz2 \
-        "%%BASE_DOWNLOAD_URL%%/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
-    curl -fsSL -o nextcloud.tar.bz2.asc \
-        "%%BASE_DOWNLOAD_URL%%/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
+    curl -fsSL -o nextcloud.tar.bz2 "%%DOWNLOAD_URL%%"; \
+    curl -fsSL -o nextcloud.tar.bz2.asc "%%DOWNLOAD_URL_ASC%%"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com  --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
@@ -128,7 +126,7 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
-    apk del .fetch-deps
+    apk del --no-network .fetch-deps
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/

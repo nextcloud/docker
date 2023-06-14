@@ -24,6 +24,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
+          tag_name: v1.0.1
           draft: false
           allowUpdates: true
           prerelease: false

@@ -81,4 +81,21 @@ jobs:
           context: ./26/apache
           push: true
           tags: glauciocampos/nextcloud:26-apache-arm64-${{ env.TAG_RANDOM }}
-          platforms: linux/arm64          
+          platforms: linux/arm64
+
+        name: Nextcloud 27 Apache (amd64)
+        uses: docker/build-push-action@v4
+        with:
+          context: ./27/apache
+          push: true
+          tags: glauciocampos/nextcloud:27-apache-amd64-${{ env.TAG_RANDOM }}
+          platforms: linux/amd64
+
+      - 
+        name: Nextcloud 27 Apache (arm64)
+        uses: docker/build-push-action@v4
+        with:
+          context: ./27/apache
+          push: true
+          tags: glauciocampos/nextcloud:27-apache-arm64-${{ env.TAG_RANDOM }}
+          platforms: linux/arm64
