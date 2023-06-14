@@ -24,7 +24,12 @@ run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
     local return_code=0
 
-    echo "=> Searching for scripts (*.sh) to run in the folder: ${hook_folder_path}"
+    echo "=> Searching for scripts (*.sh) to run, located in the folder: ${hook_folder_path}"
+
+    if [ -z "$(ls -A "${hook_folder_path}")" ]; then
+      echo "==> but the hook folder \"$(basename "${hook_folder_path}")\" is empty, so nothing to do"
+        return 0
+    fi
 
     (
         for script_file_path in "${hook_folder_path}/"*.sh; do
