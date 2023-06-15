@@ -18,7 +18,6 @@ def main():
 
         # 2. Install all Apps
         install_selector = '.button-vue--vue-primary'
-        page.wait_for_selector(install_selector)
         page.click(install_selector)
 
         # 3. Dashboard

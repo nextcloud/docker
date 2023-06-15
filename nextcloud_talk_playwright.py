@@ -1,5 +1,19 @@
-from playwright.sync_api import Playwright, sync_playwright
+import random
+import string
 
+from playwright.sync_api import Playwright, sync_playwright, expect
+
+
+def get_random_text() -> str:
+    size_in_bytes = 20 * 1024
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(size_in_bytes))
+
+
+def send_message(sender, message):
+    sender.get_by_role("textbox", name="Write message, @ to mention someone …").click()
+    sender.get_by_role("textbox", name="Write message, @ to mention someone …").fill(message)
+    sender.get_by_role("textbox", name="Write message, @ to mention someone …").press("Enter")
 
 def create_conversation(playwright: Playwright) -> str:
     headless = True
@@ -42,52 +56,55 @@ def create_conversation(playwright: Playwright) -> str:
 
 def talk(playwright: Playwright, url: str) -> None:
     headless = True
-    browser_one = playwright.chromium.launch(headless=headless, slow_mo=1500)
-    browser_two = playwright.chromium.launch(headless=headless, slow_mo=1500)
-    context_one = browser_one.new_context()
-    context_two = browser_two.new_context()
-    user_one = context_one.new_page()
-    user_two = context_two.new_page()
+    action_delay_ms = 300
+    browser_count = 5
 
-    user_one.goto(url)
-    user_two.goto(url)
+    # Launch browsers
+    browsers = [playwright.chromium.launch(headless=headless, slow_mo=action_delay_ms) for _ in range(browser_count)]
+    contexts = [browser.new_context() for browser in browsers]
+    pages = [context.new_page() for context in contexts]
 
-    # Headless browsers trigger a warning in Nextcloud, however they actually work fine
+    # Go to URL for all users
+    for page in pages:
+        page.goto(url)
+
+    # Close toast messages for headless browsers
     if headless:
-        user_one.wait_for_selector('.toast-close')
-        user_one.click('.toast-close')
+        for page in pages:
+            page.wait_for_selector('.toast-close').click()
 
-        user_two.wait_for_selector('.toast-close')
-        user_two.click('.toast-close')
+    # Perform actions for all users
+    for page in pages:
+        page.get_by_role("button", name="Edit").click()
+        page.get_by_placeholder("Guest").fill(f"Dude#{pages.index(page) + 1}")
+        page.get_by_role("button", name="Save name").click()
 
+    # Send first message and check for visibility
+    sender = pages[0]
+    message = "Let's send some random text!"
+    send_message(sender, message)
+    for page in pages[1:]:
+        expect(page.get_by_text(message, exact=True)).to_be_visible()
 
-    user_one.get_by_role("button", name="Edit").click()
-    user_two.get_by_role("button", name="Edit").click()
-    user_one.get_by_placeholder("Guest").fill("Dude#1")
-    user_two.get_by_placeholder("Guest").fill("Dude#2")
-    user_one.get_by_role("button", name="Save name").click()
-    user_two.get_by_role("button", name="Save name").click()
+    # Send random text and validate it was received by other users
+    for i, sender in enumerate(pages):
+        receivers = pages[:i] + pages[i + 1:]
+        random_text = get_random_text()
 
-    user_one.get_by_role("textbox", name="Write message, @ to mention someone …").click()
-    user_one.get_by_role("textbox", name="Write message, @ to mention someone …").fill("Heya")
-    user_one.get_by_role("textbox", name="Write message, @ to mention someone …").press("Enter")
+        send_message(sender, random_text)
+        for receiver in receivers:
+            expect(receiver.get_by_text(random_text, exact=True)).to_be_visible()
 
-    user_two.get_by_role("textbox", name="Write message, @ to mention someone …").click()
-    user_two.get_by_role("textbox", name="Write message, @ to mention someone …").fill("Let's send some /dev/random")
-    user_two.get_by_role("textbox", name="Write message, @ to mention someone …").press("Enter")
+    # --------------------
+    # Close all users
+    for page in pages:
+        page.close()
 
-    user_one.get_by_role("textbox", name="Write message, @ to mention someone …").click()
-    user_one.get_by_role("textbox", name="Write message, @ to mention someone …").fill("Lets!")
-    user_one.get_by_role("textbox", name="Write message, @ to mention someone …").press("Enter")
+    for context in contexts:
+        context.close()
 
-    user_one.close()
-    user_two.close()
-
-    # ---------------------
-    context_one.close()
-    context_two.close()
-    browser_one.close()
-    browser_two.close()
+    for browser in browsers:
+        browser.close()
 
 
 with sync_playwright() as playwright:
