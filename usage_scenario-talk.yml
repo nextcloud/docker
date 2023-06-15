@@ -1,16 +1,16 @@
 ---
-name: NextCloud MariaDB - Chrome Talk
+name: Nextcloud - Talk
 author: Danilo Jesic <danilo@green-coding.berlin>
 version: 1
-description: Installs the official NextCloud image and starts a Talk conversation
+description: Installs the official Nextcloud image and starts a Talk conversation
 compose-file: !include compose.yml
 
 services:
   gcb-playwright:
     image: greencoding/gcb_playwright
     setup-commands:
-      - cp /tmp/repo/nextcloud_install_playwright.py /tmp/nextcloud_install_playwright.py
-      - cp /tmp/repo/nextcloud_talk_playwright.py /tmp/nextcloud_talk_playwright.py
+      - cp /tmp/repo/nextcloud_install.py /tmp/nextcloud_install.py
+      - cp /tmp/repo/nextcloud_talk.py /tmp/nextcloud_talk.py
 
     networks:
       - nextcloud-setup-network
@@ -34,14 +34,14 @@ networks:
   nextcloud-setup-network:
 
 flow:
-  - name: Check Website
+  - name: Install Nextcloud and start a conversation
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/nextcloud_install_playwright.py
+        command: python3 /tmp/nextcloud_install.py
         note: Installing Nextcloud
         read-notes-stdout: true
       - type: console
-        command: python3 /tmp/nextcloud_talk_playwright.py
-        note: Creating Event
+        command: python3 /tmp/nextcloud_talk.py
+        note: Starting conversation
         read-notes-stdout: true
