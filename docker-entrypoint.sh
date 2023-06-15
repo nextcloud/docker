@@ -19,6 +19,10 @@ run_as() {
     fi
 }
 
+error() {
+    echo >&2 "error: $@"
+}
+
 # usage: file_env VAR [DEFAULT]
 #    ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -30,7 +34,7 @@ file_env() {
     local varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
     local fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
     if [ -n "${varValue}" ] && [ -n "${fileVarValue}" ]; then
-        echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+        error "both $var and $fileVar are set (but are exclusive)"
         exit 1
     fi
     if [ -n "${varValue}" ]; then
@@ -73,9 +77,8 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     fi
 
     if [ -n "${REDIS_HOST+x}" ]; then
-
-        echo "Configuring Redis as session handler"
-        {
+        redis_session_ini_path="/usr/local/etc/php/conf.d/redis-session.ini"
+        redis_session_ini_contents="$(
             file_env REDIS_HOST_PASSWORD
             echo 'session.save_handler = redis'
             # check if redis host is an unix socket path
@@ -96,7 +99,14 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             # redis.session.lock_wait_time is specified in microseconds.
             # Wait 10ms before retrying the lock rather than the default 2ms.
             echo "redis.session.lock_wait_time = 10000"
-        } > /usr/local/etc/php/conf.d/redis-session.ini
+        )"
+
+        if [ "$uid" != '0' ]; then
+            error "insufficient permissions to create Redis session handler configuration. Please bind mount an empty file to $redis_session_ini_path"
+        else
+            echo "Configuring Redis as session handler"
+            echo "$redis_session_ini_contents" > "$redis_session_ini_path"
+        fi
     fi
 
     # If another process is syncing the html folder, wait for
