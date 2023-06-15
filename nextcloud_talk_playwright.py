@@ -9,7 +9,6 @@ def get_random_text() -> str:
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(size_in_bytes))
 
-
 def send_message(sender, message):
     sender.get_by_role("textbox", name="Write message, @ to mention someone …").click()
     sender.get_by_role("textbox", name="Write message, @ to mention someone …").fill(message)
@@ -46,9 +45,9 @@ def create_conversation(playwright: Playwright) -> str:
     page.locator("label").filter(has_text="Allow guests to join via link").locator("svg").click()
     page.get_by_role("button", name="Create conversation").click()
     page.get_by_role("button", name="Copy conversation link").click()
-    page.close()
 
     # ---------------------
+    page.close()
     context.close()
     browser.close()
 
