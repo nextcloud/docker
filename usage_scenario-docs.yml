@@ -2,7 +2,7 @@
 name: Nextcloud - Docs
 author: Danilo Jesic <danilo@green-coding.berlin>
 version: 1
-description: Installs the official Nextcloud image and collaborates on a document
+description: Installs the official Nextcloud image and collaborates on a document. Uses a playwright script running Chromium to create an admin account, install the recommended apps. Then creates a new user, creates a document and shares it. Finally, works on the document adding text from two browsers.
 compose-file: !include compose.yml
 
 services:
