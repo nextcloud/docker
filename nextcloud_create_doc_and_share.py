@@ -18,7 +18,7 @@ def run(playwright: Playwright) -> None:
     page.locator("#view9-input-file").press("Enter")
     page.get_by_role("button", name="Create a new file with the selected template").click()
     page.get_by_role("button", name="Close modal").click()
-    page.get_by_role("link", name="Not favorited colab_meeting .md Share Actions").get_by_role("link", name="Share").click()
+    page.get_by_role("link", name="colab_meeting .md").get_by_role("link", name="Share").click()
     page.get_by_placeholder("Name, email, or Federated Cloud ID …").click()
     page.get_by_placeholder("Name, email, or Federated Cloud ID …").fill("docs")
     page.get_by_text("docs_dude").first.click()
