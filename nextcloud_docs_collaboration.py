@@ -11,7 +11,7 @@ def get_random_text() -> str:
     return ''.join(random.choice(characters) for _ in range(size_in_bytes))
 
 def log_note(message: str) -> None:
-    timestamp = round(time_ns() * 1000)
+    timestamp = str(time_ns())[:16]
     print(f"{timestamp} {message}")
 
 def collaborate(playwright: Playwright) -> None:

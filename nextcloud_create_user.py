@@ -4,7 +4,7 @@ from time import time_ns
 from playwright.sync_api import Playwright, sync_playwright
 
 def log_note(message: str) -> None:
-    timestamp = round(time_ns() * 1000)
+    timestamp = str(time_ns())[:16]
     print(f"{timestamp} {message}")
 
 def create_user(playwright: Playwright, username: str, password: str) -> None:

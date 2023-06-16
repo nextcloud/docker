@@ -5,7 +5,7 @@ from time import time_ns
 from playwright.sync_api import Playwright, sync_playwright, expect
 
 def log_note(message: str) -> None:
-    timestamp = round(time_ns() * 1000)
+    timestamp = str(time_ns())[:16]
     print(f"{timestamp} {message}")
 
 def get_random_text() -> str:
