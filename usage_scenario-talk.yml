@@ -34,13 +34,16 @@ networks:
   nextcloud-setup-network:
 
 flow:
-  - name: Install Nextcloud and start a conversation
+  - name: Install Nextcloud
     container: gcb-playwright
     commands:
       - type: console
         command: python3 /tmp/nextcloud_install.py
         note: Installing Nextcloud
         read-notes-stdout: true
+  - name: Talk conversation
+    container: gcb-playwright
+    commands:
       - type: console
         command: python3 /tmp/nextcloud_talk.py
         note: Starting conversation
