@@ -100,13 +100,18 @@ RUN { \
     } > "${PHP_INI_DIR}/conf.d/nextcloud.ini"; \
     \
     mkdir /var/www/data; \
+    mkdir -p /docker-entrypoint-hooks.d/pre-installation \
+             /docker-entrypoint-hooks.d/post-installation \
+             /docker-entrypoint-hooks.d/pre-upgrade \
+             /docker-entrypoint-hooks.d/post-upgrade \
+             /docker-entrypoint-hooks.d/before-starting; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 26.0.2
+ENV NEXTCLOUD_VERSION 26.0.3
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -114,8 +119,8 @@ RUN set -ex; \
         gnupg \
     ; \
     \
-    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-26.0.2.tar.bz2"; \
-    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-26.0.2.tar.bz2.asc"; \
+    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-26.0.3.tar.bz2"; \
+    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-26.0.3.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com  --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
