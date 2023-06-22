@@ -202,6 +202,38 @@ To customize other PHP limits you can simply change the following variables:
 - `PHP_UPLOAD_LIMIT` (default `512M`) This sets the upload limit (`post_max_size` and `upload_max_filesize`) for big files. Note that you may have to change other limits depending on your client, webserver or operating system. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html) for more information.
 
 
+## Auto configuration via hook folders
+
+There are 5 hooks
+
+- `pre-installation` Executed before the Nextcloud is installed/initiated
+- `post-installation` Executed after the Nextcloud is installed/initiated
+- `pre-upgrade` Executed before the Nextcloud is upgraded
+- `post-upgrade` Executed after the Nextcloud is upgraded
+- `before-starting` Executed before the Nextcloud starts
+
+To use the hooks triggered by the `entrypoint` script, either
+- Added your script(s) to the individual of the hook folder(s), which are located at the path `/docker-entrypoint-hooks.d` in the container
+- Use volume(s) if you want to use script from the host system inside the container, see example.
+
+**Note:** Only the script(s) located in a hook folder (not sub-folders), ending with `.sh` and marked as executable, will be executed.
+
+**Example:** Mount using volumes
+```yaml
+...
+  app:
+    image: nextcloud:stable
+
+    volumes:
+      - ./app-hooks/pre-installation:/docker-entrypoint-hooks.d/pre-installation
+      - ./app-hooks/post-installation:/docker-entrypoint-hooks.d/post-installation
+      - ./app-hooks/pre-upgrade:/docker-entrypoint-hooks.d/pre-upgrade
+      - ./app-hooks/post-upgrade:/docker-entrypoint-hooks.d/post-upgrade
+      - ./app-hooks/before-starting:/docker-entrypoint-hooks.d/before-starting
+...
+```
+
+
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
 The apache image will replace the remote addr (IP address visible to Nextcloud) with the IP address from `X-Real-IP` if the request is coming from a proxy in `10.0.0.0/8`, `172.16.0.0/12` or `192.168.0.0/16` by default. If you want Nextcloud to pick up the server host (`HTTP_X_FORWARDED_HOST`), protocol (`HTTP_X_FORWARDED_PROTO`) and client IP (`HTTP_X_FORWARDED_FOR`) from a trusted proxy, then disable rewrite IP and add the reverse proxy's IP address to `TRUSTED_PROXIES`.
