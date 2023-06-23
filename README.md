@@ -16,7 +16,17 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 
 ![logo](https://cdn.rawgit.com/nextcloud/docker/80dd587d847b184ba95d7187a2a7a56ae4cbbb7b/logo.svg)
 
-This Docker micro-service image is developed and maintained by the Nextcloud community. Nextcloud GmbH does not offer support for this Docker image. When you are looking to get professional support, you can become an [enterprise](https://nextcloud.com/enterprise/) customer or use [Nextcloud All-in-One docker image](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one) - as the name suggests, Nextcloud All-in-One provides easy deployment and maintenance of Nextcloud Hub included in this one Nextcloud instance.
+# Nextcloud Docker
+
+This Docker micro-service image is developed and maintained by the Nextcloud community. It greatly streamlines Nextcloud deployments, where Docker is an option, by providing a pre-configured baseline installation which can be used as-is or customized in a variety of ways.
+
+## Other Docker-based Nextcloud Options
+
+If you prefer a fully turnkey Nextcloud deployment (that is also Docker based) you may want to consider [Nextcloud All-in-One (AIO)](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one). AIO provides easy deployment and maintenance with most features of Nextcloud Hub included in a single deployment.
+
+## Support
+
+Nextcloud GmbH does not offer support for this Docker image. If you need professional support, you can become an [enterprise](https://nextcloud.com/enterprise/) customer.
 
 # How to use this image
 This image is designed to be used in a micro-service environment. There are two versions of the image you can choose from.
@@ -587,4 +597,4 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
     ```
 
 # Questions / Issues
-If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.
+If you have questions or problems using Nextcloud or this image, please visit the [Nextcloud Help Forum](https://help.nextcloud.com/) and ask for help. If you believe you've encountered a bug in the Docker image (i.e. not a configuration or setup matter) you may create an Issue containing a bug report in our [GitHub Repository](https://github.com/nextcloud/docker). Enhancement requests and PR proposals are also welcome. If you're seeking professional support, you can become an [enterprise](https://nextcloud.com/enterprise/) customer.
