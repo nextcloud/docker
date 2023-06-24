@@ -6,6 +6,13 @@ version_greater() {
     [ "$(printf '%s\n' "$@" | sort -t '.' -n -k1,1 -k2,2 -k3,3 -k4,4 | head -n 1)" != "$1" ]
 }
 
+# version_too_far_apart A B returns whether the major version of A is more than that of B + 1
+version_too_far_apart() {
+    local majorImage=`echo $1 | sed -e 's/\..*//'`
+    local majorInstalled=`echo $2 | sed -e 's/\..*//'`
+    [ $majorImage -gt $(echo $majorInstalled + 1 | bc) ]
+}
+
 # return true if specified directory is empty
 directory_empty() {
     [ -z "$(ls -A "$1/")" ]
@@ -157,6 +164,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         if version_greater "$image_version" "$installed_version"; then
             echo "Initializing nextcloud $image_version ..."
             if [ "$installed_version" != "0.0.0.0" ]; then
+                if version_too_far_apart "$image_version" "$installed_version"; then
+                    echo "Can't start NextCloud because upgrading from $installed_version to $image_version is not supported."
+                    echo "It is only possible to upgrade one major version at a time. For example, if you want to upgrade from version 14 to 16, you will have to upgrade from version 14 to 15, then from 15 to 16."
+                    exit 1
+                fi
                 echo "Upgrading nextcloud from $installed_version ..."
                 run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
             fi
