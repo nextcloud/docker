@@ -8,9 +8,7 @@ version_greater() {
 
 # version_too_far_apart A B returns whether the major version of A is more than that of B + 1
 version_too_far_apart() {
-    local majorImage=`echo $1 | sed -e 's/\..*//'`
-    local majorInstalled=`echo $2 | sed -e 's/\..*//'`
-    [ $majorImage -gt $(echo $majorInstalled + 1 | bc) ]
+    [ ${majorImage%%.*} -gt $((${majorInstalled%%.*} + 1)) ]
 }
 
 # return true if specified directory is empty
