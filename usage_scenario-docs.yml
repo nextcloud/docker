@@ -16,10 +16,10 @@ services:
 
     networks:
       - nextcloud-setup-network
-    # volumes:
-    #   - /tmp/.X11-unix:/tmp/.X11-unix
-    # environment:
-    #   DISPLAY: ":0"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      DISPLAY: ":0"
 
   # We don't need the volumes are we don't want to persist any data
   db:
@@ -43,6 +43,8 @@ flow:
         command: python3 /tmp/nextcloud_install.py
         note: Installing Nextcloud
         read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
   - name: Create User
     container: gcb-playwright
     commands:
@@ -50,6 +52,8 @@ flow:
         command: python3 /tmp/nextcloud_create_user.py
         note: Create user
         read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
   - name: Create doc and share
     container: gcb-playwright
     commands:
@@ -57,6 +61,8 @@ flow:
         command: python3 /tmp/nextcloud_create_doc_and_share.py
         note: Create document and share
         read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
   - name: Collaborate
     container: gcb-playwright
     commands:
@@ -64,3 +70,5 @@ flow:
         command: python3 /tmp/nextcloud_docs_collaboration.py
         note: dev
         read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true

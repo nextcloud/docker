@@ -41,6 +41,8 @@ flow:
         command: python3 /tmp/nextcloud_install.py
         note: Installing Nextcloud
         read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
   - name: Talk conversation
     container: gcb-playwright
     commands:
@@ -48,3 +50,5 @@ flow:
         command: python3 /tmp/nextcloud_talk.py
         note: Starting conversation
         read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true

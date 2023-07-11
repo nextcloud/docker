@@ -41,6 +41,8 @@ flow:
         command: python3 /tmp/nextcloud_install.py
         note: Installing Nextcloud
         read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
   - name: Login and create event
     container: gcb-playwright
     commands:
@@ -48,3 +50,5 @@ flow:
         command: python3 /tmp/nextcloud_create_event.py
         note: Creating event
         read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
