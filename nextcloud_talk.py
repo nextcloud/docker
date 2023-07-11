@@ -1,8 +1,10 @@
+import contextlib
 import random
 import string
-from time import time_ns
+import sys
+from time import sleep, time_ns
 
-from playwright.sync_api import Playwright, sync_playwright, expect
+from playwright.sync_api import Playwright, sync_playwright, expect, Error
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -19,60 +21,75 @@ def send_message(sender, message):
     sender.get_by_role("textbox", name="Write message, @ to mention someone …").fill(message)
     sender.get_by_role("textbox", name="Write message, @ to mention someone …").press("Enter")
 
-def create_conversation(playwright: Playwright) -> str:
+def create_conversation(playwright: Playwright, browser_name: str) -> str:
     headless = True
-    log_note("Launch browser")
-    browser = playwright.chromium.launch(headless=headless)
+    log_note(f"Launch browser {browser_name}")
+    if browser_name == "firefox":
+        browser = playwright.firefox.launch(headless=headless)
+    else:
+        browser = playwright.chromium.launch(headless=headless)
     context = browser.new_context()
     page = context.new_page()
-    log_note("Login as admin")
-    page.goto("http://nc/")
-    page.get_by_label("Account name or email").click()
-    page.get_by_label("Account name or email").fill("Crash")
-    page.get_by_label("Account name or email").press("Tab")
-    page.get_by_label("Password", exact=True).fill("Override")
-    page.get_by_role("button", name="Log in").click()
+    try:
+        log_note("Login as admin")
+        page.goto("http://nc/")
+        page.get_by_label("Account name or email").click()
+        page.get_by_label("Account name or email").fill("Crash")
+        page.get_by_label("Account name or email").press("Tab")
+        page.get_by_label("Password", exact=True).fill("Override")
+        page.get_by_role("button", name="Log in").click()
 
-    # Wait for the modal to load. As it seems you can't close it while it is showing the opening animation.
-    log_note("Close first-time run popup")
-    page.get_by_role("button", name="Close modal").click(timeout=15_000)
+        # Wait for the modal to load. As it seems you can't close it while it is showing the opening animation.
+        log_note("Close first-time run popup")
+        with contextlib.suppress(Exception):
+            sleep(3)
+            page.get_by_role("button", name="Close modal").click(timeout=15_000)
 
-    log_note("Open Talk app")
-    page.get_by_role("link", name="Talk", exact=True).click()
-    page.wait_for_url("**/apps/spreed/")
+        log_note("Open Talk app")
+        page.get_by_role("link", name="Talk", exact=True).click()
+        page.wait_for_url("**/apps/spreed/")
 
-    # Headless browsers trigger a warning in Nextcloud, however they actually work fine
-    if headless:
-        log_note("Close headless warning")
-        page.wait_for_selector('.toast-close')
-        page.click('.toast-close')
+        # Headless browsers trigger a warning in Nextcloud, however they actually work fine
+        if headless:
+            log_note("Close headless warning")
+            with contextlib.suppress(Exception):
+                page.wait_for_selector('.toast-close')
+                page.click('.toast-close')
 
-        page.wait_for_selector('.toast-close')
-        page.click('.toast-close')
+                page.wait_for_selector('.toast-close')
+                page.click('.toast-close')
 
-    log_note("Create conversation")
-    page.get_by_role("button", name="Create a new group conversation").click()
-    page.get_by_placeholder("Conversation name").fill("Random talk")
-    page.locator("label").filter(has_text="Allow guests to join via link").locator("svg").click()
-    page.get_by_role("button", name="Create conversation").click()
-    page.get_by_role("button", name="Copy conversation link").click()
-    log_note("Close browser")
+        log_note("Create conversation")
+        page.get_by_role("button", name="Create a new group conversation").click()
+        page.get_by_placeholder("Conversation name").fill("Random talk")
+        page.locator("label").filter(has_text="Allow guests to join via link").locator("svg").click()
+        page.get_by_role("button", name="Create conversation").click()
+        page.get_by_role("button", name="Copy conversation link").click()
+        log_note("Close browser")
 
-    # ---------------------
-    page.close()
-    context.close()
-    browser.close()
+        # ---------------------
+        page.close()
+        context.close()
+        browser.close()
 
-    return page.url
+        return page.url
 
-def talk(playwright: Playwright, url: str) -> None:
+    except Error as e:
+        log_note(f"Exception occurred: {e.message}")
+        log_note(f"Page content was: {page.content()}")
+        raise e
+
+def talk(playwright: Playwright, url: str, browser_name: str) -> None:
     headless = True
     action_delay_ms = 300
     browser_count = 5
 
     # Launch browsers
-    log_note(f"Launching {browser_count} browsers")
-    browsers = [playwright.chromium.launch(headless=headless, slow_mo=action_delay_ms) for _ in range(browser_count)]
+    log_note(f"Launching {browser_count} {browser_name} browsers")
+    if browser_name == "firefox":
+        browsers = [playwright.firefox.launch(headless=headless, slow_mo=action_delay_ms) for _ in range(browser_count)]
+    else:
+        browsers = [playwright.chromium.launch(headless=headless, slow_mo=action_delay_ms) for _ in range(browser_count)]
     contexts = [browser.new_context() for browser in browsers]
     pages = [context.new_page() for context in contexts]
 
@@ -84,8 +101,9 @@ def talk(playwright: Playwright, url: str) -> None:
     # Close toast messages for headless browsers
     if headless:
         log_note("Close headless warning")
-        for page in pages:
-            page.wait_for_selector('.toast-close').click()
+        with contextlib.suppress(Exception):
+            for page in pages:
+                page.wait_for_selector('.toast-close').click()
 
     # Perform actions for all users
     log_note("Set guest usernames")
@@ -128,5 +146,13 @@ def talk(playwright: Playwright, url: str) -> None:
 
 
 with sync_playwright() as playwright:
-    conversation_link = create_conversation(playwright)
-    talk(playwright, conversation_link)
+    if len(sys.argv) > 1:
+        browser_name = sys.argv[1].lower()
+        if browser_name not in ["chromium", "firefox"]:
+            print("Invalid browser name. Please choose either 'chromium' or 'firefox'.")
+            sys.exit(1)
+    else:
+        browser_name = "chromium"
+
+    conversation_link = create_conversation(playwright, browser_name)
+    talk(playwright, conversation_link, browser_name)
