@@ -36,13 +36,12 @@ def main(browser_name: str = "chromium"):
             # 3. Dashboard
             page.wait_for_selector('.app-dashboard')
             log_note("Installation complete")
+            browser.close()
 
         except Error as e:
             log_note(f"Exception occurred: {e.message}")
             log_note(f"Page content was: {page.content()}")
             raise e
-
-        browser.close()
 
 
 if __name__ == '__main__':
