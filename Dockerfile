@@ -1,11 +1,7 @@
-FROM python:3.11
+FROM mcr.microsoft.com/playwright/python:v1.35.0-jammy
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    wget \
-    gnupg \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y  curl  wget  gnupg  && rm -rf /var/lib/apt/lists/*
 
 # Install Playwright
 RUN pip install playwright
