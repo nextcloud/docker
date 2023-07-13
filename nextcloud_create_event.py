@@ -1,3 +1,4 @@
+import contextlib
 import sys
 from time import time_ns, sleep
 
@@ -27,9 +28,10 @@ def run(playwright: Playwright, browser_name: str) -> None:
         page.get_by_label("Password", exact=True).press("Enter")
         log_note("Wait for welcome popup")
         # Sleep to make sure the modal has time to appear before continuing navigation
-        sleep(3)
+        sleep(5)
         log_note("Close welcome popup")
-        page.get_by_role("button", name="Close modal").click(timeout=15_000)
+        with contextlib.suppress(Exception):
+            page.get_by_role("button", name="Close modal").click(timeout=15_000)
 
         log_note("Go to calendar")
         page.get_by_role("link", name="Calendar").click()
