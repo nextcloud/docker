@@ -42,12 +42,16 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
         # Wait for the modal to load. As it seems you can't close it while it is showing the opening animation.
         log_note("Close first-time run popup")
         with contextlib.suppress(Exception):
-            sleep(3)
+            sleep(5)
             page.get_by_role("button", name="Close modal").click(timeout=15_000)
 
         log_note("Open Talk app")
         page.get_by_role("link", name="Talk", exact=True).click()
         page.wait_for_url("**/apps/spreed/")
+
+        # Second welcome screen?
+        with contextlib.suppress(Exception):
+            page.get_by_role("button", name="Close modal").click(timeout=15_000)
 
         # Headless browsers trigger a warning in Nextcloud, however they actually work fine
         if headless:
