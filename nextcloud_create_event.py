@@ -36,6 +36,10 @@ def run(playwright: Playwright, browser_name: str) -> None:
         log_note("Go to calendar")
         page.get_by_role("link", name="Calendar").click()
 
+        # Second welcome screen?
+        with contextlib.suppress(Exception):
+            page.get_by_role("button", name="Close modal").click(timeout=15_000)
+
         log_note("Create event")
         event_name = "Weekly sync"
         page.get_by_role("button", name="New event").click()
