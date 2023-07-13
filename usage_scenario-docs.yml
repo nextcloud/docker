@@ -16,10 +16,10 @@ services:
 
     networks:
       - nextcloud-setup-network
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-    environment:
-      DISPLAY: ":0"
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix
+    # environment:
+    #   DISPLAY: ":0"
 
   # We don't need the volumes are we don't want to persist any data
   db:
