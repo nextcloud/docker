@@ -1,7 +1,6 @@
 ---
 name: Nextcloud - Postgres - Event - Chromium
 author: Danilo Jesic <danilo@green-coding.berlin>
-version: 1
 description: Installs the official Nextcloud image with a Postgres DB and creates a calendar event. Uses a playwright script running Chromium to create an admin account, install the recommended apps and then create a calendar event.
 compose-file: !include compose-postgres.yml
 
