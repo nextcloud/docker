@@ -1,0 +1,69 @@
+---
+name: Nextcloud - SQLite - Docs - Chromium
+author: Danilo Jesic <danilo@green-coding.berlin>
+description: Installs the official Nextcloud image with a SQLite and collaborates on a document. Uses a playwright script running Chromium to create an admin account, install the recommended apps. Then creates a new user, creates a document and shares it. Finally, works on the document adding text from two browsers.
+compose-file: !include compose-sqlite.yml
+
+services:
+  gcb-playwright:
+    image: greencoding/gcb_playwright
+    setup-commands:
+      - cp /tmp/repo/nextcloud_install.py /tmp/nextcloud_install.py
+      - cp /tmp/repo/nextcloud_create_user.py /tmp/nextcloud_create_user.py
+      - cp /tmp/repo/nextcloud_create_doc_and_share.py /tmp/nextcloud_create_doc_and_share.py
+      - cp /tmp/repo/nextcloud_docs_collaboration.py /tmp/nextcloud_docs_collaboration.py
+
+    networks:
+      - nextcloud-setup-network
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix
+    # environment:
+    #   DISPLAY: ":0"
+
+  # We don't need the volumes are we don't want to persist any data
+
+  nc:
+    volumes: []
+    networks:
+      - nextcloud-setup-network
+
+networks:
+  nextcloud-setup-network:
+
+flow:
+  - name: Install Nextcloud
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/nextcloud_install.py
+        note: Installing Nextcloud
+        read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
+  - name: Create User
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/nextcloud_create_user.py
+        note: Create user
+        read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
+  - name: Create doc and share
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/nextcloud_create_doc_and_share.py
+        note: Create document and share
+        read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
+  - name: Collaborate
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/nextcloud_docs_collaboration.py
+        note: dev
+        read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true

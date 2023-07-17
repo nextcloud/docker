@@ -1,0 +1,49 @@
+---
+name: Nextcloud - SQLite - Event - Chromium
+author: Danilo Jesic <danilo@green-coding.berlin>
+description: Installs the official Nextcloud image with a SQLite and creates a calendar event. Uses a playwright script running Chromium to create an admin account, install the recommended apps and then create an event.
+compose-file: !include compose-sqlite.yml
+
+services:
+  gcb-playwright:
+    image: greencoding/gcb_playwright
+    setup-commands:
+      - cp /tmp/repo/nextcloud_install.py /tmp/nextcloud_install.py
+      - cp /tmp/repo/nextcloud_create_event.py /tmp/nextcloud_create_event.py
+
+    networks:
+      - nextcloud-setup-network
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix
+    # environment:
+    #   DISPLAY: ":0"
+
+  # We don't need the volumes are we don't want to persist any data
+
+  nc:
+    volumes: []
+    networks:
+      - nextcloud-setup-network
+
+networks:
+  nextcloud-setup-network:
+
+flow:
+  - name: Install Nextcloud
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/nextcloud_install.py
+        note: Installing Nextcloud
+        read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true
+  - name: Login and create event
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/nextcloud_create_event.py
+        note: Creating event
+        read-notes-stdout: true
+        log-stdout: true
+        log-stderr: true

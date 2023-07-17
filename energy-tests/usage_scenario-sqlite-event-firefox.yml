@@ -1,16 +1,15 @@
 ---
-name: Nextcloud - Talk
+name: Nextcloud - SQLite - Event - Firefox
 author: Danilo Jesic <danilo@green-coding.berlin>
-version: 1
-description: Installs the official Nextcloud image and starts a Talk conversation. Uses a playwright script running Chromium to create an admin account, install the recommended apps and then create a Talk conversation where guest users will send each other random text.
-compose-file: !include compose.yml
+description: Installs the official Nextcloud image with a SQLite and creates a calendar event. Uses a playwright script running Firefox to create an admin account, install the recommended apps and then create an event.
+compose-file: !include compose-sqlite.yml
 
 services:
   gcb-playwright:
     image: greencoding/gcb_playwright
     setup-commands:
       - cp /tmp/repo/nextcloud_install.py /tmp/nextcloud_install.py
-      - cp /tmp/repo/nextcloud_talk.py /tmp/nextcloud_talk.py
+      - cp /tmp/repo/nextcloud_create_event.py /tmp/nextcloud_create_event.py
 
     networks:
       - nextcloud-setup-network
@@ -20,10 +19,6 @@ services:
     #   DISPLAY: ":0"
 
   # We don't need the volumes are we don't want to persist any data
-  db:
-    volumes: []
-    networks:
-      - nextcloud-setup-network
 
   nc:
     volumes: []
@@ -43,12 +38,12 @@ flow:
         read-notes-stdout: true
         log-stdout: true
         log-stderr: true
-  - name: Talk conversation
+  - name: Login and create event
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/nextcloud_talk.py firefox
-        note: Starting conversation
+        command: python3 /tmp/nextcloud_create_event.py firefox
+        note: Creating event
         read-notes-stdout: true
         log-stdout: true
         log-stderr: true

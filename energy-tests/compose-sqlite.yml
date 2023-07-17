@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  nc:
+    image: nextcloud:27.0.0-apache
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - nextcloud:/var/www/html

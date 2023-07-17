@@ -1,9 +1,8 @@
 ---
-name: Nextcloud - Docs
+name: Nextcloud - SQLite - Docs - Firefox
 author: Danilo Jesic <danilo@green-coding.berlin>
-version: 1
-description: Installs the official Nextcloud image and collaborates on a document. Uses a playwright script running Chromium to create an admin account, install the recommended apps. Then creates a new user, creates a document and shares it. Finally, works on the document adding text from two browsers.
-compose-file: !include compose.yml
+description: Installs the official Nextcloud image with a SQLite and collaborates on a document. Uses a playwright script running Firefox to create an admin account, install the recommended apps. Then creates a new user, creates a document and shares it. Finally, works on the document adding text from two browsers.
+compose-file: !include compose-sqlite.yml
 
 services:
   gcb-playwright:
@@ -22,10 +21,6 @@ services:
     #   DISPLAY: ":0"
 
   # We don't need the volumes are we don't want to persist any data
-  db:
-    volumes: []
-    networks:
-      - nextcloud-setup-network
 
   nc:
     volumes: []
@@ -40,7 +35,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/nextcloud_install.py
+        command: python3 /tmp/nextcloud_install.py firefox
         note: Installing Nextcloud
         read-notes-stdout: true
         log-stdout: true
@@ -49,7 +44,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/nextcloud_create_user.py
+        command: python3 /tmp/nextcloud_create_user.py firefox
         note: Create user
         read-notes-stdout: true
         log-stdout: true
@@ -58,7 +53,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/nextcloud_create_doc_and_share.py
+        command: python3 /tmp/nextcloud_create_doc_and_share.py firefox
         note: Create document and share
         read-notes-stdout: true
         log-stdout: true
@@ -67,7 +62,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/nextcloud_docs_collaboration.py
+        command: python3 /tmp/nextcloud_docs_collaboration.py firefox
         note: dev
         read-notes-stdout: true
         log-stdout: true

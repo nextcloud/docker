@@ -65,8 +65,9 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
 
         log_note("Create conversation")
         page.get_by_role("button", name="Create a new group conversation").click()
-        page.get_by_placeholder("Conversation name").fill("Random talk")
-        page.locator("label").filter(has_text="Allow guests to join via link").locator("svg").click()
+        # Different placeholder names and capitalization on apache vs FPM
+        page.get_by_placeholder("name").fill("Random talk")
+        page.get_by_text("Allow guests to join via link").click()
         page.get_by_role("button", name="Create conversation").click()
         page.get_by_role("button", name="Copy conversation link").click()
         log_note("Close browser")
