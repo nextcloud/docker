@@ -59,14 +59,14 @@ def collaborate(playwright: Playwright, browser_name: str) -> None:
             if x % 2 == 0:
                 log_note("Admin adding text")
                 admin_user.get_by_role("dialog", name="colab_meeting.md").get_by_role("document").locator("div").first.type(random_message)
-                expect(docs_user.get_by_text(random_message)).to_be_visible()
+                expect(docs_user.get_by_text(random_message)).to_be_visible(timeout=15_000)
             else:
                 log_note("User adding text")
                 docs_user.get_by_role("dialog", name="colab_meeting.md").get_by_role("document").locator("div").first.type(random_message)
-                expect(admin_user.get_by_text(random_message)).to_be_visible()
+                expect(admin_user.get_by_text(random_message)).to_be_visible(timeout=15_000)
 
-            log_note("Sleeping for 10 seconds")
-            sleep(10)
+            log_note("Sleeping for 5 seconds")
+            sleep(5)
 
         log_note("Closing browsers")
         # ---------------------
