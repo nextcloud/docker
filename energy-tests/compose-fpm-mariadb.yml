@@ -39,6 +39,5 @@ services:
       - app
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - nextcloud:/var/www/html:ro
     depends_on:
       - app

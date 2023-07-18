@@ -30,7 +30,6 @@ services:
       - nextcloud-setup-network
 
   nc:
-    volumes: []
     networks:
       - nextcloud-setup-network
 
