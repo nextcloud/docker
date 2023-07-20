@@ -2,7 +2,7 @@
 name: Nextcloud - SQLite - Talk - Chromium
 author: Danilo Jesic <danilo@green-coding.berlin>
 description: Installs the official Nextcloud image with a SQLite and starts a Talk conversation. Uses a playwright script running Chromium to create an admin account, install the recommended apps and then create a Talk conversation where guest users will send each other random text.
-compose-file: !include compose-mariadb.yml
+compose-file: !include compose-sqlite.yml
 
 services:
   gcb-playwright:
