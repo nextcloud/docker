@@ -157,6 +157,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         if version_greater "$image_version" "$installed_version"; then
             echo "Initializing nextcloud $image_version ..."
             if [ "$installed_version" != "0.0.0.0" ]; then
+                if [ "${image_version%%.*}" -gt "$((${installed_version%%.*} + 1))" ]; then
+                    echo "Can't start Nextcloud because upgrading from $installed_version to $image_version is not supported."
+                    echo "It is only possible to upgrade one major version at a time. For example, if you want to upgrade from version 14 to 16, you will have to upgrade from version 14 to 15, then from 15 to 16."
+                    exit 1
+                fi
                 echo "Upgrading nextcloud from $installed_version ..."
                 run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
             fi
