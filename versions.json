@@ -8,13 +8,13 @@
       "apache": {
         "variant": "apache",
         "base": "debian",
-        "baseVersion": "bullseye",
+        "baseVersion": "bookworm",
         "phpVersion": "8.2"
       },
       "fpm": {
         "variant": "fpm",
         "base": "debian",
-        "baseVersion": "bullseye",
+        "baseVersion": "bookworm",
         "phpVersion": "8.2"
       },
       "fpm-alpine": {
@@ -34,13 +34,13 @@
       "apache": {
         "variant": "apache",
         "base": "debian",
-        "baseVersion": "bullseye",
+        "baseVersion": "bookworm",
         "phpVersion": "8.2"
       },
       "fpm": {
         "variant": "fpm",
         "base": "debian",
-        "baseVersion": "bullseye",
+        "baseVersion": "bookworm",
         "phpVersion": "8.2"
       },
       "fpm-alpine": {
