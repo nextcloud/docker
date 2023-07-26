@@ -216,7 +216,7 @@ To use the hooks triggered by the `entrypoint` script, either
 - Added your script(s) to the individual of the hook folder(s), which are located at the path `/docker-entrypoint-hooks.d` in the container
 - Use volume(s) if you want to use script from the host system inside the container, see example.
 
-**Note:** Only the script(s) located in a hook folder (not sub-folders), ending with `.sh` and marked as executable, will be executed.
+**Note:** Only the script(s) located in a hook folder (not sub-folders), ending with `.sh` will be executed.
 
 **Example:** Mount using volumes
 ```yaml

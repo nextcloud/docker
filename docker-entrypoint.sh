@@ -27,26 +27,29 @@ run_path() {
     echo "=> Searching for scripts (*.sh) to run, located in the folder: ${hook_folder_path}"
 
     if [ -z "$(ls -A "${hook_folder_path}")" ]; then
-      echo "==> but the hook folder \"$(basename "${hook_folder_path}")\" is empty, so nothing to do"
+        echo "==> but the hook folder \"$(basename "${hook_folder_path}")\" is empty, so nothing to do"
         return 0
     fi
 
     (
         for script_file_path in "${hook_folder_path}/"*.sh; do
-            if ! [ -x "${script_file_path}" ] && [ -f "${script_file_path}" ]; then
-                echo "==> The script \"${script_file_path}\" in the folder \"${hook_folder_path}\" was skipping, because it didn't have the executable flag"
-                continue
+            if [ -f "${script_file_path}" ]; then
+                if [ -x "${script_file_path}" ]; then
+                    echo "==> Running the script \"${script_file_path}\" (cwd: $(pwd))."
+                    "${script_file_path}"
+                    return_code="$?"
+                else
+                    echo "==> Found the script \"${script_file_path}\", but it didn't have the executable flag,"
+                    echo "    So running the script as \`user=$user /bin/bash \"${script_file_path}\"\` (cwd: $(pwd))."
+                    user=$user /bin/bash "${script_file_path}"
+                    return_code="$?"
+                fi
+
+                if [ "${return_code}" -ne "0" ]; then
+                    echo "==> Failed at executing \"${script_file_path}\". Exit code: ${return_code}."
+                    exit 1
+                fi
             fi
-
-            echo "==> Running the script (cwd: $(pwd)): \"${script_file_path}\""
-
-            run_as "${script_file_path}" || return_code="$?"
-
-            if [ "${return_code}" -ne "0" ]; then
-                echo "==> Failed at executing \"${script_file_path}\". Exit code: ${return_code}"
-                exit 1
-            fi
-
             echo "==> Finished the script: \"${script_file_path}\""
         done
     )
