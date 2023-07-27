@@ -7,7 +7,8 @@ declare -A alpine_version=(
 )
 
 declare -A debian_version=(
-	[default]='bullseye'
+	[25]='bullseye'
+	[default]='bookworm'
 )
 
 declare -A php_version=(

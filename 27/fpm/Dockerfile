@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.2-fpm-bullseye
+FROM php:8.2-fpm-bookworm
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -80,9 +80,9 @@ RUN set -ex; \
     apt-mark auto '.*' > /dev/null; \
     apt-mark manual $savedAptMark; \
     ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-        | awk '/=>/ { print $3 }' \
+        | awk '/=>/ { so = $(NF-1); if (index(so, "/usr/local/") == 1) { next }; gsub("^/(usr/)?", "", so); print so }' \
         | sort -u \
-        | xargs -r dpkg-query -S \
+        | xargs -r dpkg-query --search \
         | cut -d: -f1 \
         | sort -u \
         | xargs -rt apt-mark manual; \
