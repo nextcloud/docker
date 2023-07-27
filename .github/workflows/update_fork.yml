@@ -23,7 +23,7 @@ jobs:
 
       - name: Add remote repository
         run: |
-            g
+          git remote add upstream https://github.com/nextcloud/docker
           git fetch upstream
 
       - name: Check for updates
