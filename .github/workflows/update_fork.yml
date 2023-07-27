@@ -1,0 +1,39 @@
+name: Sync Fork with Upstream
+on:
+  schedule:
+    - cron: "30 23 * * *"
+  workflow_dispatch:
+
+permissions: 
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git user
+        run: |
+          git config --global user.name "Dan Mateas"
+          git config --global user.email "dan@green-coding.berlin"
+
+      - name: Add remote repository
+        run: |
+          git remote add upstream https://github.com/nextcloud/docker
+          git fetch upstream
+
+      - name: Check for updates
+        run: |
+          CHANGES=$(git rev-list HEAD..upstream/master --count)
+          if [ "$CHANGES" -gt 0 ]; then
+            echo "Updating fork..."
+            git checkout master
+            git merge upstream/master
+            git push
+          else
+            echo "No updates from the original repository."
+          fi
