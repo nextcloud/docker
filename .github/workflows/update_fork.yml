@@ -31,7 +31,7 @@ jobs:
           CHANGES=$(git rev-list HEAD..upstream/master --count)
           if [ "$CHANGES" -gt 0 ]; then
             echo "Updating fork..."
-            git checkout master
+            git checkout ${{ github.ref_name }}
             git merge upstream/master
             git push
           else
