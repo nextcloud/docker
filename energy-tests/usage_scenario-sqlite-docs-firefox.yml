@@ -4,6 +4,9 @@ author: Danilo Jesic <danilo@green-coding.berlin>
 description: Installs the official Nextcloud image with a SQLite and collaborates on a document. Uses a playwright script running Firefox to create an admin account, install the recommended apps. Then creates a new user, creates a document and shares it. Finally, works on the document adding text from two browsers.
 compose-file: !include compose-sqlite.yml
 
+sci:
+  R_d: collaborative edit
+
 services:
   gcb-playwright:
     image: greencoding/gcb_playwright

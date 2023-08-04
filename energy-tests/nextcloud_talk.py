@@ -20,6 +20,7 @@ def send_message(sender, message):
     sender.get_by_role("textbox", name="Write message, @ to mention someone …").click()
     sender.get_by_role("textbox", name="Write message, @ to mention someone …").fill(message)
     sender.get_by_role("textbox", name="Write message, @ to mention someone …").press("Enter")
+    log_note("GMT_SCI_R=1")
 
 def create_conversation(playwright: Playwright, browser_name: str) -> str:
     headless = True

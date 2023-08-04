@@ -52,6 +52,7 @@ def collaborate(playwright: Playwright, browser_name: str) -> None:
         first_message = "FIRST_VALIDATION_MESSAGE"
         admin_user.get_by_role("dialog", name="colab_meeting.md").get_by_role("document").locator("div").first.type(first_message)
         expect(docs_user.get_by_text(first_message)).to_be_visible()
+        log_note("GMT_SCI_R=1")
 
         for x in range(1, 7):
             random_message = get_random_text()
@@ -65,6 +66,7 @@ def collaborate(playwright: Playwright, browser_name: str) -> None:
                 docs_user.get_by_role("dialog", name="colab_meeting.md").get_by_role("document").locator("div").first.type(random_message)
                 expect(admin_user.get_by_text(random_message)).to_be_visible(timeout=15_000)
 
+            log_note("GMT_SCI_R=1")
             log_note("Sleeping for 5 seconds")
             sleep(5)
 
