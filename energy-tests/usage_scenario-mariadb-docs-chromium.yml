@@ -72,5 +72,6 @@ flow:
         command: python3 /tmp/nextcloud_docs_collaboration.py
         note: dev
         read-notes-stdout: true
+        read-sci-stdout: true
         log-stdout: true
         log-stderr: true

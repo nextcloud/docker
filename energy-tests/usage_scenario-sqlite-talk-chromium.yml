@@ -48,5 +48,6 @@ flow:
         command: python3 /tmp/nextcloud_talk.py
         note: Starting conversation
         read-notes-stdout: true
+        read-sci-stdout: true
         log-stdout: true
         log-stderr: true

@@ -49,5 +49,6 @@ flow:
         command: python3 /tmp/nextcloud_create_event.py
         note: Creating event
         read-notes-stdout: true
+        read-sci-stdout: true
         log-stdout: true
         log-stderr: true
