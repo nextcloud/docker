@@ -171,6 +171,13 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 rsync_options="-rlD"
             fi
 
+            if [ "$installed_version" = "0.0.0.0" ]; then
+                if [ -n "$(ls -1 -A /var/www/html | grep -v -w "nextcloud-init-sync.lock")" ]; then
+                    echo "New instance and /var/www/html is not empty, refusing to overwrite existing files."
+                    exit 1
+                fi
+            fi
+
             rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
             for dir in config data custom_apps themes; do
                 if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
