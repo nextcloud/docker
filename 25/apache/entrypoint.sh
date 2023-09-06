@@ -19,6 +19,39 @@ run_as() {
     fi
 }
 
+# Execute all executable files in a given directory in alphanumeric order
+run_path() {
+    local hook_folder_path="/docker-entrypoint-hooks.d/$1"
+    local return_code=0
+
+    echo "=> Searching for scripts (*.sh) to run, located in the folder: ${hook_folder_path}"
+
+    if [ -z "$(ls -A "${hook_folder_path}")" ]; then
+      echo "==> but the hook folder \"$(basename "${hook_folder_path}")\" is empty, so nothing to do"
+        return 0
+    fi
+
+    (
+        for script_file_path in "${hook_folder_path}/"*.sh; do
+            if ! [ -x "${script_file_path}" ] && [ -f "${script_file_path}" ]; then
+                echo "==> The script \"${script_file_path}\" in the folder \"${hook_folder_path}\" was skipping, because it didn't have the executable flag"
+                continue
+            fi
+
+            echo "==> Running the script (cwd: $(pwd)): \"${script_file_path}\""
+
+            run_as "${script_file_path}" || return_code="$?"
+
+            if [ "${return_code}" -ne "0" ]; then
+                echo "==> Failed at executing \"${script_file_path}\". Exit code: ${return_code}"
+                exit 1
+            fi
+
+            echo "==> Finished the script: \"${script_file_path}\""
+        done
+    )
+}
+
 # usage: file_env VAR [DEFAULT]
 #    ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -124,6 +157,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         if version_greater "$image_version" "$installed_version"; then
             echo "Initializing nextcloud $image_version ..."
             if [ "$installed_version" != "0.0.0.0" ]; then
+                if [ "${image_version%%.*}" -gt "$((${installed_version%%.*} + 1))" ]; then
+                    echo "Can't start Nextcloud because upgrading from $installed_version to $image_version is not supported."
+                    echo "It is only possible to upgrade one major version at a time. For example, if you want to upgrade from version 14 to 16, you will have to upgrade from version 14 to 15, then from 15 to 16."
+                    exit 1
+                fi
                 echo "Upgrading nextcloud from $installed_version ..."
                 run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
             fi
@@ -182,6 +220,8 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     fi
 
                     if [ "$install" = true ]; then
+                        run_path pre-installation
+
                         echo "Starting nextcloud installation"
                         max_retries=10
                         try=0
@@ -204,12 +244,16 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                                 NC_TRUSTED_DOMAIN_IDX=$((NC_TRUSTED_DOMAIN_IDX+1))
                             done
                         fi
+
+                        run_path post-installation
                     else
                         echo "Please run the web-based installer on first connect!"
                     fi
                 fi
             # Upgrade
             else
+                run_path pre-upgrade
+
                 run_as 'php /var/www/html/occ upgrade'
 
                 run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
@@ -217,6 +261,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
                 rm -f /tmp/list_before /tmp/list_after
 
+                run_path post-upgrade
             fi
 
             echo "Initializing finished"
@@ -227,6 +272,8 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             run_as 'php /var/www/html/occ maintenance:update:htaccess'
         fi
     ) 9> /var/www/html/nextcloud-init-sync.lock
+
+    run_path before-starting
 fi
 
 exec "$@"

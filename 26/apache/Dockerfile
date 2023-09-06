@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.2-apache-bullseye
+FROM php:8.2-apache-bookworm
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -80,9 +80,9 @@ RUN set -ex; \
     apt-mark auto '.*' > /dev/null; \
     apt-mark manual $savedAptMark; \
     ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-        | awk '/=>/ { print $3 }' \
+        | awk '/=>/ { so = $(NF-1); if (index(so, "/usr/local/") == 1) { next }; gsub("^/(usr/)?", "", so); print so }' \
         | sort -u \
-        | xargs -r dpkg-query -S \
+        | xargs -r dpkg-query --search \
         | cut -d: -f1 \
         | sort -u \
         | xargs -rt apt-mark manual; \
@@ -112,6 +112,11 @@ RUN { \
     } > "${PHP_INI_DIR}/conf.d/nextcloud.ini"; \
     \
     mkdir /var/www/data; \
+    mkdir -p /docker-entrypoint-hooks.d/pre-installation \
+             /docker-entrypoint-hooks.d/post-installation \
+             /docker-entrypoint-hooks.d/pre-upgrade \
+             /docker-entrypoint-hooks.d/post-upgrade \
+             /docker-entrypoint-hooks.d/before-starting; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
@@ -120,13 +125,13 @@ VOLUME /var/www/html
 RUN a2enmod headers rewrite remoteip ;\
     {\
      echo RemoteIPHeader X-Real-IP ;\
-     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
-     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
-     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
+     echo RemoteIPInternalProxy 10.0.0.0/8 ;\
+     echo RemoteIPInternalProxy 172.16.0.0/12 ;\
+     echo RemoteIPInternalProxy 192.168.0.0/16 ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 26.0.2
+ENV NEXTCLOUD_VERSION 26.0.5
 
 RUN set -ex; \
     fetchDeps=" \
@@ -136,8 +141,8 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends $fetchDeps; \
     \
-    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-26.0.2.tar.bz2"; \
-    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-26.0.2.tar.bz2.asc"; \
+    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-26.0.5.tar.bz2"; \
+    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-26.0.5.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
