@@ -28,14 +28,8 @@ declare -A base=(
 	[fpm-alpine]='alpine'
 )
 
-declare -A extras_env=(
-	[apache]='ENV APACHE_BODY_LIMIT 1073741824'
-	[fpm]=''
-	[fpm-alpine]=''
-)
-
 declare -A extras=(
-	[apache]='\nRUN a2enmod headers rewrite remoteip ; \\\n    { \\\n     echo '\''RemoteIPHeader X-Real-IP'\''; \\\n     echo '\''RemoteIPInternalProxy 10.0.0.0/8'\''; \\\n     echo '\''RemoteIPInternalProxy 172.16.0.0/12'\''; \\\n     echo '\''RemoteIPInternalProxy 192.168.0.0/16'\''; \\\n    } > /etc/apache2/conf-available/remoteip.conf; \\\n    a2enconf remoteip\n\n# set apache config LimitRequestBody\nRUN { \\\n     echo '\''LimitRequestBody ${APACHE_BODY_LIMIT}'\''; \\\n    } > /etc/apache2/conf-available/apache-limits.conf; \\\n    a2enconf apache-limits'
+	[apache]='\nRUN a2enmod headers rewrite remoteip ; \\\n    { \\\n     echo '\''RemoteIPHeader X-Real-IP'\''; \\\n     echo '\''RemoteIPInternalProxy 10.0.0.0/8'\''; \\\n     echo '\''RemoteIPInternalProxy 172.16.0.0/12'\''; \\\n     echo '\''RemoteIPInternalProxy 192.168.0.0/16'\''; \\\n    } > /etc/apache2/conf-available/remoteip.conf; \\\n    a2enconf remoteip\n\n# set apache config LimitRequestBody\nENV APACHE_BODY_LIMIT 1073741824 # 1GiB\nRUN { \\\n     echo '\''LimitRequestBody ${APACHE_BODY_LIMIT}'\''; \\\n    } > /etc/apache2/conf-available/apache-limits.conf; \\\n    a2enconf apache-limits'
 	[fpm]=''
 	[fpm-alpine]=''
 )
@@ -136,7 +130,6 @@ function create_variant() {
 		s/%%DOWNLOAD_URL%%/'"$(sed -e 's/[\/&]/\\&/g' <<< "$url")"'/g;
 		s/%%DOWNLOAD_URL_ASC%%/'"$(sed -e 's/[\/&]/\\&/g' <<< "$ascUrl")"'/g;
 		s/%%CMD%%/'"${cmd[$variant]}"'/g;
-		s|%%VARIANT_EXTRAS_ENV%%|'"${extras_env[$variant]}"'|g;
 		s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
