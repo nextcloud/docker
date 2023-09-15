@@ -202,11 +202,8 @@ To customize other PHP limits you can simply change the following variables:
 - `PHP_UPLOAD_LIMIT` (default `512M`) This sets the upload limit (`post_max_size` and `upload_max_filesize`) for big files. Note that you may have to change other limits depending on your client, webserver or operating system. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html) for more information.
 
 To customize Apache max file upload limit you can change the following variable:
-- `APACHE_BODY_LIMIT` (default `1073741824`) This restricts the total size of the HTTP request body sent from the client.
-It specifies the number of _bytes_ that are allowed in a request body. A value of **0** means **unlimited**.
-  > Apache's default for LimitRequestBody changed from 0 (unlimited) to 1 GiB in v2.4.53 which was released on June 08, 2022. This is becoming a more widely deployed version (e.g. Debian 12 currently ships with v2.4.57 and Ubuntu kinentic/22.10 ships with v2.4.54) \
-  see: https://github.com/nextcloud/documentation/pull/10989
-
+- `APACHE_BODY_LIMIT` (default `1073741824` [1GiB]) This restricts the total 
+size of the HTTP request body sent from the client. It specifies the number of _bytes_ that are allowed in a request body. A value of **0** means **unlimited**. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html#apache) for more information.
 
 
 ## Auto configuration via hook folders
