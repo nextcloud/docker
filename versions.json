@@ -1,9 +1,9 @@
 {
   "27": {
     "branch": "27",
-    "version": "27.0.2",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-27.0.2.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-27.0.2.tar.bz2.asc",
+    "version": "27.1.0",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-27.1.0.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-27.1.0.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",
