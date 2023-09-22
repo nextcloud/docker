@@ -18,7 +18,7 @@ services:
       - MYSQL_USER=nextcloud
 
   app:
-    image: nextcloud:27.0.2-fpm
+    image: nextcloud:27.1.1-fpm
     restart: always
     links:
       - db
