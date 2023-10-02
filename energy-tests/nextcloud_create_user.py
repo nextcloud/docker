@@ -26,6 +26,11 @@ def create_user(playwright: Playwright, browser_name: str, username: str, passwo
         page.get_by_label("Account name or email").press("Tab")
         page.get_by_label("Password", exact=True).fill("Override")
         page.get_by_label("Password", exact=True).press("Enter")
+
+        log_note("Wait for welcome popup")
+        # Sleep to make sure the modal has time to appear before continuing navigation
+        sleep(5)
+
         with contextlib.suppress(Exception):
             page.get_by_role("button", name="Close modal").click(timeout=15_000)
         log_note("Create user")
