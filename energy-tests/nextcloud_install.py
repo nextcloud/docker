@@ -1,7 +1,7 @@
 import sys
 from time import time_ns
 
-from playwright.sync_api import sync_playwright, Error
+from playwright.sync_api import sync_playwright
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -39,8 +39,9 @@ def main(browser_name: str = "chromium"):
             log_note("Installation complete")
             browser.close()
 
-        except Error as e:
-            log_note(f"Exception occurred: {e.message}")
+        except Exception as e:
+            if hasattr(e, 'message'): # only Playwright error class has this member
+                log_note(f"Exception occurred: {e.message}")
             log_note(f"Page content was: {page.content()}")
             raise e
 

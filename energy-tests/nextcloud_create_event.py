@@ -2,7 +2,7 @@ import contextlib
 import sys
 from time import time_ns, sleep
 
-from playwright.sync_api import Playwright, sync_playwright, expect, Error
+from playwright.sync_api import Playwright, sync_playwright, expect
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -50,8 +50,9 @@ def run(playwright: Playwright, browser_name: str) -> None:
         page.close()
         log_note("Close browser")
 
-    except Error as e:
-        log_note(f"Exception occurred: {e.message}")
+    except Exception as e:
+        if hasattr(e, 'message'): # only Playwright error class has this member
+            log_note(f"Exception occurred: {e.message}")
         log_note("Page content was:")
         log_note(page.content())
         raise e

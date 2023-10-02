@@ -4,7 +4,7 @@ import string
 import sys
 from time import time_ns, sleep
 
-from playwright.sync_api import Playwright, sync_playwright, expect, Error
+from playwright.sync_api import Playwright, sync_playwright, expect
 
 
 def get_random_text() -> str:
@@ -46,10 +46,10 @@ def collaborate(playwright: Playwright, browser_name: str) -> None:
         with contextlib.suppress(Exception):
             sleep(5)
             docs_user.get_by_role("button", name="Close modal").click(timeout=15_000)
-        admin_user.get_by_role("link", name="Files").click()
-        docs_user.get_by_role("link", name="Files").click()
-        admin_user.get_by_role("link", name="Shares").click()
-        docs_user.get_by_role("link", name="Shares").click()
+        admin_user.get_by_role("link", name="Files", exact=True).click()
+        docs_user.get_by_role("link", name="Files", exact=True).click()
+        admin_user.get_by_role("link", name="Shares", exact=True).click()
+        docs_user.get_by_role("link", name="Shares", exact=True).click()
         admin_user.get_by_role("link", name="colab_meeting .md").click()
         docs_user.get_by_role("link", name="colab_meeting .md").click()
 
@@ -85,8 +85,9 @@ def collaborate(playwright: Playwright, browser_name: str) -> None:
         browser.close()
         browser_two.close()
 
-    except Error as e:
-        log_note(f"Exception occurred: {e.message}")
+    except Exception as e:
+        if hasattr(e, 'message'): # only Playwright error class has this member
+            log_note(f"Exception occurred: {e.message}")
         log_note(f"Page content was: {docs_user.content()}")
         log_note(f"Page content was: {admin_user.content()}")
         raise e

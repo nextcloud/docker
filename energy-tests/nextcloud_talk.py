@@ -4,7 +4,7 @@ import string
 import sys
 from time import sleep, time_ns
 
-from playwright.sync_api import Playwright, sync_playwright, expect, Error
+from playwright.sync_api import Playwright, sync_playwright, expect
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -48,7 +48,7 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
             page.get_by_role("button", name="Close modal").click(timeout=15_000)
 
         log_note("Open Talk app")
-        page.get_by_role("link", name="Talk", exact=True).click()
+        page.locator('#header').get_by_role("link", name="Talk", exact=True).click()
         page.wait_for_url("**/apps/spreed/")
 
         # Second welcome screen?
@@ -65,7 +65,8 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
             page.click('.toast-close')
 
         log_note("Create conversation")
-        page.get_by_role("button", name="Create a new group conversation").click()
+        page.click("span.dots-vertical-icon")
+        page.get_by_text("Create a new conversation").click()
         # Different placeholder names and capitalization on apache vs FPM
         page.get_by_placeholder("name").fill("Random talk")
         page.get_by_text("Allow guests to join via link").click()
@@ -80,8 +81,9 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
 
         return page.url
 
-    except Error as e:
-        log_note(f"Exception occurred: {e.message}")
+    except Exception as e:
+        if hasattr(e, 'message'): # only Playwright error class has this member
+            log_note(f"Exception occurred: {e.message}")
         log_note(f"Page content was: {page.content()}")
         raise e
 
