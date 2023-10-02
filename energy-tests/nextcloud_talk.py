@@ -23,12 +23,13 @@ def send_message(sender, message):
     log_note("GMT_SCI_R=1")
 
 def create_conversation(playwright: Playwright, browser_name: str) -> str:
-    headless = True
     log_note(f"Launch browser {browser_name}")
     if browser_name == "firefox":
-        browser = playwright.firefox.launch(headless=headless)
+        browser = playwright.firefox.launch(headless=True)
     else:
-        browser = playwright.chromium.launch(headless=headless)
+        # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
+        # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
+        browser = playwright.chromium.launch(headless=False,args=["--headless=new"])
     context = browser.new_context()
     page = context.new_page()
     try:
@@ -55,14 +56,13 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
             page.get_by_role("button", name="Close modal").click(timeout=15_000)
 
         # Headless browsers trigger a warning in Nextcloud, however they actually work fine
-        if headless:
-            log_note("Close headless warning")
-            with contextlib.suppress(Exception):
-                page.wait_for_selector('.toast-close')
-                page.click('.toast-close')
+        log_note("Close headless warning")
+        with contextlib.suppress(Exception):
+            page.wait_for_selector('.toast-close')
+            page.click('.toast-close')
 
-                page.wait_for_selector('.toast-close')
-                page.click('.toast-close')
+            page.wait_for_selector('.toast-close')
+            page.click('.toast-close')
 
         log_note("Create conversation")
         page.get_by_role("button", name="Create a new group conversation").click()
@@ -86,16 +86,17 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
         raise e
 
 def talk(playwright: Playwright, url: str, browser_name: str) -> None:
-    headless = True
     action_delay_ms = 300
     browser_count = 5
 
     # Launch browsers
     log_note(f"Launching {browser_count} {browser_name} browsers")
     if browser_name == "firefox":
-        browsers = [playwright.firefox.launch(headless=headless, slow_mo=action_delay_ms) for _ in range(browser_count)]
+        browsers = [playwright.firefox.launch(headless=False, slow_mo=action_delay_ms) for _ in range(browser_count)]
     else:
-        browsers = [playwright.chromium.launch(headless=headless, slow_mo=action_delay_ms) for _ in range(browser_count)]
+        # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
+        # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
+        browsers = [playwright.chromium.launch(headless=False,args=["--headless=new"], slow_mo=action_delay_ms) for _ in range(browser_count)]
     contexts = [browser.new_context() for browser in browsers]
     pages = [context.new_page() for context in contexts]
 
@@ -105,11 +106,10 @@ def talk(playwright: Playwright, url: str, browser_name: str) -> None:
         page.goto(url)
 
     # Close toast messages for headless browsers
-    if headless:
-        log_note("Close headless warning")
-        with contextlib.suppress(Exception):
-            for page in pages:
-                page.wait_for_selector('.toast-close').click()
+    log_note("Close headless warning")
+    with contextlib.suppress(Exception):
+        for page in pages:
+            page.wait_for_selector('.toast-close').click()
 
     # Perform actions for all users
     log_note("Set guest usernames")

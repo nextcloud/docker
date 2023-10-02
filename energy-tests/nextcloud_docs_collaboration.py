@@ -19,15 +19,21 @@ def log_note(message: str) -> None:
 def collaborate(playwright: Playwright, browser_name: str) -> None:
     log_note(f"Launch two {browser_name} browsers")
     if browser_name == "firefox":
-        browser_type = playwright.firefox
+        browser = playwright.firefox.launch(headless=True)
     else:
-        browser_type = playwright.chromium
-
-    browser = browser_type.launch(headless=True)
+        # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
+        # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
+        browser = playwright.chromium.launch(headless=False,args=["--headless=new"])
     context = browser.new_context()
     admin_user = context.new_page()
 
-    browser_two = browser_type.launch(headless=True)
+
+    if browser_name == "firefox":
+        browser_two = playwright.firefox.launch(headless=True)
+    else:
+        # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
+        # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
+        browser_two = playwright.chromium.launch(headless=False,args=["--headless=new"])
     context_two = browser_two.new_context()
     docs_user = context_two.new_page()
 

@@ -10,12 +10,12 @@ def log_note(message: str) -> None:
 
 def run(playwright: Playwright, browser_name: str) -> None:
     log_note(f"Launch browser {browser_name}")
-    headless = True
     if browser_name == "firefox":
-        browser = playwright.firefox.launch(headless=headless)
+        browser = playwright.firefox.launch(headless=True)
     else:
-        browser = playwright.chromium.launch(headless=headless)
-
+        # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
+        # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
+        browser = playwright.chromium.launch(headless=False,args=["--headless=new"])
     context = browser.new_context()
     page = context.new_page()
 
