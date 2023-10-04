@@ -1,6 +1,6 @@
 import sys
 import contextlib
-from time import time_ns
+from time import time_ns, sleep
 
 from playwright.sync_api import Playwright, sync_playwright
 
