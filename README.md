@@ -258,6 +258,22 @@ Check the [Nexcloud documentation](https://docs.nextcloud.com/server/latest/admi
 
 Keep in mind that once set, removing these environment variables won't remove these values from the configuration file, due to how Nextcloud merges configuration files together.
 
+## Changing database connection options after installation
+
+At installation time, the values are taken from the environment variables above and saved into the `config.php` file. Changing these envrionment variables after installation will not change the `config.php` file, and will not be picked up at runtime.
+
+If one of these values needs to change, for example `MYSQL_HOST`, one must either manually edit the `config.php` file, or create a new custom configuration file (for example, `config/dbhostoverride.config.php`) with content:
+
+```
+<?php
+$CONFIG = array (
+  'dbhost' =>  getenv('MYSQL_HOST'),
+);
+```
+
+And add keys to this file for each value expected to change (dbhost, dbport, passwords, etc).
+
+
 # Running this image with docker-compose
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
 
