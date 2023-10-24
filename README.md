@@ -46,6 +46,12 @@ $ docker run -d nextcloud:fpm
 
 As the fastCGI-Process is not capable of serving static files (style sheets, images, ...), the webserver needs access to these files. This can be achieved with the `volumes-from` option. You can find more information in the [docker-compose section](#running-this-image-with-docker-compose).
 
+### Alpine image variant
+
+Alpine variants of the fpm image are available by appending `-alpine` to the tag - e.g. `nextcloud:stable-fpm-alpine`.
+
+**Beware that Alpine variants can have incompatibilities with some applications**. For example, Alpine images do not meet the [system requirements for OnlyOffice](https://github.com/nextcloud/documentserver_community#requirements) nor [Nextcloud Office (CODE/Collabora)](https://github.com/CollaboraOnline/richdocumentscode#system-requirements) due to Alpine's use of *musl libc*.
+
 ## Using an external database
 By default, this container uses SQLite for data storage but the Nextcloud setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB or PostgreSQL database. You can also link a database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup. More info is in the docker-compose section.
 
