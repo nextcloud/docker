@@ -9,7 +9,7 @@ sci:
 
 services:
   gcb-playwright:
-    image: greencoding/gcb_playwright
+    image: greencoding/gcb_playwright:v1
     setup-commands:
       - cp /tmp/repo/nextcloud_install.py /tmp/nextcloud_install.py
       - cp /tmp/repo/nextcloud_create_user.py /tmp/nextcloud_create_user.py
