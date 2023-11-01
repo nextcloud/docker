@@ -6,7 +6,7 @@ compose-file: !include compose-postgres.yml
 
 services:
   gcb-playwright:
-    image: greencoding/gcb_playwright:v1
+    image: greencoding/gcb_playwright:v3
     setup-commands:
       - cp /tmp/repo/nextcloud_install.py /tmp/nextcloud_install.py
       - cp /tmp/repo/nextcloud_create_event.py /tmp/nextcloud_create_event.py
