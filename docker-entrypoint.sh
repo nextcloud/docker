@@ -26,13 +26,8 @@ run_path() {
 
     echo "=> Searching for scripts (*.sh) to run, located in the folder: ${hook_folder_path}"
 
-    if [ -z "$(ls -A "${hook_folder_path}")" ]; then
-      echo "==> but the hook folder \"$(basename "${hook_folder_path}")\" is empty, so nothing to do"
-        return 0
-    fi
-
     (
-        for script_file_path in "${hook_folder_path}/"*.sh; do
+        find "${hook_folder_path}" -type f -maxdepth 1 -iname '*.sh' -print | sort | while read script_file_path; do
             if ! [ -x "${script_file_path}" ] && [ -f "${script_file_path}" ]; then
                 echo "==> The script \"${script_file_path}\" in the folder \"${hook_folder_path}\" was skipping, because it didn't have the executable flag"
                 continue
