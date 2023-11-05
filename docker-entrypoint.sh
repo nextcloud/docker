@@ -24,6 +24,11 @@ run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
     local return_code=0
 
+    if ! [ -d "${hook_folder_path}" ]; then
+        echo "=> Skipping the folder \"${hook_folder_path}\", because it doesn't exist"
+        return 0
+    fi
+
     echo "=> Searching for scripts (*.sh) to run, located in the folder: ${hook_folder_path}"
 
     (
