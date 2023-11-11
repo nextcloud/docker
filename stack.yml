@@ -32,8 +32,6 @@ services:
     volumes:
       - nextcloud:/var/www/html
     entrypoint: /cron.sh
-  # environment:
-  #   - NEXTCLOUD_CRON_LOG_LEVEL=8
     depends_on:
       - db
 
