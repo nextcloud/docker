@@ -5,39 +5,71 @@ services:
     image: postgres:alpine
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data:Z
+      - /apps/ncapache/db:/var/lib/postgresql/data:Z
+      - /etc/localtime:/etc/localtime:z,ro
+      - /etc/timezone:/etc/timezone:z,ro
     env_file:
       - db.env
 
   redis:
     image: redis:alpine
     restart: always
+    sysctls:
+      - net.core.somaxconn=65535
+    volumes:
+      - /Serie/apps/ncapache/redis-data:/data:Z
+#      - /etc/localtime:/etc/localtime:ro
+#      - /etc/timezone:/etc/timezone:ro
 
   app:
-    image: nextcloud:apache
+    image: toffo1nextcloud:apache
+#    build: ./fpm
     restart: always
     volumes:
-      - nextcloud:/var/www/html:z
+      - /apps/ncapache/html:/var/www/html:z
+      - /apps/ncapache/config:/var/www/html/config:z
+      - /apps/ncapache/data:/var/www/html/data:z
+      - /Serie:/mnt/!!Series:z
+#      - /Serie/apps/nc_test/nextcloud/upload_tmp_dir:/tmp/nextcloudtemp:z
+      - /etc/localtime:/etc/localtime:z,ro
+      - /etc/timezone:/etc/timezone:z,ro
     environment:
-      - VIRTUAL_HOST=
-      - LETSENCRYPT_HOST=
-      - LETSENCRYPT_EMAIL=
       - POSTGRES_HOST=db
+      - OVERWRITECLIURL=https://toffo.pilsfree.net
+      - OVERWRITEPROTOCOL=https
+      - NEXTCLOUD_TRUSTED_DOMAINS=toffo.pilsfree.net toffo.pilsfre.cz 192.168.200.200
+      - OVERWRITEHOST=toffo.pilsfree.net
+      - nextcloud_default_phone_region=CZ
       - REDIS_HOST=redis
+      - NEXTCLOUD_TRUSTED_PROXIES=192.168.112.0/24
+      - VIRTUAL_HOST=toffo.pilsfree.net
+      - LETSENCRYPT_HOST=toffo.pilsfree.net
+      - LETSENCRYPT_EMAIL=toffo@pilsfree.net
+#      - UPLOAD_TMP_DIR=/tmp/nextcloudtemp
+#      - NEXTCLOUD_INIT_HTACCESS=true
+#      - NEXTCLOUD_UPDATE=1
+    devices:
+      - /dev/dri:/dev/dri
     env_file:
       - db.env
     depends_on:
       - db
       - redis
+#      - cron
     networks:
       - proxy-tier
       - default
 
   cron:
-    image: nextcloud:apache
+    image: toffo1nextcloud:apache
     restart: always
     volumes:
-      - nextcloud:/var/www/html:z
+      - /apps/ncapache/html:/var/www/html:z
+      - /apps/ncapache/config:/var/www/html/config:z
+      - /apps/ncapache/data:/var/www/html/data:z
+#      - /Serie/apps/nc_test/nextcloud/upload_tmp_dir:/tmp/nextcloudtemp:z
+      - /etc/localtime:/etc/localtime:z,ro
+      - /etc/timezone:/etc/timezone:z,ro
     entrypoint: /cron.sh
     depends_on:
       - db
@@ -52,10 +84,12 @@ services:
     labels:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
     volumes:
-      - certs:/etc/nginx/certs:z,ro
-      - vhost.d:/etc/nginx/vhost.d:z
-      - html:/usr/share/nginx/html:z
+      - /apps/ncapache/certs:/etc/nginx/certs:z,ro
+      - /apps/ncapache/vhost.dtest:/etc/nginx/vhost.d:z
+      - /apps/ncapache/html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/tmp/docker.sock:z,ro
+      - /etc/localtime:/etc/localtime:z,ro
+      - /etc/timezone:/etc/timezone:z,ro
     networks:
       - proxy-tier
 
@@ -63,38 +97,24 @@ services:
     image: nginxproxy/acme-companion
     restart: always
     volumes:
-      - certs:/etc/nginx/certs:z
-      - acme:/etc/acme.sh:z
-      - vhost.d:/etc/nginx/vhost.d:z
-      - html:/usr/share/nginx/html:z
+      - /apps/ncapache/certs:/etc/nginx/certs:z
+      - /apps/ncapache/acmetest:/etc/acme.sh:z
+      - /apps/ncapache/vhost.d:/etc/nginx/vhost.d:z
+      - /apps/ncapache/html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/var/run/docker.sock:z,ro
+      - /etc/localtime:/etc/localtime:z,ro
+      - /etc/timezone:/etc/timezone:z,ro
     networks:
       - proxy-tier
     depends_on:
       - proxy
 
-# self signed
-#  omgwtfssl:
-#    image: paulczar/omgwtfssl
-#    restart: "no"
-#    volumes:
-#      - certs:/certs
-#    environment:
-#      - SSL_SUBJECT=servhostname.local
-#      - CA_SUBJECT=my@example.com
-#      - SSL_KEY=/certs/servhostname.local.key
-#      - SSL_CSR=/certs/servhostname.local.csr
-#      - SSL_CERT=/certs/servhostname.local.crt
-#    networks:
-#      - proxy-tier
-
-volumes:
-  db:
-  nextcloud:
-  certs:
-  acme:
-  vhost.d:
-  html:
-
 networks:
+# - net.ipv6.conf.all.disable_ipv6=1
   proxy-tier:
+    name: proxy-tier
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.112.0/24
+          gateway: 192.168.112.1
