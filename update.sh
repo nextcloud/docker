@@ -2,17 +2,14 @@
 set -eo pipefail
 
 declare -A alpine_version=(
-	[25]='3.16'
 	[default]='3.18'
 )
 
 declare -A debian_version=(
-	[25]='bullseye'
 	[default]='bookworm'
 )
 
 declare -A php_version=(
-	[25]='8.1'
 	[default]='8.2'
 )
 
@@ -87,7 +84,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='25'
+min_version='26'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -111,14 +108,6 @@ function create_variant() {
 	cat "$template" >> "$dir/Dockerfile"
 
 	echo "updating $fullversion [$1] $variant"
-
-	# Apply version+variant-specific patches
-	case "$version" in
-		25)
-			# Nextcloud 26+ recommends sysvsem
-			sed -ri -e '/sysvsem/d' "$dir/Dockerfile"
-			;;
-	esac
 
 	# Replace the variables.
 	sed -ri -e '
