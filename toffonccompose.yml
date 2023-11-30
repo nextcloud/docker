@@ -1,0 +1,144 @@
+version: "3"
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    volumes:
+      - /apps/ncalpine/db:/var/lib/postgresql/data:Z
+      - /etc/localtime:/etc/localtime:z,ro
+      - /etc/timezone:/etc/timezone:z,ro
+    env_file:
+      - stack.env
+
+  redis:
+    image: redis:alpine
+    restart: always
+    sysctls:
+      - net.core.somaxconn=65535
+    volumes:
+      - /apps/ncalpine/redis-data:/data:rw
+#      - /etc/localtime:/etc/localtime:ro
+#      - /etc/timezone:/etc/timezone:ro
+
+  app:
+    build: ./fpm
+    image: nextcloudtoffo:fpm-alpine
+    restart: always
+    volumes:
+      - /apps/ncalpine/php/zz-docker.conf:/usr/local/etc/php/conf.d/zz-docker.conf:z,ro
+      - /apps/ncalpine/html:/var/www/html:z
+      - /apps/ncalpine/config:/var/www/html/config:z
+      - /apps/ncalpine/data:/var/www/html/data:z
+      - /Serie:/mnt/!!Series:z
+#      - /Serie/apps/nc_test/nextcloud/upload_tmp_dir:/tmp/nextcloudtemp:z
+      - /etc/localtime:/etc/localtime:z,ro
+      - /etc/timezone:/etc/timezone:z,ro
+    environment:
+      - POSTGRES_HOST=db
+#      - OVERWRITECLIURL=https://toffo.pilsfree.net
+#      - OVERWRITEPROTOCOL=https
+      - NEXTCLOUD_TRUSTED_DOMAINS=toffo.pilsfree.net toffo.pilsfre.cz 192.168.200.200
+#      - OVERWRITEHOST=toffo.pilsfree.net
+      - default_phone_region=CZ
+      - SMTP_HOST=smtp.pilsfree.net
+      - SMTP_SECURE=tls
+      - SMTP_AUTHTYPE=Login
+      - SMTP_NAME=toffo
+      - SMTP_PASSWORD=8557242221
+      - MAIL_FROM_ADDRESS=toffo@pilsfree.net
+      - REDIS_HOST=redis
+      - NEXTCLOUD_TRUSTED_PROXIES=192.168.112.0/24
+#      - UPLOAD_TMP_DIR=/tmp/nextcloudtemp
+#      - NEXTCLOUD_INIT_HTACCESS=true
+#      - NEXTCLOUD_UPDATE=1
+    devices:
+      - /dev/dri:/dev/dri
+    env_file:
+      - stack.env
+    depends_on:
+      - db
+      - redis
+ 
+  web:
+    build: ./web
+    restart: always
+    volumes:
+      - /apps/ncalpine/php/zz-docker.conf:/usr/local/etc/php/conf.d:z,ro
+      - /apps/ncalpine/html:/var/www/html:z,ro
+      - /apps/ncalpine/config:/var/www/html/config:z,ro
+      - /apps/ncalpine/data:/var/www/html/data:z,ro
+      - /Serie:/mnt/!!Series:z
+#      - /Serie/apps/nc_test/nextcloud/upload_tmp_dir:/tmp/nextcloudtemp:z
+      - /etc/localtime:/etc/localtime:z,ro
+      - /etc/timezone:/etc/timezone:z,ro
+    environment:
+      - VIRTUAL_HOST=toffo.pilsfree.net
+      - LETSENCRYPT_HOST=toffo.pilsfree.net
+      - LETSENCRYPT_EMAIL=toffo@pilsfree.net
+    depends_on:
+      - app
+    networks:
+      - proxy-tier
+      - default      
+
+  cron:
+    image: nextcloudtoffo:fpm-alpine
+    restart: always
+    volumes:
+      - /apps/ncalpine/php/conf.d:/usr/local/etc/php/conf.d:z,ro
+      - /apps/ncalpine/html:/var/www/html:z
+      - /apps/ncalpine/config:/var/www/html/config:z
+      - /apps/ncalpine/data:/var/www/html/data:z
+      - /Serie:/mnt/!!Series:z
+#      - /Serie/apps/nc_test/nextcloud/upload_tmp_dir:/tmp/nextcloudtemp:z
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - redis
+
+  proxy:
+    build: ./proxy
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    volumes:
+      - /apps/ncalpine/log:/var/log/nginx:rw
+      - /apps/ncalpine/certs:/etc/nginx/certs:z,ro
+      - /apps/ncalpine/vhost.d:/etc/nginx/vhost.d:z
+      - /apps/ncalpine/html:/usr/share/nginx/html:z
+      - /var/run/docker.sock:/tmp/docker.sock:z,ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - proxy-tier
+
+  letsencrypt-companion:
+    image: nginxproxy/acme-companion
+    restart: always
+    volumes:
+      - /apps/ncalpine/certs:/etc/nginx/certs:z
+      - /apps/ncalpine/acmetest:/etc/acme.sh:z
+      - /apps/ncalpine/vhost.d:/etc/nginx/vhost.d:z
+      - /apps/ncalpine/nginxhtml:/usr/share/nginx/html:z
+      - /var/run/docker.sock:/var/run/docker.sock:z,ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
+
+networks:
+# - net.ipv6.conf.all.disable_ipv6=1
+  proxy-tier:
+    name: proxy-tier
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.112.0/24
+          gateway: 192.168.112.1
