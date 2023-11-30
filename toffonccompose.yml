@@ -40,12 +40,6 @@ services:
       - NEXTCLOUD_TRUSTED_DOMAINS=toffo.pilsfree.net toffo.pilsfre.cz 192.168.200.200
 #      - OVERWRITEHOST=toffo.pilsfree.net
       - default_phone_region=CZ
-      - SMTP_HOST=smtp.pilsfree.net
-      - SMTP_SECURE=tls
-      - SMTP_AUTHTYPE=Login
-      - SMTP_NAME=toffo
-      - SMTP_PASSWORD=8557242221
-      - MAIL_FROM_ADDRESS=toffo@pilsfree.net
       - REDIS_HOST=redis
       - NEXTCLOUD_TRUSTED_PROXIES=192.168.112.0/24
 #      - UPLOAD_TMP_DIR=/tmp/nextcloudtemp
