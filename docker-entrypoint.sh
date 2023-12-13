@@ -273,6 +273,41 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         fi
     ) 9> /var/www/html/nextcloud-init-sync.lock
 
+    # check if at least one config file on persistent storage differs from running image
+    outOfDateCfgFiles=0
+
+    for cfgPath in /usr/src/nextcloud/config/*.php; do
+        cfgFile=$(basename "$cfgPath")
+
+        if [ "$cfgFile" != "config.sample.php" ]; then
+            if ! cmp -s "/usr/src/nextcloud/config/$cfgFile" "/var/www/html/config/$cfgFile"; then
+                outOfDateCfgFiles=1
+                break # we stop at detecting just one out of date file here so that we can generate the full list later (because arrays are a PITA w/o bash)
+            fi
+        fi
+    done
+
+    if [ $outOfDateCfgFiles -eq 1 ]; then # i.e. if some out of date or missing config files were noted let's try to inform the operator
+        echo "*** WARNING ***"
+        echo "*** The image-specific config files on your persistent volume differ from those that ship with the running image."
+        echo "*** This could lead to behavior that differs from that documented for the image (such as auto configuration variables not working as expected)."
+        echo "*** Don't panic! This can happen if you've ever upgraded your running container since we do not overwrite configuration files stored on persistent volumes after initial installation for your safety."
+        echo "*** The following config files differ from that expected by the running image:"
+
+        for cfgPath in /usr/src/nextcloud/config/*.php; do
+            cfgFile=$(basename "$cfgPath")
+
+            if [ "$cfgFile" != "config.sample.php" ]; then
+                if ! cmp -s "/usr/src/nextcloud/config/$cfgFile" "/var/www/html/config/$cfgFile"; then
+                    echo "**** /var/www/html/config/$cfgFile (versus the latest version for this image found at /usr/src/nextcloud/config/$cfgFile)"
+                fi
+            fi
+        done
+
+        echo "*** Details and instructions for resolving can be found at https://github.com/nextcloud/docker#auto-configuration-and-nextcloud-updates"
+        echo "*** In short, compare the contents of /usr/src/nextcloud/config/ with /var/www/html/config/."
+    fi
+
     run_path before-starting
 fi
 
