@@ -142,7 +142,8 @@ RUN set -ex; \
     chmod +x /usr/src/nextcloud/occ; \
     apk del --no-network .fetch-deps
 
-COPY *.sh upgrade.exclude /
+COPY entrypoint.sh cron.sh upgrade.exclude /
+COPY occ occ-cron /usr/local/bin/
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
