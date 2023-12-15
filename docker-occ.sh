@@ -7,7 +7,7 @@ set -eu
 RUN_AS="$(stat -c %U /var/www/html/occ)"
 [ -n "$RUN_AS" ] && [ "$RUN_AS" != "UNKNOWN" ] || { echo "Unable to run \`occ\`: Failed to determine www-data user" >&2 ; exit 1 ; }
 
-if [ "$(id -u)" == 0 ]; then
+if [ "$(id -u)" = 0 ]; then
     exec su -p "$RUN_AS" -s /bin/sh -c 'exec php -f /var/www/html/occ -- "$@"' -- '/bin/sh' "$@"
 else
     exec php -f /var/www/html/occ -- "$@"

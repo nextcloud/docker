@@ -12,8 +12,8 @@ fi
 RUN_AS="$(stat -c %U /var/www/html/cron.php)"
 [ -n "$RUN_AS" ] && [ "$RUN_AS" != "UNKNOWN" ] || { echo "Unable to run \`occ-cron\`: Failed to determine www-data user" >&2 ; exit 1 ; }
 
-if [ "$(id -u)" == 0 ]; then
-    exec su -p "$RUN_AS" -s /bin/sh -c 'php -f /var/www/html/cron.php' -- '/bin/sh'
+if [ "$(id -u)" = 0 ]; then
+    exec su -p "$RUN_AS" -s /bin/sh -c 'exec php -f /var/www/html/cron.php' -- '/bin/sh'
 else
     exec php -f /var/www/html/cron.php
 fi
