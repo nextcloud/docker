@@ -18,6 +18,7 @@ RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
         autoconf \
+        bzip2-dev \
         freetype-dev \
         gmp-dev \
         icu-dev \
@@ -39,6 +40,7 @@ RUN set -ex; \
     docker-php-ext-configure ldap; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
+        bz2 \
         exif \
         gd \
         gmp \
