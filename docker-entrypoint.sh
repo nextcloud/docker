@@ -11,14 +11,6 @@ directory_empty() {
     [ -z "$(ls -A "$1/")" ]
 }
 
-run_as() {
-    if [ "$(id -u)" = 0 ]; then
-        su -p "$user" -s /bin/sh -c "$1"
-    else
-        sh -c "$1"
-    fi
-}
-
 # Execute all executable files in a given directory in alphanumeric order
 run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
@@ -40,7 +32,11 @@ run_path() {
 
             echo "==> Running the script (cwd: $(pwd)): \"${script_file_path}\""
 
-            run_as "${script_file_path}" || return_code="$?"
+            if [ "$(id -u)" = 0 ]; then
+                su -p "$user" -s /bin/sh "${script_file_path}" || return_code="$?"
+            else
+                "${script_file_path}" || return_code="$?"
+            fi
 
             if [ "${return_code}" -ne "0" ]; then
                 echo "==> Failed at executing \"${script_file_path}\". Exit code: ${return_code}"
@@ -163,7 +159,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     exit 1
                 fi
                 echo "Upgrading nextcloud from $installed_version ..."
-                run_as 'occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
+                occ app:list | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
             fi
             if [ "$(id -u)" = 0 ]; then
                 rsync_options="-rlDog --chown $user:$group"
@@ -225,7 +221,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         echo "Starting nextcloud installation"
                         max_retries=10
                         try=0
-                        until [ "$try" -gt "$max_retries" ] || run_as "occ maintenance:install $install_options"
+                        until [ "$try" -gt "$max_retries" ] || eval "occ maintenance:install $install_options"
                         do
                             echo "Retrying install..."
                             try=$((try+1))
@@ -240,7 +236,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                             NC_TRUSTED_DOMAIN_IDX=1
                             for DOMAIN in $NEXTCLOUD_TRUSTED_DOMAINS ; do
                                 DOMAIN=$(echo "$DOMAIN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-                                run_as "occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
+                                occ config:system:set trusted_domains "$NC_TRUSTED_DOMAIN_IDX" --value="$DOMAIN"
                                 NC_TRUSTED_DOMAIN_IDX=$((NC_TRUSTED_DOMAIN_IDX+1))
                             done
                         fi
@@ -257,9 +253,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             else
                 run_path pre-upgrade
 
-                run_as 'occ upgrade'
+                occ upgrade
 
-                run_as 'occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
+                occ app:list | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
                 echo "The following apps have been disabled:"
                 diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
                 rm -f /tmp/list_before /tmp/list_after
@@ -272,7 +268,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
         # Update htaccess after init if requested
         if [ -n "${NEXTCLOUD_INIT_HTACCESS+x}" ] && [ "$installed_version" != "0.0.0.0" ]; then
-            run_as 'occ maintenance:update:htaccess'
+            occ maintenance:update:htaccess
         fi
     ) 9> /var/www/html/nextcloud-init-sync.lock
 
