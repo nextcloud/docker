@@ -17,7 +17,7 @@ RUN set -ex; \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
-    echo '*/5 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    echo '*/5 * * * * occ-cron' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
@@ -143,7 +143,8 @@ RUN set -ex; \
     chmod +x /usr/src/nextcloud/occ; \
     apk del --no-network .fetch-deps
 
-COPY *.sh upgrade.exclude /
+COPY entrypoint.sh cron.sh upgrade.exclude /
+COPY occ occ-cron /usr/local/bin/
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
