@@ -6,5 +6,8 @@ services:
     restart: always
     ports:
       - 8080:80
-    volumes:
-      - nextcloud:/var/www/html
+    #volumes:
+    #  - nextcloud:/var/www/html # This is the usual way of using nextcloud in a container, but we do not need persistent data storage for benchmarking
+    healthcheck:
+      test: ["curl",  "-f", "http://nc"]
+      interval: "1s"

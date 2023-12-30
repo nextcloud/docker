@@ -7,33 +7,20 @@ compose-file: !include compose-sqlite.yml
 services:
   gcb-playwright:
     image: greencoding/gcb_playwright:v3
-    setup-commands:
-      - cp /tmp/repo/nextcloud_install.py /tmp/nextcloud_install.py
-      - cp /tmp/repo/nextcloud_create_event.py /tmp/nextcloud_create_event.py
-
-    networks:
-      - nextcloud-setup-network
-    # volumes:
-    #   - /tmp/.X11-unix:/tmp/.X11-unix
-    # environment:
-    #   DISPLAY: ":0"
-
-  # We don't need the volumes are we don't want to persist any data
-
-  nc:
-    volumes: []
-    networks:
-      - nextcloud-setup-network
-
-networks:
-  nextcloud-setup-network:
+    depends_on:
+      nc:
+        condition: service_healthy
+    volumes:
+       - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
+    environment:
+       DISPLAY: ":0" # for debugging in non-headless mode
 
 flow:
   - name: Install Nextcloud
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/nextcloud_install.py firefox
+        command: python3 /tmp/repo/nextcloud_install.py firefox
         note: Installing Nextcloud
         read-notes-stdout: true
         log-stdout: true
@@ -42,7 +29,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/nextcloud_create_event.py firefox
+        command: python3 /tmp/repo/nextcloud_create_event.py firefox
         note: Creating event
         read-notes-stdout: true
         read-sci-stdout: true

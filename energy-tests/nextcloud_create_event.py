@@ -2,7 +2,7 @@ import contextlib
 import sys
 from time import time_ns, sleep
 
-from playwright.sync_api import Playwright, sync_playwright, expect
+from playwright.sync_api import Playwright, sync_playwright, expect, TimeoutError
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -30,15 +30,15 @@ def run(playwright: Playwright, browser_name: str) -> None:
         # Sleep to make sure the modal has time to appear before continuing navigation
         sleep(5)
         log_note("Close welcome popup")
-        with contextlib.suppress(Exception):
-            page.get_by_role("button", name="Close modal").click(timeout=15_000)
+        with contextlib.suppress(TimeoutError):
+            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
 
         log_note("Go to calendar")
         page.get_by_role("link", name="Calendar").click()
 
         # Second welcome screen?
-        with contextlib.suppress(Exception):
-            page.get_by_role("button", name="Close modal").click(timeout=15_000)
+        with contextlib.suppress(TimeoutError):
+            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
 
         log_note("Create event")
         event_name = "Weekly sync"
