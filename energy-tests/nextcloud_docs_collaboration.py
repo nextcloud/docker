@@ -4,7 +4,7 @@ import string
 import sys
 from time import time_ns, sleep
 
-from playwright.sync_api import Playwright, sync_playwright, expect
+from playwright.sync_api import Playwright, sync_playwright, expect, TimeoutError
 
 
 def get_random_text() -> str:
@@ -43,9 +43,9 @@ def collaborate(playwright: Playwright, browser_name: str) -> None:
         login(admin_user, "Crash", "Override")
         login(docs_user, "docs_dude", "docsrule!12")
         log_note("Opening document with both users")
-        with contextlib.suppress(Exception):
+        with contextlib.suppress(TimeoutError):
             sleep(5)
-            docs_user.get_by_role("button", name="Close modal").click(timeout=15_000)
+            docs_user.locator('button.first-run-wizard__close-button').click(timeout=15_000)
         admin_user.get_by_role("link", name="Files", exact=True).click()
         docs_user.get_by_role("link", name="Files", exact=True).click()
         admin_user.get_by_role("link", name="Shares", exact=True).click()

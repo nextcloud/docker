@@ -2,7 +2,7 @@ import sys
 import contextlib
 from time import time_ns, sleep
 
-from playwright.sync_api import Playwright, sync_playwright
+from playwright.sync_api import Playwright, sync_playwright, TimeoutError
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -31,8 +31,8 @@ def create_user(playwright: Playwright, browser_name: str, username: str, passwo
         # Sleep to make sure the modal has time to appear before continuing navigation
         sleep(5)
 
-        with contextlib.suppress(Exception):
-            page.get_by_role("button", name="Close modal").click(timeout=15_000)
+        with contextlib.suppress(TimeoutError):
+            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
         log_note("Create user")
         page.get_by_role("link", name="Open settings menu").click()
         page.get_by_role("link", name="Users").first.click()

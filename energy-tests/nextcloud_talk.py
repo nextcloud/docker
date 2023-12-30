@@ -4,7 +4,7 @@ import string
 import sys
 from time import sleep, time_ns
 
-from playwright.sync_api import Playwright, sync_playwright, expect
+from playwright.sync_api import Playwright, sync_playwright, expect, TimeoutError
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -43,21 +43,21 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
 
         # Wait for the modal to load. As it seems you can't close it while it is showing the opening animation.
         log_note("Close first-time run popup")
-        with contextlib.suppress(Exception):
+        with contextlib.suppress(TimeoutError):
             sleep(5)
-            page.get_by_role("button", name="Close modal").click(timeout=15_000)
+            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
 
         log_note("Open Talk app")
         page.locator('#header').get_by_role("link", name="Talk", exact=True).click()
         page.wait_for_url("**/apps/spreed/")
 
         # Second welcome screen?
-        with contextlib.suppress(Exception):
-            page.get_by_role("button", name="Close modal").click(timeout=15_000)
+        with contextlib.suppress(TimeoutError):
+            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
 
         # Headless browsers trigger a warning in Nextcloud, however they actually work fine
         log_note("Close headless warning")
-        with contextlib.suppress(Exception):
+        with contextlib.suppress(TimeoutError):
             page.wait_for_selector('.toast-close')
             page.click('.toast-close')
 
@@ -109,7 +109,7 @@ def talk(playwright: Playwright, url: str, browser_name: str) -> None:
 
     # Close toast messages for headless browsers
     log_note("Close headless warning")
-    with contextlib.suppress(Exception):
+    with contextlib.suppress(TimeoutError):
         for page in pages:
             page.wait_for_selector('.toast-close').click()
 

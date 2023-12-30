@@ -2,7 +2,7 @@ import contextlib
 import sys
 from time import sleep, time_ns
 
-from playwright.sync_api import Playwright, sync_playwright
+from playwright.sync_api import Playwright, sync_playwright, TimeoutError
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -34,8 +34,8 @@ def run(playwright: Playwright, browser_name: str) -> None:
         page.locator("#view7-input-file").press("Enter")
         page.get_by_role("button", name="Create a new file with the selected template").click()
         sleep(5)
-        with contextlib.suppress(Exception):
-            page.get_by_role("button", name="Close modal").click(timeout=15_000)
+        with contextlib.suppress(TimeoutError):
+            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
         page.keyboard.press("Escape")
         log_note("Share file with other user")
         page.get_by_role("link", name="colab_meeting .md").get_by_role("link", name="Share").click()
