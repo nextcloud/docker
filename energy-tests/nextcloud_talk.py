@@ -17,9 +17,9 @@ def get_random_text() -> str:
 
 def send_message(sender, message):
     log_note("Sending message")
-    sender.get_by_role("textbox", name="Write message, @ to mention someone …").click()
-    sender.get_by_role("textbox", name="Write message, @ to mention someone …").fill(message)
-    sender.get_by_role("textbox", name="Write message, @ to mention someone …").press("Enter")
+    sender.get_by_role("textbox").click()
+    sender.get_by_role("textbox").fill(message)
+    sender.get_by_role("textbox").press("Enter")
     log_note("GMT_SCI_R=1")
 
 def create_conversation(playwright: Playwright, browser_name: str) -> str:
@@ -65,7 +65,7 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
             page.click('.toast-close')
 
         log_note("Create conversation")
-        page.click("span.dots-vertical-icon")
+        page.click("span.chat-plus-icon")
         page.get_by_text("Create a new conversation").click()
         # Different placeholder names and capitalization on apache vs FPM
         page.get_by_placeholder("name").fill("Random talk")
@@ -116,9 +116,8 @@ def talk(playwright: Playwright, url: str, browser_name: str) -> None:
     # Perform actions for all users
     log_note("Set guest usernames")
     for page in pages:
-        page.get_by_role("button", name="Edit").click()
         page.get_by_placeholder("Guest").fill(f"Dude#{pages.index(page) + 1}")
-        page.get_by_role("button", name="Save name").click()
+        page.get_by_role("button", name="Submit name and join").click()
 
     # Send first message and check for visibility
     log_note("Send the first validation message")
