@@ -29,6 +29,8 @@ services:
       - POSTGRES_DB=nextcloud
       - POSTGRES_USER=nextcloud
       - POSTGRES_HOST=db
-    healthcheck:
-      test: ["curl",  "-f", "http://nc"]
-      interval: "1s"
+#    healthcheck:
+#      test: curl -f http://nc
+#      interval: "1h" # effectively turns repeated healthchecks during runtime off
+#      start-period: "1s" # Not yet supported. Will come with Docker CE 25.0
+#      start-interval: "1s" # Not yet supported. Will come with Docker CE 25.0
