@@ -13,8 +13,8 @@ services:
     depends_on:
       nc:
         condition: service_started # change to service_healthy when Docker CE 25.0 is released which supports start-interval
-    volumes:
-       - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
+#    volumes:
+#       - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
     environment:
        DISPLAY: ":0" # for debugging in non-headless mode
       - nextcloud-setup-network
