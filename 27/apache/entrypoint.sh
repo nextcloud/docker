@@ -32,7 +32,7 @@ run_path() {
     echo "=> Searching for scripts (*.sh) to run, located in the folder: ${hook_folder_path}"
 
     (
-        find "${hook_folder_path}" -type f -maxdepth 1 -iname '*.sh' -print | sort | while read -r script_file_path; do
+        find "${hook_folder_path}" -maxdepth 1 -iname '*.sh' '(' -type f -o -type l ')' -print | sort | while read -r script_file_path; do
             if ! [ -x "${script_file_path}" ]; then
                 echo "==> The script \"${script_file_path}\" was skipped, because it didn't have the executable flag"
                 continue
