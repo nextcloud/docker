@@ -97,7 +97,7 @@ nextcloud
 ### Custom volumes
 
 If mounting additional volumes under `/var/www/html`, you should consider:
-- Confirming that [upgrade.exclude](https://github.com/nextcloud/docker/blob/master/upgrade.exclude) contains the files and folders that should persist during installation and upgrades; or 
+- Confirming that [upgrade.exclude](https://github.com/nextcloud/docker/blob/master/upgrade.exclude) contains the files and folders that should persist during installation and upgrades; or
 - Mounting storage volumes to locations outside of `/var/www/html`.
 
 > [!WARNING]
@@ -179,13 +179,14 @@ At least `SMTP_HOST`, `MAIL_FROM_ADDRESS` and `MAIL_DOMAIN` must be set for the 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/email_configuration.html) for other values to configure SMTP.
 
 To use an external S3 compatible object store as primary storage, set the following variables:
-- `OBJECTSTORE_S3_HOST`: The hostname of the object storage server
 - `OBJECTSTORE_S3_BUCKET`: The name of the bucket that Nextcloud should store the data in
+- `OBJECTSTORE_S3_REGION`: The region that the S3 bucket resides in
+- `OBJECTSTORE_S3_HOST`: The hostname of the object storage server
+- `OBJECTSTORE_S3_PORT`: The port that the object storage server is being served over
 - `OBJECTSTORE_S3_KEY`: AWS style access key
 - `OBJECTSTORE_S3_SECRET`: AWS style secret access key
-- `OBJECTSTORE_S3_PORT`: The port that the object storage server is being served over
+- `OBJECTSTORE_S3_STORAGE_CLASS`: The storage class to use when adding objects to the bucket
 - `OBJECTSTORE_S3_SSL` (default: `true`): Whether or not SSL/TLS should be used to communicate with object storage server
-- `OBJECTSTORE_S3_REGION`: The region that the S3 bucket resides in.
 - `OBJECTSTORE_S3_USEPATH_STYLE` (default: `false`): Not required for AWS S3
 - `OBJECTSTORE_S3_LEGACYAUTH` (default: `false`): Not required for AWS S3
 - `OBJECTSTORE_S3_OBJECT_PREFIX` (default: `urn:oid:`): Prefix to prepend to the fileid
@@ -212,7 +213,7 @@ To customize other PHP limits you can simply change the following variables:
 - `PHP_UPLOAD_LIMIT` (default `512M`) This sets the upload limit (`post_max_size` and `upload_max_filesize`) for big files. Note that you may have to change other limits depending on your client, webserver or operating system. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html) for more information.
 
 To customize Apache max file upload limit you can change the following variable:
-- `APACHE_BODY_LIMIT` (default `1073741824` [1GiB]) This restricts the total 
+- `APACHE_BODY_LIMIT` (default `1073741824` [1GiB]) This restricts the total
 size of the HTTP request body sent from the client. It specifies the number of _bytes_ that are allowed in a request body. A value of **0** means **unlimited**. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html#apache) for more information.
 
 
