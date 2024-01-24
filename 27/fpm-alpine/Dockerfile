@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:8.2-fpm-alpine3.18
+FROM php:8.2-fpm-alpine3.19
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
