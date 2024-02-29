@@ -42,6 +42,7 @@ RUN set -ex; \
         libwebp-dev \
         libxml2-dev \
         libzip-dev \
+        libbz2-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -60,6 +61,7 @@ RUN set -ex; \
         pdo_pgsql \
         sysvsem \
         zip \
+        bz2 \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately

@@ -34,6 +34,7 @@ RUN set -ex; \
         openldap-dev \
         pcre-dev \
         postgresql-dev \
+        bzip2-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
@@ -51,6 +52,7 @@ RUN set -ex; \
         pdo_pgsql \
         sysvsem \
         zip \
+        bz2 \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
