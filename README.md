@@ -1,4 +1,4 @@
-# What is Nextcloud?
+# Nextcloud Docker
 
 [![GitHub CI build status badge](https://github.com/nextcloud/docker/workflows/Images/badge.svg)](https://github.com/nextcloud/docker/actions?query=workflow%3AImages)
 [![update.sh build status badge](https://github.com/nextcloud/docker/workflows/update.sh/badge.svg)](https://github.com/nextcloud/docker/actions?query=workflow%3Aupdate.sh)
@@ -12,20 +12,71 @@
 [![ppc64le build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/nextcloud.svg?label=ppc64le)](https://doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/nextcloud)
 [![s390x build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/s390x/job/nextcloud.svg?label=s390x)](https://doi-janky.infosiftr.net/job/multiarch/job/s390x/job/nextcloud)
 
-A safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms.
+Nextcloud Server is a safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms.
 
 ![logo](https://cdn.rawgit.com/nextcloud/docker/071b888f7f689caa62c1498b6c61cb3599bcea2b/logo.svg)
 
-⚠️⚠️⚠️ This image is maintained by community volunteers and designed for expert use. For quick and easy deployment that supports the full set of Nextcloud Hub features, use the [Nextcloud All-in-One docker container](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one) maintained by Nextcloud GmbH.
+This repository maintains the community Docker images for Nextcloud Server that are designed to be used in micro-services environments. These images adhere to upstream (Nextcloud Server) recommendations as closely as possible with a minimum of extraneous functionality. 
 
-# How to use this image
-This image is designed to be used in a micro-service environment. There are two versions of the image you can choose from.
+While adhering to Nextcloud Server recommendations, these images *intentionally* do not incorporate every bit of functionality supported by Nextcloud. They aim is provide a good baseline for new deployments as well serve as a stable starting point when an image's defaults don't suit a given use case. Select parameters can be changed through environment variables and all of the images can be customized or extended via typical Docker methods - e.g.`Dockerfile`.
 
-The `apache` tag contains a full Nextcloud installation including an apache web server. It is designed to be easy to use and gets you running pretty fast. This is also the default for the `latest` tag and version tags that are not further specified.
+These images are classified as Docker Official Images, which means they are curated by Docker, Inc.
+https://github.com/docker-library/official-images?tab=readme-ov-file#what-are-official-images
+
+> [!IMPORTANT]  
+> These images are community maintained (primarily by volunteers) and are designed for expert use.
+
+# What is this?
+
+
+These images may be used for either:
+* deploying throw away Nextcloud Server service containers
+  - e.g. mount your data volume and start the container to have a running Nextcloud Server instance ready to be used for testing purposes *or* place behind an HTTPS reverse proxy - and combine with any desired supplementary services - for production usage
+* building your own specialized images of Nextcloud Server
+
+
+> [!TIP]
+> If a more turnkey deployment is desired, use the [Nextcloud All-in-One docker container](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one) which is maintained by Nextcloud GmbH and aims to support the full set of Nextcloud Hub features.
+
+## Image Variants
+
+There are multiple editions of the images to accomodate different use cases and preferences. 
+
+Each image is a combination of the following:
+
+- Apache HTTP Server with `mod_php` (or standalone `php-fpm`)
+- A specific [version of Nextcloud Server](https://github.com/nextcloud/server/wiki/Maintenance-and-Release-Schedule)
+- Debian (or Alpine)
+
+Editions are chosen through the use of Docker image tags.
+
+### Choosing
+
+First, decide whether you want to deploy your Nextcloud stack around Apache/mod_php or php-fpm.
+Second, decide which major version of Nextcloud Server you wish to deploy (the Nextcloud project generally supports and provides security fixes and critical bug fixes for 2 or 3 major versions simultaneously in their *Stable* channel. The lower numbered Stable majors are the most field tested; while the higher numbered majors have the latest features )
+
+## `nextcloud:apache`
+
+The is the default image. If you're unsure which edition is appropriate for your situation, you probably want this one.
+
+The Apache edition contains a full Nextcloud installation including an Apache HTTP server. It is designed to be easy to use and gets you running pretty fast. All Apache editions utilize the `apache` tag This is also the default for the `latest` tag and version tags that are not further specified.
+
+## `nextcloud:fpm`
 
 The second option is a `fpm` container. It is based on the [php-fpm](https://hub.docker.com/_/php/) image and runs a fastCGI-Process that serves your Nextcloud page. To use this image it must be combined with any webserver that can proxy the http requests to the FastCGI-port of the container.
 
 [![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/nextcloud/docker/8db861d67f257a3e9ac1790ea06d4e2a7a193a6c/stack.yml)
+
+
+> [!CAUTION]
+> When no tag is specified in Docker, `latest` is presumed. While this may seem like a safe choice, keep in mind that `latest` is mutable, does not provide protection against upgrading across major version boundaries, and may introduce breaking changes without any warning. 
+
+> [!TIP]
+> Best practice is to specify a tag that defines a suitable mixture of the preferred major version of Nextcloud Server + Apache/mod_php versus php-fpm + Debian or Alpine.
+> It is also sometimes advtangeous to pin the version number of Nextcloud Server more tightly, such as to a specific version (e.g. v28.0.2)
+
+
+# How to use this image
 
 ## Using the apache image
 The apache image contains a webserver and exposes port 80. To start the container type:
@@ -274,6 +325,9 @@ Keep in mind that once set, removing these environment variables won't remove th
 The easiest way to get a fully featured and functional setup is using a `docker-compose` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
 
 At first, make sure you have chosen the right base image (fpm or apache) and added features you wanted (see below). In every case, you would want to add a database container and docker volumes to get easy access to your persistent data. When you want to have your server reachable from the internet, adding HTTPS-encryption is mandatory! See below for more information.
+
+> [!NOTE]
+> All examples here and in the examples folder are provided on a best effort basis. The operator is expected to be familiar with Docker, web server technology, etc. For further details on examples that include third-party components, seek out standard assistance channels for those third-party components.
 
 ## Base version - apache
 This version will use the apache image and add a mariaDB container. The volumes are set to keep your data persistent. This setup provides **no ssl encryption** and is intended to run behind a proxy.
