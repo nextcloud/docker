@@ -276,10 +276,4 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     run_path before-starting
 fi
 
-echo "⚠️⚠️⚠️"
-echo "This image is maintained by community volunteers and designed for expert use."
-echo "For quick and easy deployment that supports the full set of Nextcloud Hub features, use the Nextcloud All-in-One docker container maintained by Nextcloud GmbH."
-echo "See https://github.com/nextcloud/all-in-one#nextcloud-all-in-one"
-echo "⚠️⚠️⚠️ "
-
 exec "$@"
