@@ -20,8 +20,8 @@ jobs:
     outputs:
       strategy: ${{ steps.generate-jobs.outputs.strategy }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: docker-library/bashbrew@v0.1.5
+      - uses: actions/checkout@v4
+      - uses: docker-library/bashbrew@HEAD
       - id: generate-jobs
         name: Generate Jobs
         run: |
@@ -36,7 +36,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Prepare Environment
         run: ${{ matrix.runs.prepare }}
       - name: Run update.sh script

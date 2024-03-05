@@ -13,7 +13,7 @@ jobs:
     name: Run update.sh script
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Run update.sh script
       run: ./update.sh
     - name: Commit files
