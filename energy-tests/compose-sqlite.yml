@@ -2,7 +2,7 @@ version: '2'
 
 services:
   nc:
-    image: nextcloud:28.0.2-apache
+    image: nextcloud:28.0.3-apache
     restart: always
     ports:
       - 8080:80
