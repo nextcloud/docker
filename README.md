@@ -105,13 +105,13 @@ If mounting additional volumes under `/var/www/html`, you should consider:
 
 
 ## Using the Nextcloud command-line interface
-To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
+To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html) (aka. `occ` command), you can use a simple wrapper script provided by the Nextcloud image dealing with permissions:
 ```console
-$ docker exec --user www-data CONTAINER_ID php occ
+$ docker exec CONTAINER_ID occ
 ```
 or for docker-compose:
 ```console
-$ docker-compose exec --user www-data app php occ
+$ docker-compose exec app occ
 ```
 
 ## Auto configuration via environment variables
