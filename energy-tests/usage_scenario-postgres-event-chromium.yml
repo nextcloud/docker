@@ -6,7 +6,7 @@ compose-file: !include compose-postgres.yml
 
 services:
   gcb-playwright:
-    image: greencoding/gcb_playwright:v6
+    image: greencoding/gcb_playwright:v7
     depends_on:
       nc:
         condition: service_started # change to service_healthy when Docker CE 25.0 is released which supports start-interval
