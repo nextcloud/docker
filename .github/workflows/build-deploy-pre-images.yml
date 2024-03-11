@@ -1,0 +1,42 @@
+name: "📦 Create and publish pre-release Docker images"
+
+on:
+  workflow_dispatch:
+  push:
+    tags-ignore:
+      - '*'
+    paths:
+      - 'pre-release/**'
+      - '.github/workflows/build-deploy-pre-images.yml'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_PREFIX: ${{ github.repository }}-pre
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        flavor: [apache, fpm, fpm-alpine]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: pre-release/${{ matrix.flavor }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-${{ matrix.flavor }}:latest
