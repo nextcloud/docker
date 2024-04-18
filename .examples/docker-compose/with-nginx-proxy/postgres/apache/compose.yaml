@@ -1,9 +1,11 @@
-version: '3'
-
 services:
   db:
     image: postgres:alpine
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
     volumes:
       - db:/var/lib/postgresql/data:Z
     env_file:
@@ -16,6 +18,10 @@ services:
   app:
     image: nextcloud:apache
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
     volumes:
       - nextcloud:/var/www/html:z
     environment:
@@ -29,6 +35,7 @@ services:
     depends_on:
       - db
       - redis
+      - proxy
     networks:
       - proxy-tier
       - default
@@ -36,6 +43,10 @@ services:
   cron:
     image: nextcloud:apache
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
     volumes:
       - nextcloud:/var/www/html:z
     entrypoint: /cron.sh
@@ -46,13 +57,16 @@ services:
   proxy:
     build: ./proxy
     restart: always
+    logging:
+      driver: "syslog"
     ports:
       - 80:80
       - 443:443
     labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     volumes:
-      - certs:/etc/nginx/certs:z,ro
+      - certs:/etc/nginx/certs:ro:z
+      - conf.d:/etc/nginx/conf.d:z
       - vhost.d:/etc/nginx/vhost.d:z
       - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/tmp/docker.sock:z,ro
@@ -65,6 +79,7 @@ services:
     volumes:
       - certs:/etc/nginx/certs:z
       - acme:/etc/acme.sh:z
+      - conf.d:/etc/nginx/conf.d:z
       - vhost.d:/etc/nginx/vhost.d:z
       - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/var/run/docker.sock:z,ro
@@ -94,6 +109,7 @@ volumes:
   certs:
   acme:
   vhost.d:
+  conf.d:
   html:
 
 networks:

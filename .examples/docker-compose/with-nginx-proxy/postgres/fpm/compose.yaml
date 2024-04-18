@@ -2,15 +2,14 @@ version: '3'
 
 services:
   db:
-    image: mariadb:10.6
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    image: postgres:alpine
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
     volumes:
-      - db:/var/lib/mysql:Z
-    environment:
-      - MYSQL_ROOT_PASSWORD=
-      - MARIADB_AUTO_UPGRADE=1
-      - MARIADB_DISABLE_UPGRADE_BACKUP=1
+      - db:/var/lib/postgresql/data:Z
     env_file:
       - db.env
 
@@ -19,28 +18,50 @@ services:
     restart: always
 
   app:
-    image: nextcloud:apache
+    image: nextcloud:fpm-alpine
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
     volumes:
       - nextcloud:/var/www/html:z
     environment:
-      - VIRTUAL_HOST=
-      - LETSENCRYPT_HOST=
-      - LETSENCRYPT_EMAIL=
-      - MYSQL_HOST=db
+      - POSTGRES_HOST=db
       - REDIS_HOST=redis
     env_file:
       - db.env
     depends_on:
       - db
       - redis
+      - proxy
+
+  web:
+    build: ./web
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    volumes:
+      - nextcloud:/var/www/html:z,ro
+    environment:
+      - VIRTUAL_HOST=
+      - LETSENCRYPT_HOST=
+      - LETSENCRYPT_EMAIL=
+    depends_on:
+      - app
     networks:
       - proxy-tier
       - default
 
   cron:
-    image: nextcloud:apache
+    image: nextcloud:fpm-alpine
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
     volumes:
       - nextcloud:/var/www/html:z
     entrypoint: /cron.sh
@@ -51,13 +72,16 @@ services:
   proxy:
     build: ./proxy
     restart: always
+    logging:
+      driver: "syslog"
     ports:
       - 80:80
       - 443:443
     labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     volumes:
       - certs:/etc/nginx/certs:z,ro
+      - conf.d:/etc/nginx/conf.d:z
       - vhost.d:/etc/nginx/vhost.d:z
       - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/tmp/docker.sock:z,ro
@@ -67,12 +91,19 @@ services:
   letsencrypt-companion:
     image: nginxproxy/acme-companion
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
     volumes:
       - certs:/etc/nginx/certs:z
       - acme:/etc/acme.sh:z
+      - conf.d:/etc/nginx/conf.d:z
       - vhost.d:/etc/nginx/vhost.d:z
       - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/var/run/docker.sock:z,ro
+    environment:
+      - DEFAULT_EMAIL=
     networks:
       - proxy-tier
     depends_on:
@@ -98,6 +129,7 @@ volumes:
   nextcloud:
   certs:
   acme:
+  conf.d:
   vhost.d:
   html:
 
