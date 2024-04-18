@@ -27,7 +27,7 @@ services:
     volumes:
       - nextcloud:/var/www/html:z
     environment:
-      - MYSQL_HOST=db
+      - POSTGRES_HOST=db
       - REDIS_HOST=redis
     env_file:
       - db.env
