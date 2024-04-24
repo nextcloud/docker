@@ -76,31 +76,5 @@
         "phpVersion": "8.2"
       }
     }
-  },
-  "26": {
-    "branch": "26",
-    "version": "26.0.13",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-26.0.13.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-26.0.13.tar.bz2.asc",
-    "variants": {
-      "apache": {
-        "variant": "apache",
-        "base": "debian",
-        "baseVersion": "bookworm",
-        "phpVersion": "8.2"
-      },
-      "fpm": {
-        "variant": "fpm",
-        "base": "debian",
-        "baseVersion": "bookworm",
-        "phpVersion": "8.2"
-      },
-      "fpm-alpine": {
-        "variant": "fpm-alpine",
-        "base": "alpine",
-        "baseVersion": "3.19",
-        "phpVersion": "8.2"
-      }
-    }
   }
 }
