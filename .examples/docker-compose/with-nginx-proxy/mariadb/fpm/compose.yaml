@@ -67,7 +67,6 @@ services:
     volumes:
       - certs:/etc/nginx/certs:z,ro
       - vhost.d:/etc/nginx/vhost.d:z
-      - conf.d:/etc/nginx/conf.d:z
       - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/tmp/docker.sock:z,ro
     networks:
@@ -81,7 +80,6 @@ services:
     volumes:
       - certs:/etc/nginx/certs:z
       - acme:/etc/acme.sh:z
-      - conf.d:/etc/nginx/conf.d:z
       - vhost.d:/etc/nginx/vhost.d:z
       - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/var/run/docker.sock:z,ro
@@ -111,7 +109,6 @@ volumes:
   certs:
   acme:
   vhost.d:
-  conf.d:
   html:
 
 networks:
