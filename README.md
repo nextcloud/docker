@@ -283,14 +283,14 @@ Check the [Nexcloud documentation](https://docs.nextcloud.com/server/latest/admi
 Keep in mind that once set, removing these environment variables won't remove these values from the configuration file, due to how Nextcloud merges configuration files together.
 
 # Running this image with docker compose
-The easiest way to get a fully featured and functional setup is using a docker `compose.yaml` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
+The easiest way to get a fully featured and functional setup is using a `compose.yaml` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
 
 At first, make sure you have chosen the right base image (fpm or apache) and added features you wanted (see below). In every case, you would want to add a database container and docker volumes to get easy access to your persistent data. When you want to have your server reachable from the internet, adding HTTPS-encryption is mandatory! See below for more information.
 
 ## Base version - apache
-This version will use the apache image and add a mariaDB container. The volumes are set to keep your data persistent. 
+This version will use the apache variant and add a MariaDB container. The volumes are set to keep your data persistent. 
 > [!WARNING]
-> This setup provides **no ssl encryption** and is intended to run behind a proxy.
+> This setup provides **no TLS encryption** and is intended to run behind a proxy.
 
 Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` variables before you run this setup.
 
@@ -347,7 +347,7 @@ Then run `docker compose up -d`, now you can access Nextcloud at http://localhos
 When using the FPM image, you need another container that acts as web server on port 80 and proxies the requests to the Nextcloud container. In this example a simple nginx container is combined with the Nextcloud-fpm image and a MariaDB database container. The data is stored in docker volumes. The nginx container also needs access to static files from your Nextcloud installation. It gets access to all the volumes mounted to Nextcloud via the `volumes` option. The configuration for nginx is stored in the configuration file `nginx.conf`, that is mounted into the container. An example can be found in the examples section [here](https://github.com/nextcloud/docker/tree/master/.examples).
 
 > [!WARNING]
-> This setup provides **no ssl encryption** and is intended to run behind a proxy.
+> This setup provides **no TLS encryption** and is intended to run behind a proxy.
 
 Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` variables before you run this setup.
 
@@ -531,7 +531,7 @@ RUN ...
 ```
 The [examples folder](https://github.com/nextcloud/docker/blob/master/.examples) gives a few examples on how to add certain functionalities, like including the cron job, smb-support or imap-authentication.
 
-If you use your own Dockerfile, you need to configure your docker compose file accordingly. Switch out the `image` option with `build`. You have to specify the path to your Dockerfile. (in the example it's in the same directory next to the docker `compose.yaml` file)
+If you use your own Dockerfile, you need to configure your docker compose file accordingly. Switch out the `image` option with `build`. You have to specify the path to your Dockerfile. (in the example it's in the same directory next to the `compose.yaml` file)
 
 ```yaml
   app:
@@ -576,7 +576,7 @@ The `--pull` option tells docker to look for new versions of the base image. The
 # Migrating an existing installation
 You're already using Nextcloud and want to switch to docker? Great! Here are some things to look out for:
 
-1. Define your whole Nextcloud infrastructure in a docker `compose.yaml` file and run it with `docker compose up -d` to get the base installation, volumes and database. Work from there.
+1. Define your whole Nextcloud infrastructure in a `compose.yaml` file and run it with `docker compose up -d` to get the base installation, volumes and database. Work from there.
 2. Restore your database from a mysqldump (db is the name of your database container / service name)
     - To import from a MySQL dump use the following commands
     ```console
@@ -635,7 +635,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
     docker compose exec app chown -R www-data:www-data /var/www/html/data
     docker compose cp ./theming/ app:/var/www/html/
     docker compose exec app chown -R www-data:www-data /var/www/html/theming
-    docker compose cp ./config/config.php napp:/var/www/html/config
+    docker compose cp ./config/config.php app:/var/www/html/config
     docker compose exec app chown -R www-data:www-data /var/www/html/config
     ```
     If you want to preserve the metadata of your files like timestamps, copy the data directly on the host to the named volume using plain `cp` like this:
