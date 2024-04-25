@@ -3,10 +3,6 @@ services:
     image: mariadb:10.8.2
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-read-only-compressed=OFF
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     volumes:
       - db:/var/lib/mysql:Z
     environment:
@@ -23,10 +19,6 @@ services:
   app:
     image: nextcloud:fpm-alpine
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     volumes:
       - nextcloud:/var/www/html:z
     environment:
@@ -41,10 +33,6 @@ services:
   web:
     build: ./web
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     ports:
       - 127.0.0.1:8080:80
     volumes:
@@ -55,10 +43,6 @@ services:
   cron:
     image: nextcloud:fpm-alpine
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     volumes:
       - nextcloud:/var/www/html:z
     entrypoint: /cron.sh

@@ -2,10 +2,6 @@ services:
   db:
     image: postgres:alpine
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     volumes:
       - db:/var/lib/postgresql/data:Z
     env_file:
@@ -18,10 +14,6 @@ services:
   app:
     image: nextcloud:apache
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     volumes:
       - nextcloud:/var/www/html:z
     environment:
@@ -43,10 +35,6 @@ services:
   cron:
     image: nextcloud:apache
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     volumes:
       - nextcloud:/var/www/html:z
     entrypoint: /cron.sh
@@ -57,8 +45,6 @@ services:
   proxy:
     build: ./proxy
     restart: always
-    logging:
-      driver: "syslog"
     ports:
       - 80:80
       - 443:443
