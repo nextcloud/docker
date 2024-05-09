@@ -320,7 +320,7 @@ services:
 Then run `docker-compose up -d`, now you can access Nextcloud at http://localhost:8080/ from your host system.
 
 ## Base version - FPM
-When using the FPM image, you need another container that acts as web server on port 80 and proxies the requests to the Nextcloud container. In this example a simple nginx container is combined with the Nextcloud-fpm image and a MariaDB database container. The data is stored in docker volumes. The nginx container also needs access to static files from your Nextcloud installation. It gets access to all the volumes mounted to Nextcloud via the `volumes_from` option.The configuration for nginx is stored in the configuration file `nginx.conf`, that is mounted into the container. An example can be found in the examples section [here](https://github.com/nextcloud/docker/tree/master/.examples).
+When using the FPM image, you need another container that acts as web server on port 80 and proxies the requests to the Nextcloud container. In this example a simple nginx container is combined with the Nextcloud-fpm image and a MariaDB database container. The data is stored in docker volumes. The nginx container also needs access to static files from your Nextcloud installation. It gets access to all the volumes mounted to Nextcloud via the `volumes_from` option. The configuration for nginx is stored in the configuration file `nginx.conf`, that is mounted into the container. An example can be found in the examples section [here](https://github.com/nextcloud/docker/tree/master/.examples).
 
 As this setup does **not include encryption**, it should be run behind a proxy.
 
@@ -602,5 +602,12 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
     docker-compose exec app chown -R www-data:www-data /var/www/html/custom_apps
     ```
 
-# Questions / Issues
-If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.
+# Help (Questions / Issues)
+
+**If you have any questions or problems while using the image, please ask for assistance on the Help Forum first (https://help.nextcloud.com)**.
+
+Also, most Nextcloud Server matters are covered in the [Nextcloud Admin Manual](https://docs.nextcloud.com/server/latest/admin_manual/) which is routinely updated.
+
+If you believe you've found a bug (or have an enhancement idea) in the image itself, please [search for already reported bugs and enhancement ideas](https://github.com/nextcloud/docker/issues). If there is an existing open issue, you can either add to the discussion there or upvote to indicate you're impacted by (or interested in) the same issue. If you believe you've found a new bug, please create a new Issue so that others can try to reproduce it and remediation can be tracked.
+
+Thanks for helping to make the Nextcloud community maintained micro-services image better!
