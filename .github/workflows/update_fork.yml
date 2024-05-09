@@ -18,8 +18,8 @@ jobs:
 
       - name: Set up Git user
         run: |
-          git config --global user.name "Dan Mateas"
-          git config --global user.email "dan@green-coding.berlin"
+          git config --global user.name "Arne Tarara"
+          git config --global user.email "arne@green-coding.io"
 
       - name: Add remote repository
         run: |
