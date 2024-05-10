@@ -16,7 +16,8 @@ services:
       - POSTGRES_USER=nextcloud
 
   nc:
-    image: nextcloud:28.0.3-apache
+    build:
+      context: ../29/apache
     restart: always
     ports:
       - 8080:80

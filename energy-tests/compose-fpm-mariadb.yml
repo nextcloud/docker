@@ -18,7 +18,9 @@ services:
       - MYSQL_USER=nextcloud
 
   app:
-    image: nextcloud:28.0.3-fpm
+    build:
+      context: ../29/fpm
+      dockerfile: Dockerfile
     restart: always
     links:
       - db
