@@ -59,7 +59,7 @@ services:
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     volumes:
-      - certs:/etc/nginx/certs:ro:z
+      - certs:/etc/nginx/certs:ro,z
       - vhost.d:/etc/nginx/vhost.d:z
       - html:/usr/share/nginx/html:z
       - dhparam:/etc/nginx/dhparam:z
