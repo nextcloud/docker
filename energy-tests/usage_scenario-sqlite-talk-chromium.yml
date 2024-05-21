@@ -23,7 +23,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/repo/energy_tests/nextcloud_install.py
+        command: python3 /tmp/repo/energy-tests/nextcloud_install.py
         note: Installing Nextcloud
         read-notes-stdout: true
         log-stdout: true
@@ -32,7 +32,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/repo/energy_tests/nextcloud_talk.py
+        command: python3 /tmp/repo/energy-tests/nextcloud_talk.py
         note: Starting conversation
         read-notes-stdout: true
         read-sci-stdout: true
