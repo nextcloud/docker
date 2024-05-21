@@ -20,7 +20,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/repo/nextcloud_install.py
+        command: python3 /tmp/repo/energy_tests/nextcloud_install.py
         note: Installing Nextcloud
         read-notes-stdout: true
         log-stdout: true
@@ -29,7 +29,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/repo/nextcloud_create_event.py
+        command: python3 /tmp/repo/energy_tests/nextcloud_create_event.py
         note: Creating event
         read-notes-stdout: true
         read-sci-stdout: true
