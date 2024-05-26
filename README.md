@@ -116,17 +116,41 @@ $ docker-compose exec --user www-data app php occ
 
 ## Auto configuration via environment variables
 
-The Nextcloud image supports auto configuration of the initial installation via environment variables. You can preconfigure everything that is asked on the install page on first run.
+The Nextcloud image supports auto configuration of the initial installation via environment variables. You can preconfigure everything that is usually asked on the install page on first run.
 
 In addition, support for adjusting several other key aspects of Nextcloud and the container's runtime environment are supported by the image.
 
 Keep in mind the intention is to auto configure initial installation. Only a few variables may be used after initial deployment (i.e. changing them in your Compose file may not flow through to an existing installation).
 
-All variables below work at installation time, at a minimum. Other contraints are noted in the table.
+All variables below, at a minimum, work at installation time. Some may be used after installation time. Specific contraints are noted in the table below. Details about each variable follow the table.
 
-Variable | Description | After installation? | Dependent on other variables? | Visible in  config.php? | Visible via  occ config:list system? | Will override config.php? | Can be a secret? | Rootless? | Injected via...
---- | --- | --- | --- | --- | --- | ---| --- | ---
-
+|            Variable           |      Default        | After install? |             Dependencies?          | Visible in `config.php`? | Visible via `occ config:list`? | Overrides `config.php`? | Can be secret? | Rootless? |               Injected via            |
+| ----------------------------- | ------------------ | ------------------- | ---------------------------------- | ------------------------ | -------------------------------| ------------------------ | -------------- | --------- | ---------------------------------------- |
+| SQLITE_DATABASE               |                    | No                  | No                                 | Yes                      | Yes                            | n/a                      | n/a            | Yes        | `entrypoint.sh` or `autoconfig.php`     |
+| MYSQL_DATABASE                |                    | No                  | All MYSQL_* variables              | Yes                      | Yes                            | n/a                      | n/a            | Yes        | `entrypoint.sh` or `autoconfig.php`     |
+| MYSQL_USER                    |                    | No                  | All MYSQL_* variables              | Yes                      | Yes                            | n/a                      | Yes            | Yes        | `entrypoint.sh` or `autoconfig.php`     |
+| MYSQL_PASSWORD                |                    | No                  | All MYSQL_* variables              | Yes                      | Yes                            | n/a                      | Yes            | Yes        | `entrypoint.sh` or `autoconfig.php`     |      
+| MYSQL_HOST                    |                    | No                  | All MYSQL_* variables              | Yes                      | Yes                            | n/a                      | No             | Yes        | `entrypoint.sh` or `autoconfig.php`     |
+| POSTGRES_DB                   |                    | No                  | All POSTGRES_* variables           | Yes                      | Yes                            | n/a                      | n/a            | Yes        | `entrypoint.sh` or `autoconfig.php`     |
+| POSTGRES_USER
+| POSTGRES_PASSWORD
+| POSTGRES_HOST
+| NEXTCLOUD_ADMIN_USER
+| NEXTCLOUD_ADMIN_PASSWORD
+| NEXTCLOUD_DATA_DIR
+| NEXTCLOUD_TRUSTED_DOMAINS
+| TRUSTED_PROXIES
+| NEXTCLOUD_UPDATE
+| NEXTCLOUD_INIT_HTACCESS
+| REDIS_*
+| SMTP_*
+| MAIL_*
+| OBJECTSTORE_*
+| PHP_MEMORY_LIMIT
+| PHP_UPLOAD_LIMIT
+| APACHE_BODY_LIMIT
+| APACHE_DISABLE_REWRITE_IP
+| OVERWRITE*
 
 Set your database connection via auto configuration using the following environment variables. You must specify all of the environment variables for a given database or the database environment variables defaults to SQLITE. ONLY use one database type!
 
