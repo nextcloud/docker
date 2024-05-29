@@ -122,20 +122,37 @@ In addition, support for adjusting several other key aspects of Nextcloud and th
 
 Keep in mind the intention is to auto configure initial installation. Only a few variables may be used after initial deployment (i.e. changing them in your Compose file may not flow through to an existing installation).
 
-All variables below, at a minimum, work at installation time. Some may be used after installation time. Specific contraints are noted in the table below. Details about each variable follow the table.
+All variables below, at a minimum, work at installation time. Some may be used after installation time and thus may override `config.php` and similar parameters. Specifics are noted in the tables below. Details about each variable follow the table.
 
-|            Variable           |      Default        | After install? |             Dependencies?          | Visible in `config.php`? | Visible via `occ config:list`? | Overrides `config.php`? | Can be secret? | Rootless? |               Injected via            |
-| ----------------------------- | ------------------ | ------------------- | ---------------------------------- | ------------------------ | -------------------------------| ------------------------ | -------------- | --------- | ---------------------------------------- |
-| SQLITE_DATABASE               |                    | No                  | No                                 | Yes                      | Yes                            | n/a                      | n/a            | Yes        | `entrypoint.sh` or `autoconfig.php`     |
-| MYSQL_DATABASE                |                    | No                  | All MYSQL_* variables              | Yes                      | Yes                            | n/a                      | n/a            | Yes        | `entrypoint.sh` or `autoconfig.php`     |
-| MYSQL_USER                    |                    | No                  | All MYSQL_* variables              | Yes                      | Yes                            | n/a                      | Yes            | Yes        | `entrypoint.sh` or `autoconfig.php`     |
-| MYSQL_PASSWORD                |                    | No                  | All MYSQL_* variables              | Yes                      | Yes                            | n/a                      | Yes            | Yes        | `entrypoint.sh` or `autoconfig.php`     |      
-| MYSQL_HOST                    |                    | No                  | All MYSQL_* variables              | Yes                      | Yes                            | n/a                      | No             | Yes        | `entrypoint.sh` or `autoconfig.php`     |
-| POSTGRES_DB                   |                    | No                  | All POSTGRES_* variables           | Yes                      | Yes                            | n/a                      | n/a            | Yes        | `entrypoint.sh` or `autoconfig.php`     |
-| POSTGRES_USER
-| POSTGRES_PASSWORD
-| POSTGRES_HOST
-| NEXTCLOUD_ADMIN_USER
+* Usage
+  - Install
+  - Post-install
+* Dependencies
+* Visibility
+  - `config.php`
+  - `occ config:list`
+* Priority
+  - Overrides `config.php`
+* Secret?
+* Compatibility
+  - Rootless
+* Injection method(s)
+  - `entrypoint.sh` to Server installer
+  - `autoconfig.php` to Server installer
+
+
+| Environment Variable | Description | Example | Secret[4] | Post-install[5] | Visibility | Notes | Method |
+| :------------------: | :---------: | :-----: | :-----: | :-------------: | :--------: | ----- | ------ |
+| SQLITE_DATABASE |  Use SQLite as the database and use as the `dbname` | `ncdb` | No | No | `config.php` | Suitable to testing and minimal-instances only | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_*`) otherwise via `autoconfig.php` |
+| MYSQL_DATABASE | Use MySQL/MariaDB as the database and use as the `dbname` | `ncdb` | ✓ | No | `config.php` | Ignored unless all `MYSQL_*` variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_*`) otherwise via `autoconfig.php` |
+| MYSQL_USER | the `dbuser` | `ncdbuser` | ✓ | No | `config.php` | See `MYSQL_DATABASE` | |
+| MYSQL_PASSWORD | the `dbpass` | `ncdbpass` | ✓ | No | `config.php` | See `MYSQL_DATABASE` | |
+| MYSQL_HOST | the `dbhost` | `db` or `localhost:/usr/local/run/mysql.sock` | ✓ | No | `config.php` | See `MYSQL_DATABASE` | |
+| POSTGRES_DB | Use PostgreSQL as the database and use as the `dbname` | `ncdb` | ✓ | No | `config.php` | Ignored unless all `POSTGRES_*` variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_*`) otherwise via `autoconfig.php` |
+| POSTGRES_USER | the `dbuser` | `ncdbuser` | ✓ | No | `config.php` | See `POSTGRES_DB` | |
+| POSTGRES_PASSWORD | the `dbpass` | `ncdbpass` | ✓ | No | `config.php` | See `POSTGRES_DB` | |
+| POSTGRES_HOST | the `dbhost` | `db` | ✓ | No | `config.php` | See `POSTGRES_DB` | |
+| NEXTCLOUD_ADMIN_USER | the initial Nextcloud admin user | `ncadmin` | ✓ | No | Nextcloud Super `admin` group | Ignored unless `NEXTCLOUD_ADMIN_PASSWORD` + preferred database variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` |
 | NEXTCLOUD_ADMIN_PASSWORD
 | NEXTCLOUD_DATA_DIR
 | NEXTCLOUD_TRUSTED_DOMAINS
@@ -151,6 +168,15 @@ All variables below, at a minimum, work at installation time. Some may be used a
 | APACHE_BODY_LIMIT
 | APACHE_DISABLE_REWRITE_IP
 | OVERWRITE*
+
+
+[4] Can be specified as a Docker secret or pulled from a file available from within the container. See [#docker-secrets](Docker Secrets). 
+
+[5] No = Installation only (i.e. cannot be modified post-installation via variable).
+
+
+
+---
 
 Set your database connection via auto configuration using the following environment variables. You must specify all of the environment variables for a given database or the database environment variables defaults to SQLITE. ONLY use one database type!
 
