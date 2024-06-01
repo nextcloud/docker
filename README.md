@@ -141,20 +141,20 @@ All variables below, at a minimum, work at installation time. Some may be used a
   - `autoconfig.php` to Server installer
 
 
-| Environment Variable | Description | Example | Secret[4] | Post-install[5] | Visibility | Notes | Method |
-| :------------------: | :---------: | :-----: | :-----: | :-------------: | :--------: | ----- | ------ |
-| SQLITE_DATABASE |  Use SQLite as the database and use as the `dbname` | `ncdb` | No | No | `config.php` | Suitable to testing and minimal-instances only | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_*`) otherwise via `autoconfig.php` |
-| MYSQL_DATABASE | Use MySQL/MariaDB as the database and use as the `dbname` | `ncdb` | ✓ | No | `config.php` | Ignored unless all `MYSQL_*` variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_*`) otherwise via `autoconfig.php` |
-| MYSQL_USER | the `dbuser` | `ncdbuser` | ✓ | No | `config.php` | See `MYSQL_DATABASE` | |
-| MYSQL_PASSWORD | the `dbpass` | `ncdbpass` | ✓ | No | `config.php` | See `MYSQL_DATABASE` | |
-| MYSQL_HOST | the `dbhost` | `db` or `localhost:/usr/local/run/mysql.sock` | ✓ | No | `config.php` | See `MYSQL_DATABASE` | |
-| POSTGRES_DB | Use PostgreSQL as the database and use as the `dbname` | `ncdb` | ✓ | No | `config.php` | Ignored unless all `POSTGRES_*` variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_*`) otherwise via `autoconfig.php` |
-| POSTGRES_USER | the `dbuser` | `ncdbuser` | ✓ | No | `config.php` | See `POSTGRES_DB` | |
-| POSTGRES_PASSWORD | the `dbpass` | `ncdbpass` | ✓ | No | `config.php` | See `POSTGRES_DB` | |
-| POSTGRES_HOST | the `dbhost` | `db` | ✓ | No | `config.php` | See `POSTGRES_DB` | |
-| NEXTCLOUD_ADMIN_USER | the initial Nextcloud admin user | `ncadmin` | ✓ | No | Nextcloud Super `admin` group | Ignored unless `NEXTCLOUD_ADMIN_PASSWORD` + preferred database variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` |
-| NEXTCLOUD_ADMIN_PASSWORD
-| NEXTCLOUD_DATA_DIR
+| Environment Variable | Description | Example | Default | Secret[4] | Post-install[5] | Visibility | Notes | Method |
+| :------------------: | :---------: | :-----: | :------ | :-------: | :-------------: | :--------: | ----- | ------ |
+| SQLITE_DATABASE |  Use SQLite as the database and use as the `dbname` | `ncdb` | Yes | No | No | `config.php` | Suitable to testing and minimal-instances only | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_ADMIN_*`) otherwise via `autoconfig.php` |
+| MYSQL_DATABASE | Use MySQL/MariaDB as the database and use as the `dbname` | `ncdb` | n/a | ✓ | No | `config.php` | Ignored unless all `MYSQL_*` variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_ADMIN_*`) otherwise via `autoconfig.php` |
+| MYSQL_USER | the `dbuser` | `ncdbuser` | n/a | ✓ | No | `config.php` | See `MYSQL_DATABASE` | |
+| MYSQL_PASSWORD | the `dbpass` | `ncdbpass` | n/a | ✓ | No | `config.php` | See `MYSQL_DATABASE` | |
+| MYSQL_HOST | the `dbhost` | `db` or `localhost:/usr/local/run/mysql.sock` | n/a | ✓ | No | `config.php` | See `MYSQL_DATABASE` | |
+| POSTGRES_DB | Use PostgreSQL as the database and use as the `dbname` | `ncdb` | n/a | ✓ | No | `config.php` | Ignored unless all `POSTGRES_*` variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_ADMIN_*`) otherwise via `autoconfig.php` |
+| POSTGRES_USER | the `dbuser` | `ncdbuser` | n/a | ✓ | No | `config.php` | See `POSTGRES_DB` | |
+| POSTGRES_PASSWORD | the `dbpass` | `ncdbpass` | n/a | ✓ | No | `config.php` | See `POSTGRES_DB` | |
+| POSTGRES_HOST | the `dbhost` | `db` | n/a | ✓ | No | `config.php` | See `POSTGRES_DB` | |
+| NEXTCLOUD_ADMIN_USER | the initial Nextcloud admin user | `ncadmin` | n/a | ✓ | No | Nextcloud Super `admin` group | Ignored unless `NEXTCLOUD_ADMIN_PASSWORD` + preferred database variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` |
+| NEXTCLOUD_ADMIN_PASSWORD | the initial Nextcloud admin password | `ncadminpass` | n/a | ✓ | No | Nextcloud Super `admin` group | Ignored unless `NEXTCLOUD_ADMIN_USER` + preferred database variables are specified | Injected via `entrypoint.sh` to `occ maintenance:install` |
+| NEXTCLOUD_DATA_DIR | data directory where nextcloud stores all files from the users | `/var/www/html/data` | `/var/www/html/data` | No | No | `config.php` | | Injected via `entrypoint.sh` to `occ maintenance:install` (when specified with `NEXTCLOUD_ADMIN_*` + db parameters; otherwise via `autoconfig.php` |
 | NEXTCLOUD_TRUSTED_DOMAINS
 | TRUSTED_PROXIES
 | NEXTCLOUD_UPDATE
