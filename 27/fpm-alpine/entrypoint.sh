@@ -186,6 +186,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 file_env NEXTCLOUD_ADMIN_PASSWORD
                 file_env NEXTCLOUD_ADMIN_USER
 
+                install=false
                 if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
                     # shellcheck disable=SC2016
                     install_options='-n --admin-user "$NEXTCLOUD_ADMIN_USER" --admin-pass "$NEXTCLOUD_ADMIN_PASSWORD"'
@@ -201,7 +202,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     file_env POSTGRES_PASSWORD
                     file_env POSTGRES_USER
 
-                    install=false
                     if [ -n "${SQLITE_DATABASE+x}" ]; then
                         echo "Installing with SQLite database"
                         # shellcheck disable=SC2016
@@ -246,9 +246,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         fi
 
                         run_path post-installation
-                    else
-                        echo "Please run the web-based installer on first connect!"
-                    fi
+		    fi
+                fi
+		# not enough specified to do a fully automated installation 
+                if [ "$install" = false ]; then 
+                    echo "Next step: Access your instance to finish the web-based installation!"
+                    echo "Hint: You can specify NEXTCLOUD_ADMIN_USER and NEXTCLOUD_ADMIN_PASSWORD and the database variables _prior to first launch_ to fully automate initial installation."
                 fi
             # Upgrade
             else
