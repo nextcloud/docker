@@ -1,0 +1,82 @@
+
+# Create netxcloud network first
+# docker network create nextcloud
+#NOTES:
+#1. certificatesresolvers.myresolver.acme.email=myemail@gmail.com 
+#2. TRUSTED_PROXIES values based on your 'traefik docker network run docker network inspect traefik' to see the network
+#3. remove traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy and  
+#traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue if you don't want to allow iframe your domain
+# cat docker-compose.yml
+
+version: '3.3'
+
+volumes:
+  nextcloud-www:
+    driver: local
+  nextcloud-db:
+    driver: local
+  redis:
+    driver: local
+
+
+services:
+
+  db:
+    restart: always
+    image: postgres:11
+    networks:
+      - nextcloud
+    environment:
+    - POSTGRES_USER=nextcloud
+    - POSTGRES_PASSWORD=password
+    - POSTGRES_DB=nextcloud
+    volumes:
+    - nextcloud-db:/var/lib/postgresql/data
+  redis:
+    image: redis:latest
+    restart: always
+    networks:
+      - nextcloud
+    volumes:
+      - redis:/var/lib/redis
+
+  nextcloud:
+    image: nextcloud:latest
+    restart: always
+    networks:
+      - default
+      - nextcloud
+    depends_on:
+      - redis
+      - db
+    labels:
+      - traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect
+      - traefik.http.routers.nextcloud.tls.certresolver=myresolver
+      - traefik.http.routers.nextcloud.rule=Host(`nextcloud.mydomain.com`)
+      - traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM https://mydomain.com
+      - traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' mydomain.com *.mydomain.net
+      - traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011
+      - traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.nextcloud.headers.stsPreload=true
+      - traefik.http.middlewares.nextcloud_redirect.redirectregex.regex=/.well-known/(card|cal)dav
+      - traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/
+    environment:
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST=db
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=adminpass
+      - REDIS_HOST=redis
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.mydomain.com
+      - TRUSTED_PROXIES=172.19.0.0/16
+    volumes:
+      - nextcloud-www:/var/www/html
+
+networks:
+  default:
+    external:
+      name: traefik
+
+  nextcloud:
+      internal: true
