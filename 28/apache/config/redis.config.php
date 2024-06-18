@@ -5,7 +5,7 @@ if (getenv('REDIS_HOST')) {
     'memcache.locking' => '\OC\Memcache\Redis',
     'redis' => array(
       'host' => getenv('REDIS_HOST'),
-      'password' => getenv('REDIS_HOST_PASSWORD_FILE') && file_exists(getenv('REDIS_HOST_PASSWORD_FILE')) ? trim(file_get_contents(getenv('REDIS_HOST_PASSWORD_FILE'))) : (string) getenv('REDIS_HOST_PASSWORD'),
+      'password' => getenv('REDIS_HOST_PASSWORD_FILE') ? trim(file_get_contents(getenv('REDIS_HOST_PASSWORD_FILE'))) : (string) getenv('REDIS_HOST_PASSWORD'),
     ),
   );
 

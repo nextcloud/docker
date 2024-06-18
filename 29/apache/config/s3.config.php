@@ -24,7 +24,7 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
     )
   );
 
-  if (getenv('OBJECTSTORE_S3_KEY_FILE') && file_exists(getenv('OBJECTSTORE_S3_KEY_FILE'))) {
+  if (getenv('OBJECTSTORE_S3_KEY_FILE')) {
     $CONFIG['objectstore']['arguments']['key'] = trim(file_get_contents(getenv('OBJECTSTORE_S3_KEY_FILE')));
   } elseif (getenv('OBJECTSTORE_S3_KEY')) {
     $CONFIG['objectstore']['arguments']['key'] = getenv('OBJECTSTORE_S3_KEY');
@@ -32,7 +32,7 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
     $CONFIG['objectstore']['arguments']['key'] = '';
   }
 
-  if (getenv('OBJECTSTORE_S3_SECRET_FILE') && file_exists(getenv('OBJECTSTORE_S3_SECRET_FILE'))) {
+  if (getenv('OBJECTSTORE_S3_SECRET_FILE')) {
     $CONFIG['objectstore']['arguments']['secret'] = trim(file_get_contents(getenv('OBJECTSTORE_S3_SECRET_FILE')));
   } elseif (getenv('OBJECTSTORE_S3_SECRET')) {
     $CONFIG['objectstore']['arguments']['secret'] = getenv('OBJECTSTORE_S3_SECRET');
@@ -40,7 +40,7 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
     $CONFIG['objectstore']['arguments']['secret'] = '';
   }
 
-  if (getenv('OBJECTSTORE_S3_SSE_C_KEY_FILE') && file_exists(getenv('OBJECTSTORE_S3_SSE_C_KEY_FILE'))) {
+  if (getenv('OBJECTSTORE_S3_SSE_C_KEY_FILE')) {
     $CONFIG['objectstore']['arguments']['sse_c_key'] = trim(file_get_contents(getenv('OBJECTSTORE_S3_SSE_C_KEY_FILE')));
   } elseif (getenv('OBJECTSTORE_S3_SSE_C_KEY')) {
     $CONFIG['objectstore']['arguments']['sse_c_key'] = getenv('OBJECTSTORE_S3_SSE_C_KEY');
