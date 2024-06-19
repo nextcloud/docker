@@ -60,8 +60,8 @@ file_env() {
     local var="$1"
     local fileVar="${var}_FILE"
     local def="${2:-}"
-    local varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
-    local fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
+    local varValue="`env | grep -E \"^${var}=\" | sed -E -e \"s/^${var}=//\"`"
+    local fileVarValue="`env | grep -E \"^${fileVar}=\" | sed -E -e \"s/^${fileVar}=//\"`"
     if [ -n "${varValue}" ] && [ -n "${fileVarValue}" ]; then
         echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
         exit 1
