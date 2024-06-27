@@ -276,6 +276,17 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         fi
     ) 9> /var/www/html/nextcloud-init-sync.lock
 
+    # warn if config files on persistent storage differ from the latest version of this image
+    for cfgPath in /usr/src/nextcloud/config/*.php; do
+        cfgFile=$(basename "$cfgPath")
+
+        if [ "$cfgFile" != "config.sample.php" ]; then
+            if ! cmp -s "/usr/src/nextcloud/config/$cfgFile" "/var/www/html/config/$cfgFile"; then
+                echo "Warning: /var/www/html/config/$cfgFile differs from the latest version of this image at /usr/src/nextcloud/config/$cfgFile"
+            fi
+        fi
+    done
+
     run_path before-starting
 fi
 
