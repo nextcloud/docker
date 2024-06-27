@@ -6,6 +6,12 @@ RUN set -ex; \
     \
     apk add --no-cache \
         imagemagick \
+        imagemagick-pdf \
+        imagemagick-jpeg \
+        imagemagick-raw \
+        imagemagick-tiff \
+        imagemagick-heic \
+        imagemagick-webp \
         rsync \
     ; \
     \
