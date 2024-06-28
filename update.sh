@@ -17,23 +17,36 @@ declare -A cmd=(
 	[apache]='apache2-foreground'
 	[fpm]='php-fpm'
 	[fpm-alpine]='php-fpm'
+	[unit]='unitd --no-daemon'
 )
 
 declare -A base=(
 	[apache]='debian'
 	[fpm]='debian'
 	[fpm-alpine]='alpine'
+	[unit]='unit'
 )
 
 declare -A extras=(
 	[apache]='\nRUN a2enmod headers rewrite remoteip ; \\\n    { \\\n     echo '\''RemoteIPHeader X-Real-IP'\''; \\\n     echo '\''RemoteIPInternalProxy 10.0.0.0/8'\''; \\\n     echo '\''RemoteIPInternalProxy 172.16.0.0/12'\''; \\\n     echo '\''RemoteIPInternalProxy 192.168.0.0/16'\''; \\\n    } > /etc/apache2/conf-available/remoteip.conf; \\\n    a2enconf remoteip\n\n# set apache config LimitRequestBody\nENV APACHE_BODY_LIMIT 1073741824\nRUN { \\\n     echo '\''LimitRequestBody ${APACHE_BODY_LIMIT}'\''; \\\n    } > /etc/apache2/conf-available/apache-limits.conf; \\\n    a2enconf apache-limits'
 	[fpm]=''
 	[fpm-alpine]=''
+	[unit]=''
 )
 
 declare -A crontab_int=(
 	[default]='5'
 )
+
+unit_version="$(
+	git ls-remote --tags https://github.com/nginx/unit.git \
+		| cut -d/ -f3 \
+		| grep -v -- '-1' \
+		| grep -v '\^' \
+		| sed -E 's/^v//' \
+		| sort -V \
+		| tail -1
+)"
 
 apcu_version="$(
 	git ls-remote --tags https://github.com/krakjoe/apcu.git \
@@ -82,6 +95,7 @@ variants=(
 	apache
 	fpm
 	fpm-alpine
+	unit
 )
 
 min_version='27'
@@ -89,6 +103,13 @@ min_version='27'
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
 	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
+}
+
+# joins a list of strings together with a delimiter
+# join_by delim first rest...
+function join_by() {
+	local delim=${1-} first=${2-}
+	shift 2 && printf %s "${first}" "${@/#/$delim}"
 }
 
 function create_variant() {
@@ -118,12 +139,13 @@ function create_variant() {
 		s/%%VERSION%%/'"$fullversion"'/g;
 		s/%%DOWNLOAD_URL%%/'"$(sed -e 's/[\/&]/\\&/g' <<< "$url")"'/g;
 		s/%%DOWNLOAD_URL_ASC%%/'"$(sed -e 's/[\/&]/\\&/g' <<< "$ascUrl")"'/g;
-		s/%%CMD%%/'"${cmd[$variant]}"'/g;
+		s/%%CMD%%/'"$(join_by '", "' ${cmd[$variant]})"'/g;
 		s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
+		s/%%UNIT_VERSION%%/'"${unit_version}"'/g;
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
 
@@ -131,6 +153,11 @@ function create_variant() {
 	for name in entrypoint cron; do
 		cp "docker-$name.sh" "$dir/$name.sh"
 	done
+
+	# Copy the nginx-unit configuration if unit variant.
+	if [ "$variant" == "unit" ]; then
+		cp nextcloud-unit.json "$dir/nextcloud-unit.json"
+	fi
 
 	# Copy the upgrade.exclude
 	cp upgrade.exclude "$dir/"

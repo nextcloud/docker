@@ -82,7 +82,7 @@ if expr "$1" : "apache" 1>/dev/null; then
     fi
 fi
 
-if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
+if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || expr "$1" : "unitd" 1>/dev/null || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
     uid="$(id -u)"
     gid="$(id -g)"
     if [ "$uid" = '0' ]; then
@@ -288,6 +288,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     done
 
     run_path before-starting
+fi
+
+if expr "$1" : "unitd" 1>/dev/null; then
+    exec /usr/local/bin/unit-entrypoint.sh "$@"
 fi
 
 exec "$@"
