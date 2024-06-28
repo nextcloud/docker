@@ -6,6 +6,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         imagemagick \
+        imagemagick-svg \
         rsync \
     ; \
     \
