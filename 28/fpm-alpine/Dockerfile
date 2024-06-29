@@ -12,6 +12,7 @@ RUN set -ex; \
         imagemagick-tiff \
         imagemagick-heic \
         imagemagick-webp \
+        imagemagick-svg \
         rsync \
     ; \
     \
