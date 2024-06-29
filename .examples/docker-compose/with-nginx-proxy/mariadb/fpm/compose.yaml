@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   db:
     image: mariadb:10.6
@@ -31,6 +29,7 @@ services:
     depends_on:
       - db
       - redis
+      - proxy
 
   web:
     build: ./web
@@ -64,7 +63,7 @@ services:
       - 80:80
       - 443:443
     labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     volumes:
       - certs:/etc/nginx/certs:z,ro
       - vhost.d:/etc/nginx/vhost.d:z
@@ -76,6 +75,8 @@ services:
   letsencrypt-companion:
     image: nginxproxy/acme-companion
     restart: always
+    environment:
+      - DEFAULT_EMAIL=
     volumes:
       - certs:/etc/nginx/certs:z
       - acme:/etc/acme.sh:z
