@@ -71,6 +71,16 @@ imagick_version="$(
 		| tail -1
 )"
 
+notify_push_version="$(
+	git ls-remote --tags https://github.com/nextcloud/notify_push.git \
+		| cut -d/ -f3 \
+		| grep -vE -- '-rc|-b' \
+		| tr -d '^{}' \
+		| sed -E 's/^v//' \
+		| sort -V \
+		| tail -1
+)"
+
 declare -A pecl_versions=(
 	[APCu]="$apcu_version"
 	[memcached]="$memcached_version"
@@ -179,3 +189,6 @@ for version in "${versions[@]}"; do
 		done
 	fi
 done
+
+echo "updating notify_push $notify_push_version"
+sed -re 's/^ENV NOTIFY_PUSH_VERSION .*$/ENV NOTIFY_PUSH_VERSION '"$notify_push_version"'/;' -i "notify_push/Dockerfile"
