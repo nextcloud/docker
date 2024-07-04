@@ -41,6 +41,8 @@ RUN set -ex; \
         pcre-dev \
         postgresql-dev \
     ; \
+    # Install diffutils to address diff dependencies issue
+    apk add --no-cache diffutils; \
     \
     docker-php-ext-configure ftp --with-openssl-dir=/usr; \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
