@@ -225,7 +225,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         echo "Starting nextcloud installation"
                         max_retries=10
                         try=0
-                        until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]
+                        until  [ "$try" -gt "$max_retries" ] || run_as "php /var/www/html/occ maintenance:install $install_options" 
                         do
                             echo "Retrying install..."
                             try=$((try+1))
