@@ -482,9 +482,15 @@ When using docker-compose your compose file takes care of your configuration, so
 
 ```console
 $ docker-compose pull
+$ docker-compose build
 $ docker-compose up -d
 ```
 
+After the container is started up, run the database migrations:
+
+```console
+$ docker-compose exec --user www-data app php occ db:add-missing-indices
+```
 
 # Adding Features
 A lot of people want to use additional functionality inside their Nextcloud installation. If the image does not include the packages you need, you can easily build your own image on top of it. Start your derived image with the `FROM` statement and add whatever you like.
@@ -533,11 +539,10 @@ docker run -d your-name
 
 or for docker-compose:
 ```console
-docker-compose build --pull
+docker-compose pull
+docker-compose build
 docker-compose up -d
 ```
-
-The `--pull` option tells docker to look for new versions of the base image. Then the build instructions inside your `Dockerfile` are run on top of the new image.
 
 # Migrating an existing installation
 You're already using Nextcloud and want to switch to docker? Great! Here are some things to look out for:
