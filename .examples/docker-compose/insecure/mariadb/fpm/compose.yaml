@@ -1,11 +1,14 @@
-version: '3'
-
 services:
   db:
-    image: postgres:alpine
+    image: mariadb:10.6
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data:z
+      - db:/var/lib/mysql:Z
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MARIADB_AUTO_UPGRADE=1
+      - MARIADB_DISABLE_UPGRADE_BACKUP=1
     env_file:
       - db.env
 
@@ -19,7 +22,7 @@ services:
     volumes:
       - nextcloud:/var/www/html:z
     environment:
-      - POSTGRES_HOST=db
+      - MYSQL_HOST=db
       - REDIS_HOST=redis
     env_file:
       - db.env

@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   db:
     image: mariadb:10.6
@@ -34,6 +32,10 @@ services:
     depends_on:
       - db
       - redis
+      # Added proxy container dependency below. 
+      # It is unclear on when or why it happens, but sometimes NC manages to start before the proxy 
+      #  and it breaks for whatever weird reason resulting in the need of manual proxy container restart.
+      - proxy
     networks:
       - proxy-tier
       - default
@@ -55,11 +57,12 @@ services:
       - 80:80
       - 443:443
     labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     volumes:
-      - certs:/etc/nginx/certs:z,ro
+      - certs:/etc/nginx/certs:ro,z
       - vhost.d:/etc/nginx/vhost.d:z
       - html:/usr/share/nginx/html:z
+      - dhparam:/etc/nginx/dhparam:z
       - /var/run/docker.sock:/tmp/docker.sock:z,ro
     networks:
       - proxy-tier
@@ -67,6 +70,8 @@ services:
   letsencrypt-companion:
     image: nginxproxy/acme-companion
     restart: always
+    environment:
+      - DEFAULT_EMAIL=
     volumes:
       - certs:/etc/nginx/certs:z
       - acme:/etc/acme.sh:z
@@ -100,6 +105,7 @@ volumes:
   acme:
   vhost.d:
   html:
+  dhparam:
 
 networks:
   proxy-tier:

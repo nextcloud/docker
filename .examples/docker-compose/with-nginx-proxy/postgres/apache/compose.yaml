@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   db:
     image: postgres:alpine
@@ -29,6 +27,7 @@ services:
     depends_on:
       - db
       - redis
+      - proxy
     networks:
       - proxy-tier
       - default
@@ -50,9 +49,9 @@ services:
       - 80:80
       - 443:443
     labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     volumes:
-      - certs:/etc/nginx/certs:z,ro
+      - certs:/etc/nginx/certs:ro:z
       - vhost.d:/etc/nginx/vhost.d:z
       - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/tmp/docker.sock:z,ro
