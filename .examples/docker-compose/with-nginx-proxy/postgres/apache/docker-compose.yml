@@ -12,6 +12,9 @@ services:
   redis:
     image: redis:alpine
     restart: always
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_HOST_PASSWORD"
+    env_file:
+      - redis.env
 
   app:
     image: nextcloud:apache
@@ -26,6 +29,7 @@ services:
       - REDIS_HOST=redis
     env_file:
       - db.env
+      - redis.env
     depends_on:
       - db
       - redis
