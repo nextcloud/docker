@@ -128,9 +128,10 @@ function create_variant() {
 	' "$dir/Dockerfile"
 
 	# Copy the shell scripts
-	for name in entrypoint cron; do
-		cp "docker-$name.sh" "$dir/$name.sh"
-	done
+	cp "docker-entrypoint.sh" "$dir/entrypoint.sh"
+	cp "docker-cron.sh" "$dir/cron.sh"
+	cp "docker-occ.sh" "$dir/occ"
+	cp "docker-occ-cron.sh" "$dir/occ-cron"
 
 	# Copy the upgrade.exclude
 	cp upgrade.exclude "$dir/"
