@@ -19,7 +19,14 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
         // required for some non Amazon S3 implementations
         'use_path_style' => $use_path == true && strtolower($use_path) !== 'false',
         // required for older protocol versions
-        'legacy_auth' => $use_legacyauth == true && strtolower($use_legacyauth) !== 'false'
+        'legacy_auth' => $use_legacyauth == true && strtolower($use_legacyauth) !== 'false',
+        'concurrency' => getenv('OBJECTSTORE_S3_CONCURRENCY') ?: 5,
+        'proxy' => getenv('OBJECTSTORE_S3_PROXY') ?: false,
+        'timeout' => getenv('OBJECTSTORE_S3_TIMEOUT') ?: 15,
+        'uploadPartSize' => getenv('OBJECTSTORE_S3_UPLOADPARTSIZE') ?: 524288000,
+        'putSizeLimit' => getenv('OBJECTSTORE_S3_PUTSIZELIMIT') ?: 104857600,
+        'version' => getenv('OBJECTSTORE_S3_VERSION') ?: "latest",
+        'verify_bucket_exists' => getenv('OBJECTSTORE_S3_VERIFY_BUCKET_EXISTS') ?: true
       )
     )
   );
