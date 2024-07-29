@@ -110,7 +110,7 @@ As the fastCGI-Process is not capable of serving static files (style sheets, ima
 ## Using an external database
 By default, this container uses SQLite for data storage but the Nextcloud setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB or PostgreSQL database. You can also link a database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup. More info is in the docker-compose section.
 
-## Adding persistent storage 
+# Adding persistent storage 
 
 The active Nextcloud installation and all data (beyond what lives in the database), are by default stored in an [unnamed Docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) containing `/var/www/html`. This volume contains the active Nextcloud installation, your configuration files, all created/uploaded files, and any application data stored in the filesystem (i.e. groupfolders).
 
@@ -141,9 +141,17 @@ $ docker run -d \
 mariadb:10.6
 ```
 
-### Additional volumes
+## Apps
 
-If you want to get fine grained access to your individual files, you can mount additional volumes for data, config, your theme and custom apps. The `data`, `config` files are stored in respective subfolders inside `/var/www/html/`. The apps are split into core `apps` (which are shipped with Nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use a custom theme it would go into the `themes` subfolder.
+In the image, Nextcloud's apps are split into *shipped* `apps` (i.e. those which come with and updated with each new release od Nextcloud Server, but are not necessarily enabled by default) and apps installed from the app store or other sources (`custom_apps`).
+
+## Folders
+
+The `data/`, `config/` files are stored in respective subfolders inside `/var/www/html/`. Nextcloud's shipped apps are kept in `apps/` (which you don't need to take care of since they'll be covered by your main volume) and a locally deployed apps end up in the `custom_apps/` folder. If you use a custom theme it would go into the `themes/` subfolder.
+
+## Volumes
+
+Only one named volume (or host mounted volume) is necessary for production use. If you want more fine grained control over the storage of your data files, config files, local apps, and custom themes, you can mount additional volumes for `data/`, `config/`,`custom_apps`, and `themes/`. If you do not specify additional volumes, these subfolders be still be used and fully managed through the one named volume. A common reason to specify additional volumes is to place `data/` elsewhere on your host or to inject external config files.
 
 Overview of the folders that can be mounted as volumes:
 
