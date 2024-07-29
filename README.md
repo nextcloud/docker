@@ -16,14 +16,45 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 
 ![logo](https://cdn.rawgit.com/nextcloud/docker/071b888f7f689caa62c1498b6c61cb3599bcea2b/logo.svg)
 
+# About this image
+
 ⚠️⚠️⚠️ This image is maintained by community volunteers and designed for expert use. For quick and easy deployment that supports the full set of Nextcloud Hub features, use the [Nextcloud All-in-One docker container](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one) maintained by Nextcloud GmbH.
 
+This image is designed to be used in a micro-service environment. It enables the deployment of the runtime container containing Nextcloud Server itself. That container needs to be surrounded by other services to make a full stack. We provide some [examples](.examples) stacks (via Docker Compose).
+
 # How to use this image
-This image is designed to be used in a micro-service environment. There are two versions of the image you can choose from.
 
-The `apache` tag contains a full Nextcloud installation including an apache web server. It is designed to be easy to use and gets you running pretty fast. This is also the default for the `latest` tag and version tags that are not further specified.
+There are two ways of deploying Nextcloud: via Apache/mod_php and via [insert your web server of choice]/php-fpm. There is a variation of the image for each approach. Docker tags are used for specifying your preferred image variant.
 
-The second option is a `fpm` container. It is based on the [php-fpm](https://hub.docker.com/_/php/) image and runs a fastCGI-Process that serves your Nextcloud page. To use this image it must be combined with any webserver that can proxy the http requests to the FastCGI-port of the container.
+The `apache` tag includes an Apache Web server and mod_php. It is designed to be easy to use and gets you running pretty fast. This is the default variant you'll pull if you do not specify a tag (or use the so-called `latest` tag, which is equivalent to an empty tag in Docker land).
+
+The second tag, `fpm`, is an `fpm` container. It runs a fastCGI-Process (php-fpm) that Nextcloud runs in (rather than mod_php). To use this image it must be combined with a webserver that supports FPM and will "proxy" http requests to the PHP FastCGI process provided by a container running this variant of the image.
+
+Both variants are based on similar variations of the [PHP Docker Official Image]. And both contain an as close as possible "per the official Admin Manual" generalized installation of Nextcloud Server.
+
+Lastly, we offer both Debian (currently bookworm) and Alpine based editions of both of the above. Speaking in broad stroaks: the Debian edition best matches a standard installation and likely has the broadest compatibility and support. The Alpine edition offers a smaller footprint and - in some use cases - some performance and potential security benefits.
+
+All image variations and editions are built from our published Dockerfiles and associated content. And new images are always published as close as possible following new Nextcloud Server releases (major and maintenance). However, our images are also updated at other times. Since we're part of the Docker Official Image program, our images are updated  automatically and periodically when our underlying base images (which are also Official Docker Images) receive updates (such as for security matters or fixes for critical bugs in Debian, Alpine, or PHP).
+
+# Tags
+
+Docker tags or labels are used for specifying:
+
+- deployment mode variant
+- edition (Debian or Alpine)
+- Nextcloud Server version (major or specific)
+
+We also have two special version tracking tags: `stable` which always points at upstream's latest stable major branch (at least when upstream designates it for 100% availability) and `oldstable` which points at upstream's still supported previous stable branch. We also have `laststable` which points at upstream's oldest supported major branch (sometimes this is the same as `oldstable` but often there are three major branches still receiving active support).
+
+(Specific tags are available at the top of our DockerHub page).
+
+Default (aka: `latest` or what you get without specifying a tag) will always receive the newest Server version that upstream has designated for 100% availability.
+
+# Modifying the image
+
+For some use cases this image is best used as a base image to be further extended in your own way (we provide some examples for extending the image via Dockerfiles and Docker Compose). For others this image works as-is or with only minimal tweaking or configuration. 
+
+For simple things like adding support for additional Nextcloud Server configuration parameters, customization is not needed. In addition to the installation configuration values that can be defined via Docker environment variables (and secrets), other config values can be set via either the image's auto-config "hook" support (without any limitations) or via Nextcloud's less well documented `NC_` environment variables (with some limitations).
 
 [![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/nextcloud/docker/8db861d67f257a3e9ac1790ea06d4e2a7a193a6c/stack.yml)
 
