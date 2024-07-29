@@ -118,11 +118,11 @@ Docker will manage and store this unnamed volume within the Docker controlled di
 
 While this technically means (in most cases) your data is "automatically" saved even if the container crashes, is stopped, or gets deleted, this is not the ideal way of running things and is more intended as a "safety net".
 
-We strongly encourage the use of named Docker volumes, to make it clearer where and how your important data is being stored. Or, alternatively, mounted host directories, for similar reasons (albeit at somewhat greater risk of permissions/ownership problems and sometimes some performance tradeoffs versus Docker volumes).
+The use of named Docker volumes is necessary for deployment in `fpm` variations (to permit the web server to serve static files) and also strongly recommended to make it clear where and how your important data is being stored. Mounted host directories are another acceptable option.
 
-Knowing exactly where your is stored - whether in explicitly named volumes or predefined bind mounts, will make upgrades, backups, and even migrations easier.
+Knowing exactly where your data is stored - whether in explicitly named volumes or predefined bind mounts, will make upgrades, backups, and even migrations easier.
 
-To achieve this with named volumes, you need at a minimum one volume for Nextcloud and one associated with your database container. You may also need one for your web server and/or reverse proxy containers.
+To achieve this with named volumes, at a minimum you'll specify one volume for Nextcloud and - unless using SQLite - another associated with your database container. You may also need one for your web server and/or reverse proxy container configs.
 
 Nextcloud:
 - `/var/www/html/` folder where all Nextcloud data lives
