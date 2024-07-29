@@ -66,7 +66,16 @@ If you wish to deploy additional binaries in the image itself, you will likely w
 
 [![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/nextcloud/docker/8db861d67f257a3e9ac1790ea06d4e2a7a193a6c/stack.yml)
 
+# Quick start
+
+Keep in mind quick start steps are not meant for production use.
+
+These simplified command lines and Compose files are appropriate for quick testing and learning, but should never be used in production. These quick examples lack persistent data storage. They also do not take advantage of our deployment-time auto-configuration support. Those topics are covered, however, elsewhere in this guide.
+
+
 ## Using the `apache` image
+
+### via `docker run`
 
 The apache image contains a webserver and exposes port 80. To start the container type:
 
@@ -74,7 +83,14 @@ The apache image contains a webserver and exposes port 80. To start the containe
 $ docker run -d -p 8080:80 nextcloud
 ```
 
-Now you can access Nextcloud at http://localhost:8080/ from your host system. This simplified command line is appropriate for quick testing, but lacks persistent data storage and any deployment-time auto-configuration. Read on for coverage of those topics.
+### via `docker compose`
+
+[...]
+
+
+### Either run method
+
+Now you can access Nextcloud at http://localhost:8080/ from your host system. 
 
 
 ## Using the `fpm` image
@@ -94,10 +110,19 @@ As the fastCGI-Process is not capable of serving static files (style sheets, ima
 ## Using an external database
 By default, this container uses SQLite for data storage but the Nextcloud setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB or PostgreSQL database. You can also link a database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup. More info is in the docker-compose section.
 
-## Persistent data
-The Nextcloud installation and all data beyond what lives in the database (file uploads, etc.) are stored in the [unnamed docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) volume `/var/www/html`. The docker daemon will store that data within the docker directory `/var/lib/docker/volumes/...`. That means your data is saved even if the container crashes, is stopped or deleted.
+## Adding persistent storage 
 
-A named Docker volume or a mounted host directory should be used for upgrades and backups. To achieve this, you need one volume for your database container and one for Nextcloud.
+The active Nextcloud installation and all data (beyond what lives in the database), are by default stored in an [unnamed Docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) for `/var/www/html`. This volume contains the active Nextcloud installation, your configuration files, all uploaded files, and any application data stored in the filesystem (i.e. groupfolders).
+
+Docker will manage and store this unnamed volume within the Docker controlled directory `/var/lib/docker/volumes/...`. 
+
+While this technically means (in most cases) your data is "automatically" saved even if the container crashes, is stopped, or gets deleted, this is not the ideal way of running things and is more intended as a "safety net".
+
+We strongly encourage the use of named Docker volumes, to make it clearer where and how your important data is being stored. Or, alternatively, mounted host directories, for similar reasons (albeit at somewhat greater risk of permissions/ownership problems and sometimes some performance tradeoffs versus Docker volumes).
+
+Knowing exactly where your is stored - whether in explicitly named volumes or predefined bind mounts, will make upgrades, backups, and even migrations easier.
+
+To achieve this with named volumes, you need at a minimum one volume for Nextcloud and one associated with your database container. You may also need one for your web server and/or reverse proxy containers.
 
 Nextcloud:
 - `/var/www/html/` folder where all Nextcloud data lives
