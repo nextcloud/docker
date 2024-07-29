@@ -112,7 +112,7 @@ By default, this container uses SQLite for data storage but the Nextcloud setup 
 
 # Adding persistent storage 
 
-The active Nextcloud installation and all data (beyond what lives in the database), are by default stored in an [unnamed Docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) containing `/var/www/html`. This volume contains the active Nextcloud installation, your configuration files, all created/uploaded files, and any application data stored in the filesystem (i.e. groupfolders).
+The active Nextcloud installation and all data (beyond what lives in the database), are by default stored in an [unnamed Docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) containing `/var/www/html`. This volume contains the active Nextcloud installation (needed for now we handle upgrades currently), your configuration files, all created/uploaded files, locally installed apps, and any application data stored in the filesystem (i.e. groupfolders).
 
 Docker will manage and store this unnamed volume within the Docker controlled directory (i.e. `/var/lib/docker/volumes/...`). 
 
