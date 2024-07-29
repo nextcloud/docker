@@ -22,7 +22,7 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 
 This image is designed to be used in a micro-service environment. It enables the deployment of the runtime container containing Nextcloud Server itself. That container needs to be surrounded by other services to make a full stack. We provide some [examples](.examples) stacks (via Docker Compose).
 
-The stated goal of this base image is adhere as closely as possible to the Nextcloud Server application itself's deployment methods as described in the official Nextcloud Server Admin Manual. Since we're intended to a be both a functional *and* base image for others to extend, there is some judgement involved when it comes to what to include in the image "by default." From time to time we do change our mind and expand things, but due to the diverse user base for this image, we tend to be fairly conservative by default in this area.
+The stated goal of this base image is adhere as closely as possible to the Nextcloud Server application itself's deployment methods as described in the official Nextcloud Server Admin Manual. Since we're intended to a be both a functional *and* base image for others to extend, there is some judgement involved when it comes to what to include in the image "by default." From time to time we do change our minds and expand things, but due to the diverse user base for this image, we tend to be fairly conservative by default in this area.
 
 # How to use this image
 
@@ -56,28 +56,34 @@ Default (aka: `latest` or what you get without specifying a tag) will always rec
 
 For some use cases this image is best used as a base image to be further extended in your own way (we provide some examples for extending the image via Dockerfiles and auto building via Docker Compose). For others this image works as-is or with only minimal tweaking or configuration. 
 
-For simple things like adding support for additional Nextcloud Server configuration parameters, customization is not needed. In addition to the installation-time configuration values (and Docker secret sources) that can be defined via Docker environment variables, other config values can be set via one or more of:
+For simple things like adding support for specifying additional Nextcloud Server configuration parameters at deployment time, customization is not needed. In addition to the installation-time configuration values (and Docker secret sources) that can be defined via Docker environment variables already, other Nextcloud config values can be set via one or more of:
 
-- the image's auto-config "hook" support (without any limitations)
+- the image's auto-config "hooks" support (without any limitations)
 - Nextcloud's less well documented `NC_` environment variables (with some limitations)
 - mounting your own config files (i.e. source controlled)
 
-If you wish to deploy additional binaries in the image itself, you will likely want to utilize a standard Dockerfile approach for doing so to extend this image.
+If you wish to deploy additional binaries in the image itself, you will likely want to utilize a standard Dockerfile approach for doing so to extend this image (refer to Docker's documentation and numerous tutorials that can be found via third-party resources).
 
 [![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/nextcloud/docker/8db861d67f257a3e9ac1790ea06d4e2a7a193a6c/stack.yml)
 
-## Using the apache image
+## Using the `apache` image
+
 The apache image contains a webserver and exposes port 80. To start the container type:
 
 ```console
 $ docker run -d -p 8080:80 nextcloud
 ```
 
-Now you can access Nextcloud at http://localhost:8080/ from your host system.
+Now you can access Nextcloud at http://localhost:8080/ from your host system. This simplified command line is appropriate for quick testing, but lacks persistent data storage and any deployment-time auto-configuration. Read on for coverage of those topics.
 
 
-## Using the fpm image
-To use the fpm image, you need an additional web server, such as [nginx](https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html), that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases, you might want to use another container or your host as proxy. If you use your host you can address your Nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file). In both cases you don't want to map the fpm port to your host.
+## Using the `fpm` image
+
+To use the fpm image, you need an additional web server, such as [nginx](https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html) or an Apache instance (without mod_php), that can process http requests, serve static files, and interact with Nextcloud via the fpm service exposed by the container. 
+
+For fpm connections, this container exposes port 9000. In many cases, you'll use another container (or your host) as your web server. If you use your host, you can address your Nextcloud container directly on port 9000. 
+
+If you use another container, make sure that it has connectivity to the same Docker network as Nextcloud. You add the containers to the same docker network (via `docker run --network <NAME> ...` or the `networks` config file in your Docker Compose` file). See Docker's own documentation for Docker networking details. There is no need to map the fpm port to your host.
 
 ```console
 $ docker run -d nextcloud:fpm
