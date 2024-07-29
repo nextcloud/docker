@@ -22,6 +22,8 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 
 This image is designed to be used in a micro-service environment. It enables the deployment of the runtime container containing Nextcloud Server itself. That container needs to be surrounded by other services to make a full stack. We provide some [examples](.examples) stacks (via Docker Compose).
 
+The stated goal of this base image is adhere as closely as possible to the Nextcloud Server application itself's deployment methods as described in the official Nextcloud Server Admin Manual. Since we're intended to a be both a functional *and* base image for others to extend, there is some judgement involved when it comes to what to include in the image "by default." From time to time we do change our mind and expand things, but due to the diverse user base for this image, we tend to be fairly conservative by default in this area.
+
 # How to use this image
 
 There are two ways of deploying Nextcloud: via Apache/mod_php and via [insert your web server of choice]/php-fpm. There is a variation of the image for each approach. Docker tags are used for specifying your preferred image variant.
