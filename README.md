@@ -52,9 +52,15 @@ Default (aka: `latest` or what you get without specifying a tag) will always rec
 
 # Modifying the image
 
-For some use cases this image is best used as a base image to be further extended in your own way (we provide some examples for extending the image via Dockerfiles and Docker Compose). For others this image works as-is or with only minimal tweaking or configuration. 
+For some use cases this image is best used as a base image to be further extended in your own way (we provide some examples for extending the image via Dockerfiles and auto building via Docker Compose). For others this image works as-is or with only minimal tweaking or configuration. 
 
-For simple things like adding support for additional Nextcloud Server configuration parameters, customization is not needed. In addition to the installation configuration values that can be defined via Docker environment variables (and secrets), other config values can be set via either the image's auto-config "hook" support (without any limitations) or via Nextcloud's less well documented `NC_` environment variables (with some limitations).
+For simple things like adding support for additional Nextcloud Server configuration parameters, customization is not needed. In addition to the installation-time configuration values (and Docker secret sources) that can be defined via Docker environment variables, other config values can be set via one or more of:
+
+- the image's auto-config "hook" support (without any limitations)
+- Nextcloud's less well documented `NC_` environment variables (with some limitations)
+- mounting your own config files (i.e. source controlled)
+
+If you wish to deploy additional binaries in the image itself, you will likely want to utilize a standard Dockerfile approach for doing so to extend this image.
 
 [![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/nextcloud/docker/8db861d67f257a3e9ac1790ea06d4e2a7a193a6c/stack.yml)
 
