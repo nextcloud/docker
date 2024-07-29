@@ -112,13 +112,13 @@ By default, this container uses SQLite for data storage but the Nextcloud setup 
 
 ## Adding persistent storage 
 
-The active Nextcloud installation and all data (beyond what lives in the database), are by default stored in an [unnamed Docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) for `/var/www/html`. This volume contains the active Nextcloud installation, your configuration files, all uploaded files, and any application data stored in the filesystem (i.e. groupfolders).
+The active Nextcloud installation and all data (beyond what lives in the database), are by default stored in an [unnamed Docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) containing `/var/www/html`. This volume contains the active Nextcloud installation, your configuration files, all created/uploaded files, and any application data stored in the filesystem (i.e. groupfolders).
 
-Docker will manage and store this unnamed volume within the Docker controlled directory `/var/lib/docker/volumes/...`. 
+Docker will manage and store this unnamed volume within the Docker controlled directory (i.e. `/var/lib/docker/volumes/...`). 
 
 While this technically means (in most cases) your data is "automatically" saved even if the container crashes, is stopped, or gets deleted, this is not the ideal way of running things and is more intended as a "safety net".
 
-The use of named Docker volumes is necessary for deployment in `fpm` variations (to permit the web server to serve static files) and also strongly recommended to make it clear where and how your important data is being stored. Mounted host directories are another acceptable option.
+The use of *named* Docker volumes is necessary for deployment in `fpm` variations (to permit the web server to serve static files) and also strongly recommended all image variations to make it clear where and how your important data is being stored. Mounted host directories are another acceptable option.
 
 Knowing exactly where your data is stored - whether in explicitly named volumes or predefined bind mounts, will make upgrades, backups, and even migrations easier.
 
