@@ -70,6 +70,24 @@ latest=$( cat latest.txt )
 versions=( */ )
 versions=( "${versions[@]%/}" )
 for version in "${versions[@]}"; do
+
+	if [ "$version" = "notify_push" ]; then
+		commit="$(dockerfileCommit "$version")"
+		fullversion="$( awk '$1 == "ENV" && $2 == "NOTIFY_PUSH_VERSION" { print $3; exit }' "$version/Dockerfile" )"
+		versionAliases=( "$fullversion" "${fullversion%.*}" "${fullversion%.*.*}" )
+		variantAliases=( "${versionAliases[@]/%/-$version}" $version )
+
+		cat <<-EOE
+
+			Tags: $(join ', ' "${variantAliases[@]}")
+			Architectures: amd64, arm32v7, arm64v8
+			GitCommit: $commit
+			Directory: $version
+		EOE
+
+		continue
+	fi
+
 	variants=( $version/*/ )
 	variants=( $(for variant in "${variants[@]%/}"; do
 		echo "$(basename "$variant")"
