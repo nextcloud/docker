@@ -217,6 +217,15 @@ To customize Apache max file upload limit you can change the following variable:
 - `APACHE_BODY_LIMIT` (default `1073741824` [1GiB]) This restricts the total
 size of the HTTP request body sent from the client. It specifies the number of _bytes_ that are allowed in a request body. A value of **0** means **unlimited**. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html#apache) for more information.
 
+To customize OPcache parameters you can change the following variables:
+- `PHP_OPCACHE_INTERNED_STRINGS_BUFFER` (default `32`) The amount of memory used to store interned strings, in megabytes.
+- `PHP_OPCACHE_MAX_ACCELERATED_FILES` (default `10000`) The maximum number of keys (and therefore scripts) in the OPcache hash table. The actual value used will be the first number in the set of prime numbers { 223, 463, 983, 1979, 3907, 7963, 16229, 32531, 65407, 130987, 262237, 524521, 1048793 } that is greater than or equal to the configured value. The minimum value is 200. The maximum value is 1000000. Values outside of this range are clamped to the permissible range. 
+- `PHP_OPCACHE_MEMORY_CONSUMPTION` (default `128`) The size of the shared memory storage used by OPcache, in megabytes. The minimum permissible value is "8", which is enforced if a smaller value is set.
+- `PHP_OPCACHE_SAVE_COMMENT` (default `1`) If disabled, all documentation comments will be discarded from the opcode cache to reduce the size of the optimised code. Disabling this configuration directive may break applications and frameworks that rely on comment parsing for annotations, including Doctrine, Zend Framework 2 and PHPUnit. 
+- `PHP_OPCACHE_REVALIDATE_FREQ` (default `60`) How often to check script timestamps for updates, in seconds. 0 will result in OPcache checking for updates on every request. 
+- `PHP_OPCACHE_JIT` (default `1255`) This set JIT configuration mode. Check the [OPcache JIT configuration](https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.jit) for more information.
+- `PHP_OPCACHE_JIT_BUFFER_SIZE` (default `128M`) The amount of shared memory to reserve for compiled JIT code. A zero value disables the JIT. 
+
 ### Auto configuration and Nextcloud updates
 The image comes with special config files for Nextcloud that set parameters specific to containerized usage (e.g. `upgrade-disable-web.config.php`) or enable auto configuration via environment variables (e.g. `reverse-proxy.config.php`). Within the image, the latest version of these config files are located in `/usr/src/nextcloud/config`.
 
