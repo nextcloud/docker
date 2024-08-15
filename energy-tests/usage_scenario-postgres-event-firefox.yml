@@ -6,10 +6,10 @@ compose-file: !include compose-postgres.yml
 
 services:
   gcb-playwright:
-    image: greencoding/gcb_playwright:v9
+    image: greencoding/gcb_playwright:v11
     depends_on:
       nc:
-        condition: service_started # change to service_healthy when Docker CE 25.0 is released which supports start-interval
+        condition: service_healthy
 #    volumes:
 #       - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
     environment:
