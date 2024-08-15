@@ -21,9 +21,9 @@ def run(playwright: Playwright, browser_name: str) -> None:
     try:
         log_note("Login")
         page.goto("http://nc/")
-        page.get_by_label("Account name or email").click()
-        page.get_by_label("Account name or email").fill("Crash")
-        page.get_by_label("Account name or email").press("Tab")
+        page.get_by_label("Login with username or email").click()
+        page.get_by_label("Login with username or email").fill("Crash")
+        page.get_by_label("Login with username or email").press("Tab")
         page.get_by_label("Password", exact=True).fill("Override")
         page.get_by_label("Password", exact=True).press("Enter")
         log_note("Create new text file")

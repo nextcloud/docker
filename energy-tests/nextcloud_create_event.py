@@ -22,8 +22,8 @@ def run(playwright: Playwright, browser_name: str) -> None:
     try:
         page.goto("http://nc/login")
         log_note("Login")
-        page.get_by_label("Account name or email").fill("Crash")
-        page.get_by_label("Account name or email").press("Tab")
+        page.get_by_label("Login with username or email").fill("Crash")
+        page.get_by_label("Login with username or email").press("Tab")
         page.get_by_label("Password", exact=True).fill("Override")
         page.get_by_label("Password", exact=True).press("Enter")
         log_note("Wait for welcome popup")
@@ -31,14 +31,14 @@ def run(playwright: Playwright, browser_name: str) -> None:
         sleep(5)
         log_note("Close welcome popup")
         with contextlib.suppress(TimeoutError):
-            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
+            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
 
         log_note("Go to calendar")
         page.get_by_role("link", name="Calendar").click()
 
         # Second welcome screen?
         with contextlib.suppress(TimeoutError):
-            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
+            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
 
         log_note("Create event")
         event_name = "Weekly sync"

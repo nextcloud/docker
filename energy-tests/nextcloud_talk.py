@@ -35,9 +35,9 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
     try:
         log_note("Login as admin")
         page.goto("http://nc/")
-        page.get_by_label("Account name or email").click()
-        page.get_by_label("Account name or email").fill("Crash")
-        page.get_by_label("Account name or email").press("Tab")
+        page.get_by_label("Login with username or email").click()
+        page.get_by_label("Login with username or email").fill("Crash")
+        page.get_by_label("Login with username or email").press("Tab")
         page.get_by_label("Password", exact=True).fill("Override")
         page.get_by_role("button", name="Log in").click()
 
@@ -53,7 +53,7 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
 
         # Second welcome screen?
         with contextlib.suppress(TimeoutError):
-            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
+            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
 
         # Headless browsers trigger a warning in Nextcloud, however they actually work fine
         log_note("Close headless warning")

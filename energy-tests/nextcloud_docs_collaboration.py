@@ -94,9 +94,9 @@ def collaborate(playwright: Playwright, browser_name: str) -> None:
 
 def login(page, username, password):
     page.goto("http://nc/login")
-    page.get_by_label("Account name or email").click()
-    page.get_by_label("Account name or email").fill(username)
-    page.get_by_label("Account name or email").press("Tab")
+    page.get_by_label("Login with username or email").click()
+    page.get_by_label("Login with username or email").fill(username)
+    page.get_by_label("Login with username or email").press("Tab")
     page.get_by_label("Password", exact=True).fill(password)
     page.get_by_label("Password", exact=True).press("Enter")
 
