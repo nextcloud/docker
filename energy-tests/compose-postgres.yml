@@ -16,8 +16,10 @@ services:
       - POSTGRES_USER=nextcloud
 
   nc:
-    build:
-      context: ../29/apache
+    image: nextcloud:29.0.4-apache
+    #build: # The build takes currently ~ 30 minutes which is far too long for daily testing
+    #  context: ../29/fpm
+    #  dockerfile: Dockerfile
     restart: always
     ports:
       - 8080:80
@@ -30,8 +32,8 @@ services:
       - POSTGRES_DB=nextcloud
       - POSTGRES_USER=nextcloud
       - POSTGRES_HOST=db
-#    healthcheck:
-#      test: curl -f http://nc
-#      interval: "1h" # effectively turns repeated healthchecks during runtime off
-#      start-period: "1s" # Not yet supported. Will come with Docker CE 25.0
-#      start-interval: "1s" # Not yet supported. Will come with Docker CE 25.0
+    healthcheck:
+      test: curl --fail --silent http://localhost
+      interval: "1h" # effectively turns repeated healthchecks during runtime off
+      start-period: "60s"
+      start-interval: "1s"

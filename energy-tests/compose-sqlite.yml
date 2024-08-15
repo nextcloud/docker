@@ -2,15 +2,17 @@ version: '2'
 
 services:
   nc:
-    build:
-      context: ../29/apache
+    image: nextcloud:29.0.4-apache
+    #build: # The build takes currently ~ 30 minutes which is far too long for daily testing
+    #  context: ../29/fpm
+    #  dockerfile: Dockerfile
     restart: always
     ports:
       - 8080:80
     #volumes:
     #  - nextcloud:/var/www/html # This is the usual way of using nextcloud in a container, but we do not need persistent data storage for benchmarking
-#    healthcheck:
-#      test: curl -f http://nc
-#      interval: "1h" # effectively turns repeated healthchecks during runtime off
-#      start-period: "1s" # Not yet supported. Will come with Docker CE 25.0
-#      start-interval: "1s" # Not yet supported. Will come with Docker CE 25.0
+    healthcheck:
+      test: curl --fail --silent http://localhost
+      interval: "1h" # effectively turns repeated healthchecks during runtime off
+      start-period: "60s"
+      start-interval: "1s"

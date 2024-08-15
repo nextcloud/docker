@@ -18,9 +18,10 @@ services:
       - MYSQL_USER=nextcloud
 
   app:
-    build:
-      context: ../29/fpm
-      dockerfile: Dockerfile
+    image: nextcloud:29.0.4-apache
+    #build: # The build takes currently ~ 30 minutes which is far too long for daily testing
+    #  context: ../29/fpm
+    #  dockerfile: Dockerfile
     restart: always
     links:
       - db
@@ -31,6 +32,11 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
+   healthcheck:
+     test: curl --fail --silent http://nc
+     interval: "1h" # effectively turns repeated healthchecks during runtime off
+     start-period: "60s"
+     start-interval: "1s"
 
   nc:
     image: nginx:1.25.1-alpine3.17
@@ -43,8 +49,3 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - app
-#    healthcheck:
-#      test: curl -f http://nc
-#      interval: "1h" # effectively turns repeated healthchecks during runtime off
-#      start-period: "1s" # Not yet supported. Will come with Docker CE 25.0
-#      start-interval: "1s" # Not yet supported. Will come with Docker CE 25.0
