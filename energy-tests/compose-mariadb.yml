@@ -34,8 +34,8 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
-   healthcheck:
+    healthcheck:
       test: curl --fail --silent http://localhost
       interval: "1h" # effectively turns repeated healthchecks during runtime off
-      start-period: "60s"
-      start-interval: "1s"
+      start_period: "60s"
+      start_interval: "1s"

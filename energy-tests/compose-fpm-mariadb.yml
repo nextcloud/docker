@@ -32,11 +32,11 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
-   healthcheck:
-     test: curl --fail --silent http://nc
-     interval: "1h" # effectively turns repeated healthchecks during runtime off
-     start-period: "60s"
-     start-interval: "1s"
+    healthcheck:
+      test: curl --fail --silent http://nc
+      interval: "1h" # effectively turns repeated healthchecks during runtime off
+      start_period: "60s"
+      start_interval: "1s"
 
   nc:
     image: nginx:1.25.1-alpine3.17
