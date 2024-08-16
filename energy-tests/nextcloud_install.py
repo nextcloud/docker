@@ -20,7 +20,7 @@ def main(browser_name: str = "chromium"):
         page = context.new_page()
         try:
             page.goto('http://nc/')
-            page.set_default_timeout(240_000)
+            page.set_default_timeout(240_000) # 240 seconds (timeout is in milliseconds)
 
             # 1. Create User
             log_note("Create admin user")
