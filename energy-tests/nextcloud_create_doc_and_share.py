@@ -35,7 +35,7 @@ def run(playwright: Playwright, browser_name: str) -> None:
         page.get_by_role("button", name="Create a new file with the selected template").click()
         sleep(5)
         with contextlib.suppress(TimeoutError):
-            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
+            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
         page.keyboard.press("Escape")
         log_note("Share file with other user")
         page.get_by_role("link", name="colab_meeting .md").get_by_role("link", name="Share").click()

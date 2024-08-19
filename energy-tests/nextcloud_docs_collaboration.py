@@ -45,7 +45,7 @@ def collaborate(playwright: Playwright, browser_name: str) -> None:
         log_note("Opening document with both users")
         with contextlib.suppress(TimeoutError):
             sleep(5)
-            docs_user.locator('button.first-run-wizard__close-button').click(timeout=15_000)
+            docs_user.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
         admin_user.get_by_role("link", name="Files", exact=True).click()
         docs_user.get_by_role("link", name="Files", exact=True).click()
         admin_user.get_by_role("link", name="Shares", exact=True).click()

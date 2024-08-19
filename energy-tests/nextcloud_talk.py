@@ -45,7 +45,7 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
         log_note("Close first-time run popup")
         with contextlib.suppress(TimeoutError):
             sleep(5)
-            page.locator('button.first-run-wizard__close-button').click(timeout=15_000)
+            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
 
         log_note("Open Talk app")
         page.locator('#header').get_by_role("link", name="Talk", exact=True).click()
