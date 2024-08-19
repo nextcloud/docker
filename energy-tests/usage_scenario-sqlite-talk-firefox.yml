@@ -9,7 +9,7 @@ sci:
 
 services:
   gcb-playwright:
-    image: greencoding/gcb_playwright:v11
+    image: greencoding/gcb_playwright:v12
     depends_on:
       nc:
         condition: service_healthy
