@@ -16,7 +16,7 @@ services:
       - POSTGRES_USER=nextcloud
 
   nc:
-    image: nextcloud:29.0.4-apache
+    image: nextcloud:29.0.5-apache
     #build: # The build takes currently ~ 30 minutes which is far too long for daily testing
     #  context: ../29/fpm
     #  dockerfile: Dockerfile
