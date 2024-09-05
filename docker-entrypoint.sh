@@ -114,15 +114,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             # check if redis host is an unix socket path
             if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
               if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_HOST_PASSWORD}\""
+                echo "session.save_path = \"unix://${REDIS_HOST}/${REDIS_DB_INDEX}?auth=${REDIS_HOST_PASSWORD}\""
               else
-                echo "session.save_path = \"unix://${REDIS_HOST}\""
+                echo "session.save_path = \"unix://${REDIS_HOST}/${REDIS_DB_INDEX}\""
               fi
             # check if redis password has been set
             elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
+                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}/${REDIS_DB_INDEX}?auth=${REDIS_HOST_PASSWORD}\""
             else
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
+                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}/${REDIS_DB_INDEX}\""
             fi
             echo "redis.session.locking_enabled = 1"
             echo "redis.session.lock_retries = -1"
