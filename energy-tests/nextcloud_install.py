@@ -1,7 +1,10 @@
 import sys
+import signal
 from time import time_ns
+from playwright.sync_api import sync_playwright, TimeoutError
 
-from playwright.sync_api import sync_playwright
+def timeout_handler(signum, frame):
+    raise TimeoutError("Page.content() timed out")
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -19,8 +22,8 @@ def main(browser_name: str = "chromium"):
         context = browser.new_context()
         page = context.new_page()
         try:
-            page.goto('http://nc/')
             page.set_default_timeout(240_000) # 240 seconds (timeout is in milliseconds)
+            page.goto('http://nc/')
 
             # 1. Create User
             log_note("Create admin user")
@@ -42,7 +45,13 @@ def main(browser_name: str = "chromium"):
         except Exception as e:
             if hasattr(e, 'message'): # only Playwright error class has this member
                 log_note(f"Exception occurred: {e.message}")
+
+            # set a timeout. Since the call to page.content() is blocking we need to defer it to the OS
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(5)
             log_note(f"Page content was: {page.content()}")
+            signal.alarm(0) # remove timeout signal
+
             raise e
 
 

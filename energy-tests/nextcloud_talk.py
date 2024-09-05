@@ -2,9 +2,13 @@ import contextlib
 import random
 import string
 import sys
+import signal
 from time import sleep, time_ns
 
 from playwright.sync_api import Playwright, sync_playwright, expect, TimeoutError
+
+def timeout_handler(signum, frame):
+    raise TimeoutError("Page.content() timed out")
 
 def log_note(message: str) -> None:
     timestamp = str(time_ns())[:16]
@@ -84,7 +88,13 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
     except Exception as e:
         if hasattr(e, 'message'): # only Playwright error class has this member
             log_note(f"Exception occurred: {e.message}")
+
+        # set a timeout. Since the call to page.content() is blocking we need to defer it to the OS
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(5)
         log_note(f"Page content was: {page.content()}")
+        signal.alarm(0) # remove timeout signal
+
         raise e
 
 def talk(playwright: Playwright, url: str, browser_name: str) -> None:
