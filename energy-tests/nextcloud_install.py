@@ -13,6 +13,8 @@ def log_note(message: str) -> None:
 def main(browser_name: str = "chromium"):
     with sync_playwright() as playwright:
         log_note(f"Launch browser {browser_name}")
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(5)
         if browser_name == "firefox":
             browser = playwright.firefox.launch(headless=True)
         else:
@@ -21,6 +23,7 @@ def main(browser_name: str = "chromium"):
             browser = playwright.chromium.launch(headless=False,args=["--headless=new"])
         context = browser.new_context()
         page = context.new_page()
+        signal.alarm(0) # remove timeout signal
         try:
             page.set_default_timeout(240_000) # 240 seconds (timeout is in milliseconds)
             page.goto('http://nc/')
