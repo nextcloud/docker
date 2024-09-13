@@ -140,7 +140,7 @@ RUN { \
     } > /etc/apache2/conf-available/apache-limits.conf; \
     a2enconf apache-limits
 
-ENV NEXTCLOUD_VERSION 28.0.9
+ENV NEXTCLOUD_VERSION 28.0.10
 
 RUN set -ex; \
     fetchDeps=" \
@@ -150,8 +150,8 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends $fetchDeps; \
     \
-    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-28.0.9.tar.bz2"; \
-    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-28.0.9.tar.bz2.asc"; \
+    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-28.0.10.tar.bz2"; \
+    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-28.0.10.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
