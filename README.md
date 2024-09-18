@@ -68,7 +68,7 @@ Database:
 ```console
 $ docker run -d \
 -v db:/var/lib/mysql \
-mariadb:10.6
+mariadb:10.11
 ```
 
 ### Additional volumes
@@ -294,7 +294,7 @@ Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` varia
 ```yaml
 services:
   db:
-    image: mariadb:10.6
+    image: mariadb:10.11
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
@@ -342,7 +342,7 @@ Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` varia
 ```yaml
 services:
   db:
-    image: mariadb:10.6
+    image: mariadb:10.11
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
