@@ -14,7 +14,7 @@ def main(browser_name: str = "chromium"):
     with sync_playwright() as playwright:
         log_note(f"Launch browser {browser_name}")
         signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(5)
+        signal.alarm(10)
         if browser_name == "firefox":
             browser = playwright.firefox.launch(headless=True)
         else:
@@ -51,7 +51,7 @@ def main(browser_name: str = "chromium"):
 
             # set a timeout. Since the call to page.content() is blocking we need to defer it to the OS
             signal.signal(signal.SIGALRM, timeout_handler)
-            signal.alarm(5)
+            signal.alarm(20)
             log_note(f"Page content was: {page.content()}")
             signal.alarm(0) # remove timeout signal
 

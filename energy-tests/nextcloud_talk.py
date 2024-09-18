@@ -91,7 +91,7 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
 
         # set a timeout. Since the call to page.content() is blocking we need to defer it to the OS
         signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(5)
+        signal.alarm(20)
         log_note(f"Page content was: {page.content()}")
         signal.alarm(0) # remove timeout signal
 
