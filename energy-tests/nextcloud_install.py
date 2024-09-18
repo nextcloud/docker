@@ -50,11 +50,13 @@ def main(browser_name: str = "chromium"):
                 log_note(f"Exception occurred: {e.message}")
 
             # set a timeout. Since the call to page.content() is blocking we need to defer it to the OS
-            signal.signal(signal.SIGALRM, timeout_handler)
-            signal.alarm(20)
-            log_note(f"Page content was: {page.content()}")
-            signal.alarm(0) # remove timeout signal
-
+            try:
+                signal.signal(signal.SIGALRM, timeout_handler)
+                signal.alarm(20)
+                log_note(f"Page content was: {page.content()}")
+                signal.alarm(0) # remove timeout signal
+            except TimeoutError as exc:
+                raise e from exc
             raise e
 
 
