@@ -1,9 +1,35 @@
 {
+  "30": {
+    "branch": "30",
+    "version": "30.0.0",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-30.0.0.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-30.0.0.tar.bz2.asc",
+    "variants": {
+      "apache": {
+        "variant": "apache",
+        "base": "debian",
+        "baseVersion": "bookworm",
+        "phpVersion": "8.2"
+      },
+      "fpm": {
+        "variant": "fpm",
+        "base": "debian",
+        "baseVersion": "bookworm",
+        "phpVersion": "8.2"
+      },
+      "fpm-alpine": {
+        "variant": "fpm-alpine",
+        "base": "alpine",
+        "baseVersion": "3.20",
+        "phpVersion": "8.2"
+      }
+    }
+  },
   "29": {
     "branch": "29",
-    "version": "29.0.2",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-29.0.2.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-29.0.2.tar.bz2.asc",
+    "version": "29.0.7",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-29.0.7.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-29.0.7.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",
@@ -27,35 +53,9 @@
   },
   "28": {
     "branch": "28",
-    "version": "28.0.6",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-28.0.6.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-28.0.6.tar.bz2.asc",
-    "variants": {
-      "apache": {
-        "variant": "apache",
-        "base": "debian",
-        "baseVersion": "bookworm",
-        "phpVersion": "8.2"
-      },
-      "fpm": {
-        "variant": "fpm",
-        "base": "debian",
-        "baseVersion": "bookworm",
-        "phpVersion": "8.2"
-      },
-      "fpm-alpine": {
-        "variant": "fpm-alpine",
-        "base": "alpine",
-        "baseVersion": "3.20",
-        "phpVersion": "8.2"
-      }
-    }
-  },
-  "27": {
-    "branch": "27",
-    "version": "27.1.10",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-27.1.10.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-27.1.10.tar.bz2.asc",
+    "version": "28.0.10",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-28.0.10.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-28.0.10.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",

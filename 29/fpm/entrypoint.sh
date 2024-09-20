@@ -225,7 +225,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         echo "Starting nextcloud installation"
                         max_retries=10
                         try=0
-                        until run_as "php /var/www/html/occ maintenance:install $install_options" || [ "$try" -gt "$max_retries" ]
+                        until  [ "$try" -gt "$max_retries" ] || run_as "php /var/www/html/occ maintenance:install $install_options" 
                         do
                             echo "Retrying install..."
                             try=$((try+1))
@@ -275,6 +275,17 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             run_as 'php /var/www/html/occ maintenance:update:htaccess'
         fi
     ) 9> /var/www/html/nextcloud-init-sync.lock
+
+    # warn if config files on persistent storage differ from the latest version of this image
+    for cfgPath in /usr/src/nextcloud/config/*.php; do
+        cfgFile=$(basename "$cfgPath")
+
+        if [ "$cfgFile" != "config.sample.php" ] && [ "$cfgFile" != "autoconfig.php" ]; then
+            if ! cmp -s "/usr/src/nextcloud/config/$cfgFile" "/var/www/html/config/$cfgFile"; then
+                echo "Warning: /var/www/html/config/$cfgFile differs from the latest version of this image at /usr/src/nextcloud/config/$cfgFile"
+            fi
+        fi
+    done
 
     run_path before-starting
 fi
