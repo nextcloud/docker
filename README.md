@@ -543,7 +543,7 @@ The `--pull` option tells docker to look for new versions of the base image. The
 You're already using Nextcloud and want to switch to docker? Great! Here are some things to look out for:
 
 1. Define your whole Nextcloud infrastructure in a `docker-compose` file and run it with `docker-compose up -d` to get the base installation, volumes and database. Work from there.
-2. Restore your database from a mysqldump (nextcloud\_db\_1 is the name of your db container)
+2. Restore your database from a mysqldump (``db`` is your current db container; ``nextcloud\_db\_1`` is the name of your new db container; mysql root password is ``nextcloud``).
     - To import from a MySQL dump use the following commands
     ```console
     docker cp ./database.dmp nextcloud_db_1:/dmp
