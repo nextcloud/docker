@@ -299,10 +299,6 @@ services:
     command: --transaction-isolation=READ-COMMITTED --log-bin --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     environment:
       - MYSQL_ROOT_PASSWORD=
       - MYSQL_PASSWORD=
@@ -318,10 +314,6 @@ services:
     restart: always
     ports:
       - 8080:80
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     depends_on:
       - redis
       - db
@@ -355,10 +347,6 @@ services:
     command: --transaction-isolation=READ-COMMITTED --log-bin --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     environment:
       - MYSQL_ROOT_PASSWORD=
       - MYSQL_PASSWORD=
@@ -372,10 +360,6 @@ services:
   app:
     image: nextcloud:fpm
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     depends_on:
       - redis
       - db
@@ -413,10 +397,6 @@ services:
   db:
     image: postgres
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     volumes:
       - db:/var/lib/postgresql/data
     environment:
@@ -434,10 +414,6 @@ services:
   app:
     image: nextcloud
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
     ports:
       - 8080:80
     volumes:
