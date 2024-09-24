@@ -68,7 +68,7 @@ The following Dockerfile commands are also necessary for a sucessfull cron insta
 In `docker-compose` additional services are bundled to create a complete nextcloud installation. The examples are designed to run out-of-the-box.
 Before running the examples you have to modify the `db.env` and `compose.yaml` file and fill in your custom information.
 
-The docker-compose examples make heavily use of derived Dockerfiles to add configuration files into the containers. This way they should also work on remote docker systems as _Docker for Windows_. When running docker compose on the same host as the docker daemon, another possibility would be to simply mount the files in the volumes section in the `compose.yaml` file.
+The docker compose examples make heavily use of derived Dockerfiles to add configuration files into the containers. This way they should also work on remote docker systems as _Docker for Windows_. When running docker compose on the same host as the docker daemon, another possibility would be to simply mount the files in the volumes section in the `compose.yaml` file.
 
 
 ### insecure
