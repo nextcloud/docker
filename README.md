@@ -620,6 +620,16 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
     docker compose exec app chown -R www-data:www-data /var/www/html/custom_apps
     ```
 
+## Migrating from a non-Alpine image to an Alpine image
+
+If you already use one of our non-Alpine images, but want to switch to an Alpine-based image, you may experience permissions problems with your existing volumes. This is because the Alpine images uses a different user ID for `www-data`. 
+So, you must change the ownership of the `/var/www/html` (or `$NEXTCLOUD_DATA_DIR`) folder to be compatible with Alpine:
+
+```console
+docker exec container-name chown -R www-data:root /var/www/html
+```
+
+After changing the permissions, restart the container and the permission errors should disappear.
 # Help (Questions / Issues)
 
 **If you have any questions or problems while using the image, please ask for assistance on the Help Forum first (https://help.nextcloud.com)**.
