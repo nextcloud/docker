@@ -68,7 +68,7 @@ Database:
 ```console
 $ docker run -d \
 -v db:/var/lib/mysql \
-mariadb:10.6
+mariadb:10.11
 ```
 
 ### Additional volumes
@@ -261,7 +261,7 @@ To use the hooks triggered by the `entrypoint` script, either
 ```
 
 
-## Using the apache image behind a reverse proxy and auto configure server host and protocol
+## Using the image behind a reverse proxy and auto configure server host and protocol
 
 The apache image will replace the remote addr (IP address visible to Nextcloud) with the IP address from `X-Real-IP` if the request is coming from a proxy in `10.0.0.0/8`, `172.16.0.0/12` or `192.168.0.0/16` by default. If you want Nextcloud to pick up the server host (`HTTP_X_FORWARDED_HOST`), protocol (`HTTP_X_FORWARDED_PROTO`) and client IP (`HTTP_X_FORWARDED_FOR`) from a trusted proxy, then disable rewrite IP and add the reverse proxy's IP address to `TRUSTED_PROXIES`.
 
@@ -276,6 +276,7 @@ If the `TRUSTED_PROXIES` approach does not work for you, try using fixed values 
 - `OVERWRITECLIURL` (empty by default): Set the cli url of the proxy (e.g. https://mydnsname.example.com)
 - `OVERWRITEWEBROOT` (empty by default): Set the absolute path of the proxy.
 - `OVERWRITECONDADDR` (empty by default): Regex to overwrite the values dependent on the remote address.
+- `FORWARDED_FOR_HEADERS` (empty by default): HTTP headers with the original client IP address
 
 Check the [Nexcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/reverse_proxy_configuration.html) for more details.
 
@@ -294,7 +295,7 @@ Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` varia
 ```yaml
 services:
   db:
-    image: mariadb:10.6
+    image: mariadb:10.11
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
@@ -342,7 +343,7 @@ Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` varia
 ```yaml
 services:
   db:
-    image: mariadb:10.6
+    image: mariadb:10.11
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
