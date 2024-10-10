@@ -395,7 +395,7 @@ As an alternative to passing sensitive information via environment variables, `_
 ```yaml
 services:
   db:
-    image: postgres
+    image: postgres:15
     restart: always
     volumes:
       - db:/var/lib/postgresql/data
