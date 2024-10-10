@@ -1,5 +1,9 @@
 #!/bin/sh
 set -eu
+if [ -n "${IMAGE_DEBUG+x}" ]; then
+    echo "**Image debugging enabled**" 
+    set -x
+fi
 
 # version_greater A B returns whether A > B
 version_greater() {
