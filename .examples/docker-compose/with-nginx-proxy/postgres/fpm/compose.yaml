@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    image: postgres:alpine
+    image: postgres:15
     restart: always
     volumes:
       - db:/var/lib/postgresql/data:Z
