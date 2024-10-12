@@ -88,15 +88,22 @@ RUN set -ex; \
 # see https://docs.nextcloud.com/server/latest/admin_manual/installation/server_tuning.html#enable-php-opcache
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 512M
+ENV PHP_OPCACHE_INTERNED_STRINGS_BUFFER 32
+ENV PHP_OPCACHE_MAX_ACCELERATED_FILES 10000
+ENV PHP_OPCACHE_MEMORY_CONSUMPTION 128
+ENV PHP_OPCACHE_SAVE_COMMENTS 1
+ENV PHP_OPCACHE_REVALIDATE_FREQ 60
+ENV PHP_OPCACHE_JIT 1255
+ENV PHP_OPCACHE_JIT_BUFFER_SIZE 128M
 RUN { \
         echo 'opcache.enable=1'; \
-        echo 'opcache.interned_strings_buffer=32'; \
-        echo 'opcache.max_accelerated_files=10000'; \
-        echo 'opcache.memory_consumption=128'; \
-        echo 'opcache.save_comments=1'; \
-        echo 'opcache.revalidate_freq=60'; \
-        echo 'opcache.jit=1255'; \
-        echo 'opcache.jit_buffer_size=128M'; \
+        echo 'opcache.interned_strings_buffer=${PHP_OPCACHE_INTERNED_STRINGS_BUFFER}'; \
+        echo 'opcache.max_accelerated_files=${PHP_OPCACHE_MAX_ACCELERATED_FILES}'; \
+        echo 'opcache.memory_consumption=${PHP_OPCACHE_MEMORY_CONSUMPTION}'; \
+        echo 'opcache.save_comments=${PHP_OPCACHE_SAVE_COMMENTS}'; \
+        echo 'opcache.revalidate_freq=${PHP_OPCACHE_REVALIDATE_FREQ}'; \
+        echo 'opcache.jit=${PHP_OPCACHE_JIT}'; \
+        echo 'opcache.jit_buffer_size=${PHP_OPCACHE_JIT_BUFFER_SIZE}'; \
     } > "${PHP_INI_DIR}/conf.d/opcache-recommended.ini"; \
     \
     echo 'apc.enable_cli=1' >> "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"; \
