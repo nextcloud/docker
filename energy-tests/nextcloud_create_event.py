@@ -3,14 +3,10 @@ import sys
 from time import time_ns, sleep
 import signal
 
-from playwright.sync_api import Playwright, sync_playwright, expect, TimeoutError
+from playwright.sync_api import Playwright, sync_playwright, expect
 
-def timeout_handler(signum, frame):
-    raise TimeoutError("Page.content() timed out")
+from helpers.helper_functions import log_note, get_random_text, login_nextcloud, close_modal, timeout_handler
 
-def log_note(message: str) -> None:
-    timestamp = str(time_ns())[:16]
-    print(f"{timestamp} {message}")
 
 def run(playwright: Playwright, browser_name: str) -> None:
     log_note(f"Launch browser {browser_name}")
@@ -26,23 +22,13 @@ def run(playwright: Playwright, browser_name: str) -> None:
     try:
         page.goto("http://nc/login")
         log_note("Login")
-        page.get_by_label("Login with username or email").fill("Crash")
-        page.get_by_label("Login with username or email").press("Tab")
-        page.get_by_label("Password", exact=True).fill("Override")
-        page.get_by_label("Password", exact=True).press("Enter")
+        login_nextcloud(page)
+
         log_note("Wait for welcome popup")
-        # Sleep to make sure the modal has time to appear before continuing navigation
-        sleep(5)
-        log_note("Close welcome popup")
-        with contextlib.suppress(TimeoutError):
-            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
+        close_modal(page)
 
         log_note("Go to calendar")
         page.get_by_role("link", name="Calendar").click()
-
-        # Second welcome screen?
-        with contextlib.suppress(TimeoutError):
-            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
 
         log_note("Create event")
         event_name = "Weekly sync"

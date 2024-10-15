@@ -5,19 +5,9 @@ import sys
 import signal
 from time import sleep, time_ns
 
-from playwright.sync_api import Playwright, sync_playwright, expect, TimeoutError
+from playwright.sync_api import Playwright, sync_playwright, expect
 
-def timeout_handler(signum, frame):
-    raise TimeoutError("Page.content() timed out")
-
-def log_note(message: str) -> None:
-    timestamp = str(time_ns())[:16]
-    print(f"{timestamp} {message}")
-
-def get_random_text() -> str:
-    size_in_bytes = 20 * 1024
-    characters = string.ascii_letters + string.digits
-    return ''.join(random.choice(characters) for _ in range(size_in_bytes))
+from helpers.helper_functions import log_note, get_random_text, login_nextcloud, close_modal, timeout_handler
 
 def send_message(sender, message):
     log_note("Sending message")
@@ -38,35 +28,20 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
     page = context.new_page()
     try:
         log_note("Login as admin")
-        page.goto("http://nc/")
-        page.get_by_label("Login with username or email").click()
-        page.get_by_label("Login with username or email").fill("Crash")
-        page.get_by_label("Login with username or email").press("Tab")
-        page.get_by_label("Password", exact=True).fill("Override")
-        page.get_by_role("button", name="Log in").click()
+        login_nextcloud(page)
 
         # Wait for the modal to load. As it seems you can't close it while it is showing the opening animation.
         log_note("Close first-time run popup")
-        with contextlib.suppress(TimeoutError):
-            sleep(5)
-            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
+        close_modal(page)
 
         log_note("Open Talk app")
         page.locator('#header').get_by_role("link", name="Talk", exact=True).click()
         page.wait_for_url("**/apps/spreed/")
 
-        # Second welcome screen?
-        with contextlib.suppress(TimeoutError):
-            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
-
         # Headless browsers trigger a warning in Nextcloud, however they actually work fine
         log_note("Close headless warning")
         with contextlib.suppress(TimeoutError):
-            page.wait_for_selector('.toast-close')
-            page.click('.toast-close')
-
-            page.wait_for_selector('.toast-close')
-            page.click('.toast-close')
+            page.locator('.toast-close').click()
 
         log_note("Create conversation")
         page.click("span.chat-plus-icon")
@@ -94,7 +69,6 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
         signal.alarm(20)
         log_note(f"Page content was: {page.content()}")
         signal.alarm(0) # remove timeout signal
-
         raise e
 
 def talk(playwright: Playwright, url: str, browser_name: str) -> None:
@@ -121,7 +95,7 @@ def talk(playwright: Playwright, url: str, browser_name: str) -> None:
     log_note("Close headless warning")
     with contextlib.suppress(TimeoutError):
         for page in pages:
-            page.wait_for_selector('.toast-close').click()
+            page.locator('.toast-close').click()
 
     # Perform actions for all users
     log_note("Set guest usernames")

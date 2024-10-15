@@ -3,14 +3,9 @@ import contextlib
 from time import time_ns, sleep
 import signal
 
-from playwright.sync_api import Playwright, sync_playwright, TimeoutError
+from playwright.sync_api import Playwright, sync_playwright
 
-def timeout_handler(signum, frame):
-    raise TimeoutError("Page.content() timed out")
-
-def log_note(message: str) -> None:
-    timestamp = str(time_ns())[:16]
-    print(f"{timestamp} {message}")
+from helpers.helper_functions import log_note, get_random_text, login_nextcloud, close_modal, timeout_handler
 
 def create_user(playwright: Playwright, browser_name: str, username: str, password: str) -> None:
     log_note(f"Launch browser {browser_name}")
@@ -24,19 +19,11 @@ def create_user(playwright: Playwright, browser_name: str, username: str, passwo
     try:
         page = context.new_page()
         log_note("Login")
-        page.goto("http://nc/")
-        page.get_by_label("Login with username or email").click()
-        page.get_by_label("Login with username or email").fill("Crash")
-        page.get_by_label("Login with username or email").press("Tab")
-        page.get_by_label("Password", exact=True).fill("Override")
-        page.get_by_label("Password", exact=True).press("Enter")
+        login_nextcloud(page)
 
         log_note("Wait for welcome popup")
-        # Sleep to make sure the modal has time to appear before continuing navigation
-        sleep(5)
+        close_modal(page)
 
-        with contextlib.suppress(TimeoutError):
-            page.locator('#firstrunwizard .modal-container__content button[aria-label=Close]').click(timeout=15_000)
         log_note("Create user")
         page.get_by_role("link", name="Open settings menu").click()
         page.get_by_role("link", name="Users").first.click()

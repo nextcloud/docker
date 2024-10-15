@@ -1,14 +1,9 @@
 import sys
 import signal
 from time import time_ns
-from playwright.sync_api import sync_playwright, TimeoutError
+from playwright.sync_api import sync_playwright
 
-def timeout_handler(signum, frame):
-    raise TimeoutError("Page.content() timed out")
-
-def log_note(message: str) -> None:
-    timestamp = str(time_ns())[:16]
-    print(f"{timestamp} {message}")
+from helpers.helper_functions import log_note, get_random_text, login_nextcloud, close_modal, timeout_handler
 
 def main(browser_name: str = "chromium"):
     with sync_playwright() as playwright:
@@ -25,23 +20,21 @@ def main(browser_name: str = "chromium"):
         page = context.new_page()
         signal.alarm(0) # remove timeout signal
         try:
-            page.set_default_timeout(240_000) # 240 seconds (timeout is in milliseconds)
             page.goto('http://nc/')
 
             # 1. Create User
             log_note("Create admin user")
-            page.type('#adminlogin', 'Crash')
-            page.type('#adminpass', 'Override')
-            page.click('.primary')
+            page.locator('#adminlogin').fill('Crash')
+            page.locator('#adminpass').fill('Override')
+            page.locator('.primary').click()
 
             # 2. Install all Apps
             log_note("Install recommended apps")
             install_selector = '.button-vue--vue-primary'
-            page.wait_for_selector(install_selector)
-            page.click(install_selector)
+            page.locator(install_selector).click()
 
             # 3. Dashboard
-            page.wait_for_selector('.app-dashboard')
+            page.locator('.app-dashboard', timeout=240_000)
             log_note("Installation complete")
             browser.close()
 
@@ -50,13 +43,10 @@ def main(browser_name: str = "chromium"):
                 log_note(f"Exception occurred: {e.message}")
 
             # set a timeout. Since the call to page.content() is blocking we need to defer it to the OS
-            try:
-                signal.signal(signal.SIGALRM, timeout_handler)
-                signal.alarm(20)
-                log_note(f"Page content was: {page.content()}")
-                signal.alarm(0) # remove timeout signal
-            except TimeoutError as exc:
-                raise e from exc
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(20)
+            log_note(f"Page content was: {page.content()}")
+            signal.alarm(0) # remove timeout signal
             raise e
 
 
