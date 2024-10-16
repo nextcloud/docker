@@ -34,7 +34,7 @@ def main(browser_name: str = "chromium"):
             page.locator(install_selector).click()
 
             # 3. Dashboard
-            page.locator('.app-dashboard', timeout=240_000)
+            page.locator('.app-dashboard').wait_for(timeout=240_000)
             log_note("Installation complete")
             browser.close()
 
