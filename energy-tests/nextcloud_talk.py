@@ -5,7 +5,7 @@ import sys
 import signal
 from time import sleep, time_ns
 
-from playwright.sync_api import Playwright, sync_playwright, expect
+from playwright.sync_api import Playwright, sync_playwright, expect, TimeoutError
 
 from helpers.helper_functions import log_note, get_random_text, login_nextcloud, close_modal, timeout_handler
 
@@ -35,13 +35,13 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
         close_modal(page)
 
         log_note("Open Talk app")
-        page.locator('#header').get_by_role("link", name="Talk", exact=True).click()
+        page.locator('#header a[title=Talk]').click()
         page.wait_for_url("**/apps/spreed/")
 
         # Headless browsers trigger a warning in Nextcloud, however they actually work fine
         log_note("Close headless warning")
         with contextlib.suppress(TimeoutError):
-            page.locator('.toast-close').click()
+            page.locator('.toast-close').click(timeout=5_000)
 
         log_note("Create conversation")
         page.click("span.chat-plus-icon")
@@ -78,7 +78,7 @@ def talk(playwright: Playwright, url: str, browser_name: str) -> None:
     # Launch browsers
     log_note(f"Launching {browser_count} {browser_name} browsers")
     if browser_name == "firefox":
-        browsers = [playwright.firefox.launch(headless=False, slow_mo=action_delay_ms) for _ in range(browser_count)]
+        browsers = [playwright.firefox.launch(headless=True, slow_mo=action_delay_ms) for _ in range(browser_count)]
     else:
         # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
         # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
@@ -95,7 +95,7 @@ def talk(playwright: Playwright, url: str, browser_name: str) -> None:
     log_note("Close headless warning")
     with contextlib.suppress(TimeoutError):
         for page in pages:
-            page.locator('.toast-close').click()
+            page.locator('.toast-close').click(timeout=5_000)
 
     # Perform actions for all users
     log_note("Set guest usernames")
