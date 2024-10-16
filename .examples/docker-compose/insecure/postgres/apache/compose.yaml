@@ -1,11 +1,9 @@
-version: '3'
-
 services:
   db:
     image: postgres:alpine
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data:z
+      - db:/var/lib/postgresql/data:Z
     env_file:
       - db.env
 
@@ -14,8 +12,10 @@ services:
     restart: always
 
   app:
-    image: nextcloud:fpm-alpine
+    image: nextcloud:apache
     restart: always
+    ports:
+      - 127.0.0.1:8080:80
     volumes:
       - nextcloud:/var/www/html:z
     environment:
@@ -27,18 +27,8 @@ services:
       - db
       - redis
 
-  web:
-    build: ./web
-    restart: always
-    ports:
-      - 127.0.0.1:8080:80
-    volumes:
-      - nextcloud:/var/www/html:z,ro
-    depends_on:
-      - app
-
   cron:
-    image: nextcloud:fpm-alpine
+    image: nextcloud:apache
     restart: always
     volumes:
       - nextcloud:/var/www/html:z

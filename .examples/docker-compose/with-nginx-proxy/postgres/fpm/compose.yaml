@@ -26,6 +26,7 @@ services:
     depends_on:
       - db
       - redis
+      - proxy
 
   web:
     build: ./web
@@ -59,7 +60,7 @@ services:
       - 80:80
       - 443:443
     labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     volumes:
       - certs:/etc/nginx/certs:z,ro
       - vhost.d:/etc/nginx/vhost.d:z
@@ -77,6 +78,8 @@ services:
       - vhost.d:/etc/nginx/vhost.d:z
       - html:/usr/share/nginx/html:z
       - /var/run/docker.sock:/var/run/docker.sock:z,ro
+    environment:
+      - DEFAULT_EMAIL=
     networks:
       - proxy-tier
     depends_on:
