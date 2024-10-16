@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+
 if [ -n "${IMAGE_DEBUG+x}" ]; then
     echo "**Image debugging enabled**" 
     set -x
@@ -169,10 +170,14 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 echo "Upgrading nextcloud from $installed_version ..."
                 run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
             fi
+	    rsync_options=''
+	    if [ -n "${IMAGE_DEBUG+x}" ]; then
+ 	        rsync_options='-vv'
+ 	    fi
             if [ "$(id -u)" = 0 ]; then
-                rsync_options="-rlDog --chown $user:$group"
+                rsync_options="$rsync_options -rlDog --chown $user:$group"
             else
-                rsync_options="-rlD"
+                rsync_options="$rsync_options -rlD"
             fi
 
             rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
@@ -192,8 +197,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
                 install=false
                 if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
+		    install_options=''
+		    if [ -n "${IMAGE_DEBUG+x}" ]; then
+                        install_options='-v '
+ 		    fi
                     # shellcheck disable=SC2016
-                    install_options='-n --admin-user "$NEXTCLOUD_ADMIN_USER" --admin-pass "$NEXTCLOUD_ADMIN_PASSWORD"'
+                    install_options=$install_options'-n --admin-user "$NEXTCLOUD_ADMIN_USER" --admin-pass "$NEXTCLOUD_ADMIN_PASSWORD"'
                     if [ -n "${NEXTCLOUD_DATA_DIR+x}" ]; then
                         # shellcheck disable=SC2016
                         install_options=$install_options' --data-dir "$NEXTCLOUD_DATA_DIR"'
@@ -231,9 +240,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         try=0
                         until  [ "$try" -gt "$max_retries" ] || run_as "php /var/www/html/occ maintenance:install $install_options" 
                         do
-                            echo "Retrying install..."
+                            echo "Nextcloud installation failed; will retry in 10s..."
                             try=$((try+1))
                             sleep 10s
+			    echo "Retrying nextcloud install now... ($try of $max_retries attempts)"
                         done
                         if [ "$try" -gt "$max_retries" ]; then
                             echo "Installing of nextcloud failed!"
