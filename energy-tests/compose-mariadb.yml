@@ -1,8 +1,8 @@
 version: '2'
 
 volumes:
-  nextcloud:
-  db:
+  nextcloud-data-mariadb:
+  nextcloud-db-mariadb:
 
 services:
   db:
@@ -10,7 +10,7 @@ services:
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
-      - db:/var/lib/mysql
+      - nextcloud-db-mariadb:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=TheGibson
       - MYSQL_PASSWORD=TheGibson
@@ -28,7 +28,7 @@ services:
     links:
       - db
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud-data-mariadb:/var/www/html
     environment:
       - MYSQL_PASSWORD=TheGibson
       - MYSQL_DATABASE=nextcloud

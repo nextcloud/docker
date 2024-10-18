@@ -1,5 +1,8 @@
 version: '2'
 
+volumes:
+  nextcloud-data-sqlite:
+
 services:
   nc:
     image: nextcloud:30.0.0-apache
@@ -12,7 +15,7 @@ services:
     environment:
       SQLITE_DATABASE: owncloud2.db
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud-data-sqlite:/var/www/html
     healthcheck:
       test: curl --fail --silent http://nc
       interval: "1h" # effectively turns repeated healthchecks during runtime off

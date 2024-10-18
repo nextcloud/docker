@@ -1,15 +1,15 @@
 version: '2'
 
 volumes:
-  nextcloud:
-  db:
+  nextcloud-data-postgres:
+  nextcloud-db-postgres:
 
 services:
   db:
     image: postgres:15.3-alpine3.18
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data
+      - nextcloud-db-postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=TheGibson
       - POSTGRES_DB=nextcloud
@@ -26,7 +26,7 @@ services:
     links:
       - db
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud-data-postgres:/var/www/html
     environment:
       - POSTGRES_PASSWORD=TheGibson
       - POSTGRES_DB=nextcloud
