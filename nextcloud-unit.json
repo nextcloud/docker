@@ -1,0 +1,162 @@
+{
+    "listeners": {
+        "*:80": {
+            "pass": "routes",
+            "forwarded": {
+                "client_ip": "X-Forwarded-For",
+                "source": [
+                  "10.0.0.0/8",
+                  "172.16.0.0/12",
+                  "192.168.0.0/16",
+                  "fc00::/7"
+                ]
+            }
+        }
+    },
+
+    "routes": [
+        {
+            "match": {
+                "uri": [
+                    "/.well-known/carddav",
+                    "/.well-known/caldav"
+                ]
+            },
+
+            "action": {
+                "return": 301,
+                "location": "/remote.php/dav"
+            }
+        },
+        {
+            "match": {
+                "uri": [
+                    "/.well-known/*"
+                ]
+            },
+
+            "action": {
+                "pass": "applications/nextcloud/index"
+            }
+        },
+        {
+            "match": {
+                "uri": [
+                    "/build/*",
+                    "/tests/*",
+                    "/config/*",
+                    "/lib/*",
+                    "/3rdparty/*",
+                    "/templates/*",
+                    "/data/*",
+                    "/.*",
+                    "/autotest*",
+                    "/occ*",
+                    "/issue*",
+                    "/indie*",
+                    "/db_*",
+                    "/console*"
+                ]
+            },
+
+            "action": {
+                "return": 404
+            }
+        },
+        {
+            "match": {
+                "uri": [
+                    "/core/ajax/update.php*",
+                    "/cron.php*",
+                    "/ocs-provider*.php*",
+                    "/ocs/v1.php*",
+                    "/ocs/v2.php*",
+                    "/public.php*",
+                    "/remote.php*",
+                    "/status.php*",
+                    "/updater*.php*"
+                ]
+            },
+
+            "action": {
+                "pass": "applications/nextcloud/direct"
+            }
+        },
+        {
+            "match": {
+                "uri": "/ocs-provider*"
+            },
+
+            "action": {
+                "pass": "applications/nextcloud/ocs"
+            }
+        },
+        {
+            "match": {
+                "uri": [
+                    "/index.php",
+                    "index.php/*"
+                ]
+            },
+            "action": {
+                "pass": "applications/nextcloud/index"
+            }
+        },
+        {
+            "match": {
+                "uri": [
+                    "~\\.(?:css|js|mjs|svg|gif|png|jpg|ico|wasm|tflite|map|ogg|flac|woff2?)$"
+                ]
+            },
+            "action": {
+                "share": "/var/www/html$uri",
+                "fallback": {
+                    "pass": "applications/nextcloud/index"
+                },
+                "response_headers": {
+                    "Cache-Control": "public, max-age=15778463"
+                }
+            }
+        },
+        {
+            "action": {
+                "share": "/var/www/html$uri",
+                "fallback": {
+                    "pass": "applications/nextcloud/index"
+                }
+            }
+        }
+    ],
+
+    "applications": {
+        "nextcloud": {
+            "type": "php",
+            "user": "www-data",
+            "processes": {},
+            "targets": {
+                "direct": {
+                    "root": "/var/www/html/"
+                },
+
+                "index": {
+                    "root": "/var/www/html/",
+                    "script": "index.php"
+                },
+
+                "ocs": {
+                    "root": "/var/www/html/ocs-provider/",
+                    "script": "index.php"
+                }
+            },
+            "environment": {
+                "front_controller_active": "true"
+            }
+        }
+    },
+
+    "settings": {
+        "http": {
+            "max_body_size": 1073741824
+        }
+    }
+}
