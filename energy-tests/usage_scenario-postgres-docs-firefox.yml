@@ -20,15 +20,6 @@ services:
       - nextcloud-setup-network
 
 flow:
-  - name: Install Nextcloud
-    container: gcb-playwright
-    commands:
-      - type: console
-        command: python3 /tmp/repo/energy-tests/nextcloud_install.py firefox
-        note: Installing Nextcloud
-        read-notes-stdout: true
-        log-stdout: true
-        log-stderr: true
   - name: Create User
     container: gcb-playwright
     commands:

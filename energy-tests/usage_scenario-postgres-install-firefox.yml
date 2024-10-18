@@ -1,7 +1,7 @@
 ---
-name: Nextcloud - Postgres - Event - Firefox
-author: Danilo Jesic <danilo@green-coding.berlin>
-description: Installs the official Nextcloud image with a Postgres DB and creates a calendar event. Uses a playwright script running Firefox to create an admin account, install the recommended apps and then create a calendar event.
+name: Nextcloud - PostgreSQL - Install - Firefox
+author: Arne Tarara <arne@green-coding.io>
+description: Installs the official Nextcloud image with a PostgreSQL DB.
 compose-file: !include compose-postgres.yml
 
 services:
@@ -16,13 +16,12 @@ services:
        DISPLAY: ":0" # for debugging in non-headless mode
 
 flow:
-  - name: Login and create event
+  - name: Install Nextcloud
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/repo/energy-tests/nextcloud_create_event.py firefox
-        note: Creating event
+        command: python3 /tmp/repo/energy-tests/nextcloud_install.py
+        note: Installing Nextcloud
         read-notes-stdout: true
-        read-sci-stdout: true
         log-stdout: true
         log-stderr: true

@@ -9,8 +9,8 @@ services:
     image: mariadb:11.0.2-jammy
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
-    #volumes:
-    #  - db:/var/lib/mysql # This is the usual way of starting this service in a container, but we do not need persistent data storage for benchmarking
+    volumes:
+      - db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=TheGibson
       - MYSQL_PASSWORD=TheGibson
@@ -27,8 +27,8 @@ services:
       - 8080:80
     links:
       - db
-    #volumes:
-    #  - nextcloud:/var/www/html # This is the usual way of using nextcloud in a container, but we do not need persistent data storage for benchmarking
+    volumes:
+      - nextcloud:/var/www/html
     environment:
       - MYSQL_PASSWORD=TheGibson
       - MYSQL_DATABASE=nextcloud

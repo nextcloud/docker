@@ -16,15 +16,6 @@ services:
        DISPLAY: ":0" # for debugging in non-headless mode
 
 flow:
-  - name: Install Nextcloud
-    container: gcb-playwright
-    commands:
-      - type: console
-        command: python3 /tmp/repo/energy-tests/nextcloud_install.py
-        note: Installing Nextcloud
-        read-notes-stdout: true
-        log-stdout: true
-        log-stderr: true
   - name: Login and create event
     container: gcb-playwright
     commands:

@@ -8,8 +8,8 @@ services:
   db:
     image: postgres:15.3-alpine3.18
     restart: always
-    #volumes:
-    #  - db:/var/lib/postgresql/data:Z # This is the usual way of starting this service in a container, but we do not need persistent data storage for benchmarking
+    volumes:
+      - db:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=TheGibson
       - POSTGRES_DB=nextcloud
@@ -25,8 +25,8 @@ services:
       - 8080:80
     links:
       - db
-    #volumes:
-    #  - nextcloud:/var/www/html # This is the usual way of using nextcloud in a container, but we do not need persistent data storage for benchmarking
+    volumes:
+      - nextcloud:/var/www/html
     environment:
       - POSTGRES_PASSWORD=TheGibson
       - POSTGRES_DB=nextcloud

@@ -1,7 +1,7 @@
 ---
-name: Nextcloud - MariaDB - Event - Chromium
-author: Danilo Jesic <danilo@green-coding.berlin>
-description: Installs the official Nextcloud image with a MariaDB and creates a calendar event. Uses a playwright script running Chromium to create an admin account, install the recommended apps and then create an event.
+name: Nextcloud - MariaDB - Install - Firefox
+author: Arne Tarara <arne@green-coding.io>
+description: Installs the official Nextcloud image with a MariaDB.
 compose-file: !include compose-mariadb.yml
 
 services:
@@ -16,13 +16,12 @@ services:
        DISPLAY: ":0" # for debugging in non-headless mode
 
 flow:
-  - name: Login and create event
+  - name: Install Nextcloud
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/repo/energy-tests/nextcloud_create_event.py
-        note: Creating event
+        command: python3 /tmp/repo/energy-tests/nextcloud_install.py
+        note: Installing Nextcloud
         read-notes-stdout: true
-        read-sci-stdout: true
         log-stdout: true
         log-stderr: true
