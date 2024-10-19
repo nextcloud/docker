@@ -13,7 +13,7 @@ directory_empty() {
 
 run_as() {
     if [ "$(id -u)" = 0 ]; then
-        su -p "$user" -s /bin/sh -c "$1"
+        HOME=/var/www su -p "$user" -s /bin/sh -c "$1"
     else
         sh -c "$1"
     fi
