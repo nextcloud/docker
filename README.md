@@ -115,7 +115,9 @@ $ docker run -d \
 --mount type=bind,source=$(pwd)/theme,target=/var/www/html/themes/<YOUR_CUSTOM_THEME> \
 nextcloud
 ```
-The examples above use the current directory for bind mounts. If this isn't suitable, you can modify the paths by using either a relative or absolute path. Additionally, do not mix the `apps` and `custom_apps` folders. These folders contain different sets of apps, and mixing them will result in a broken installation. While upgrades\recovery may sometimes still be possible, this configuration is likely to cause issues.
+The examples above use the current directory for bind mounts. If this isn't suitable, you can modify the paths by using either a relative or absolute path.
+
+NOTE: Do not confuse the `apps` and `custom_apps` folders. These folders contain different sets of apps, and mixing them will result in a broken installation. The former contains "shipped" apps, which come with Nextcloud Server. The latter contains apps you install from the App Store.
 
 ### Custom volumes
 
