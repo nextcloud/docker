@@ -18,6 +18,7 @@ services:
       - 127.0.0.1:8080:80
     volumes:
       - nextcloud:/var/www/html:z
+      # NOTE: The `volumes` config of the `cron` and `app` containers must match
     environment:
       - POSTGRES_HOST=db
       - REDIS_HOST=redis
@@ -32,6 +33,7 @@ services:
     restart: always
     volumes:
       - nextcloud:/var/www/html:z
+      # NOTE: The `volumes` config of the `cron` and `app` containers must match
     entrypoint: /cron.sh
     depends_on:
       - db

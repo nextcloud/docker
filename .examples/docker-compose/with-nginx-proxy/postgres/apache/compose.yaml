@@ -16,6 +16,7 @@ services:
     restart: always
     volumes:
       - nextcloud:/var/www/html:z
+      # NOTE: The `volumes` config of the `cron` and `app` containers must match
     environment:
       - VIRTUAL_HOST=
       - LETSENCRYPT_HOST=
@@ -37,6 +38,7 @@ services:
     restart: always
     volumes:
       - nextcloud:/var/www/html:z
+      # NOTE: The `volumes` config of the `cron` and `app` containers must match
     entrypoint: /cron.sh
     depends_on:
       - db
