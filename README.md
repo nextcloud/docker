@@ -103,7 +103,8 @@ If mounting additional volumes under `/var/www/html`, you should consider:
 You should note that data inside the main folder (`/var/www/html`) will be overridden/removed during installation and upgrades, unless listed in [upgrade.exclude](https://github.com/nextcloud/docker/blob/master/upgrade.exclude). The additional volumes officially supported are already in that list, but custom volumes will need to be added by you. We suggest mounting custom storage volumes outside of `/var/www/html` and if possible read-only so that making this adjustment is unnecessary. If you must do so, however, you may build a custom image with a modified `/upgrade.exclude` file that incorporates your custom volume(s).
 
 
-## Using the Nextcloud command-line interface
+## Using the Nextcloud command-line interface (`occ`)
+
 To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
 ```console
 $ docker exec --user www-data CONTAINER_ID php occ
@@ -112,6 +113,23 @@ or for docker compose:
 ```console
 $ docker compose exec --user www-data app php occ
 ```
+or even shorter:
+```console
+$ docker compose exec -u33 app ./occ
+```
+Note: substitute `82` for `33` if using the Alpine-based images.
+
+## Viewing the Nextcloud configuration (`config.php`)
+
+The image takes advantage of Nextcloud's [Multiple config.php support](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/config_sample_php_parameters.html#multiple-config-php-file) to inject auto configuration environment variables and set image specific config values.
+
+This means that merely viewing your `config.php` will not give you an accurate view of your running config. Instead, you should use Nextcloud's [`occ config:list system` command](https://docs.nextcloud.com/server/latest/admin_manual/occ_command.html#config-commands-label) to get get a complete view of your merged configuration. This has the added benefit of automatically omitting sensitive values such as passwords and secrets from the output by default (e.g. useful for shared publicly or assisting others when troubleshooting or reporting a bug).
+
+```console
+$ docker compose exec -u33 app ./occ config:list system
+```
+
+The `--private` flag can also be specified, in order to output all configuration values including passwords and secrets.
 
 ## Auto configuration via environment variables
 The Nextcloud image supports auto configuration via environment variables. You can preconfigure everything that is asked on the install page on first run. To enable auto configuration, set your database connection via the following environment variables. You must specify all of the environment variables for a given database or the database environment variables defaults to SQLITE. ONLY use one database type!
