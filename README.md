@@ -653,6 +653,15 @@ docker exec container-name chown -R www-data:root /var/www/html
 ```
 
 After changing the permissions, restart the container and the permission errors should disappear.
+
+# Troubleshooting
+
+The Nextcloud image entrypoint supports a debug (verbose) mode that can be toggled on via an environment variable. This can be used to troubleshoot container start-up, Nextcloud installation, entrypoint changes, etc.
+
+- `IMAGE_DEBUG=1`
+
+Note the container log will be highly verbose with this on!
+
 # Help (Questions / Issues)
 
 **If you have any questions or problems while using the image, please ask for assistance on the Help Forum first (https://help.nextcloud.com)**.
