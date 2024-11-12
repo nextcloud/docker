@@ -97,25 +97,25 @@ nextcloud
 If you'd prefer to use bind mounts instead of named volumes, for instance, when working with different device or network mounts for user data files and configuration:
 ```console
 $ docker run -d \
--v $(pwd)/nextcloud:/var/www/html \
--v $(pwd)/custom_apps:/var/www/html/custom_apps \
--v $(pwd)/config:/var/www/html/config \
--v $(pwd)/data:/var/www/html/data \
--v $(pwd)/theme:/var/www/html/themes/<YOUR_CUSTOM_THEME> \
+-v /path/on/host/to/folder/nextcloud:/var/www/html \
+-v /path/on/host/to/folder/custom_apps:/var/www/html/custom_apps \
+-v /path/on/host/to/folder/config:/var/www/html/config \
+-v /path/on/host/to/folder/data:/var/www/html/data \
+-v /path/on/host/to/folder/theme:/var/www/html/themes/<YOUR_CUSTOM_THEME> \
 nextcloud
 ```
 
 Here’s the same example using Docker's more detailed `--mount`. Note that with `-v` or `--volume`, the specified folders are created automatically if they don't exist. However, when using `--mount` for bind mounts, the directories must already exist on the host, or Docker will return an error.
 ```console
 $ docker run -d \
---mount type=bind,source=$(pwd)/nextcloud,target=/var/www/html \
---mount type=bind,source=$(pwd)/custom_apps,target=/var/www/html/custom_apps \
---mount type=bind,source=$(pwd)/config,target=/var/www/html/config \
---mount type=bind,source=$(pwd)/data,target=/var/www/html/data \
---mount type=bind,source=$(pwd)/theme,target=/var/www/html/themes/<YOUR_CUSTOM_THEME> \
+--mount type=bind,source=/path/on/host/to/folder/nextcloud,target=/var/www/html \
+--mount type=bind,source=/path/on/host/to/folder/custom_apps,target=/var/www/html/custom_apps \
+--mount type=bind,source=/path/on/host/to/folder/config,target=/var/www/html/config \
+--mount type=bind,source=/path/on/host/to/folder/data,target=/var/www/html/data \
+--mount type=bind,source=/path/on/host/to/folder/theme,target=/var/www/html/themes/<YOUR_CUSTOM_THEME> \
 nextcloud
 ```
-The examples above use the current directory for bind mounts. If this isn't suitable, you can modify the paths by using either a relative or absolute path.
+The examples above use figurative directory `/path/on/host/to/folder/` for bind mounts. Please modify the paths by using either a relative or absolute path.
 
 NOTE: Do not confuse the `apps` and `custom_apps` folders. These folders contain different sets of apps, and mixing them will result in a broken installation. The former contains "shipped" apps, which come with Nextcloud Server. The latter contains apps you install from the App Store.
 
