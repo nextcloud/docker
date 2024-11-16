@@ -4,7 +4,7 @@ if (getenv('REDIS_HOST')) {
     'memcache.distributed' => '\OC\Memcache\Redis',
     'memcache.locking' => '\OC\Memcache\Redis',
     'redis' => array(
-      'host' => getenv('REDIS_HOST'),
+      'host' => ($_ENV['REDIS_PROTOCOL'] ?? 'tcp') . "://" . getenv('REDIS_HOST'),
       'password' => getenv('REDIS_HOST_PASSWORD_FILE') ? trim(file_get_contents(getenv('REDIS_HOST_PASSWORD_FILE'))) : (string) getenv('REDIS_HOST_PASSWORD'),
     ),
   );

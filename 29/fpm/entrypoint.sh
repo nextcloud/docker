@@ -120,9 +120,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
               fi
             # check if redis password has been set
             elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
+                echo "session.save_path = \"${REDIS_PROTOCOL:=tcp}://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
             else
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
+                echo "session.save_path = \"${REDIS_PROTOCOL:=tcp}://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
             fi
             echo "redis.session.locking_enabled = 1"
             echo "redis.session.lock_retries = -1"
