@@ -280,7 +280,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
     for cfgPath in /usr/src/nextcloud/config/*.php; do
         cfgFile=$(basename "$cfgPath")
 
-        if [ "$cfgFile" != "config.sample.php" ]; then
+        if [ "$cfgFile" != "config.sample.php" ] && [ "$cfgFile" != "autoconfig.php" ]; then
             if ! cmp -s "/usr/src/nextcloud/config/$cfgFile" "/var/www/html/config/$cfgFile"; then
                 echo "Warning: /var/www/html/config/$cfgFile differs from the latest version of this image at /usr/src/nextcloud/config/$cfgFile"
             fi
