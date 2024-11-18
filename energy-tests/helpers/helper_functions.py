@@ -5,15 +5,15 @@ from time import time_ns, sleep
 from playwright.sync_api import TimeoutError
 
 
-def login_nextcloud(page, username='Crash', password='Override'):
-    page.goto("http://nc/login")
+def login_nextcloud(page, username='Crash', password='Override', domain='https://ncs'):
+    page.goto(f"{domain}/login")
     page.locator('#user').fill(username)
     page.locator('#password').fill(password)
     page.locator('#password').press("Enter")
 
 
 def get_random_text() -> str:
-    size_in_bytes = 1024
+    size_in_bytes = 10
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(size_in_bytes))
 

@@ -7,33 +7,31 @@ from playwright.sync_api import Playwright, sync_playwright
 
 from helpers.helper_functions import log_note, get_random_text, login_nextcloud, close_modal, timeout_handler
 
-def create_user(playwright: Playwright, browser_name: str, username: str, password: str) -> None:
+def create_user(playwright: Playwright, browser_name: str, username: str, password: str, email: str, headless=False) -> None:
     log_note(f"Launch browser {browser_name}")
     if browser_name == "firefox":
-        browser = playwright.firefox.launch(headless=True)
+        browser = playwright.firefox.launch(headless=headless)
     else:
         # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
         # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
-        browser = playwright.chromium.launch(headless=False,args=["--headless=new"])
-    context = browser.new_context()
+        browser = playwright.chromium.launch(headless=headless,args=["--headless=new"])
+    context = browser.new_context(ignore_https_errors=True)
     try:
         page = context.new_page()
         log_note("Login")
         login_nextcloud(page)
 
         log_note("Wait for welcome popup")
-        close_modal(page)
+        #close_modal(page)
 
         log_note("Create user")
-        page.get_by_role("link", name="Open settings menu").click()
-        page.get_by_role("link", name="Users").first.click()
-        page.get_by_role("button", name="New user").click()
-        page.get_by_placeholder("Username").click()
-        page.get_by_placeholder("Username").fill(username)
-        page.get_by_placeholder("Username").press("Tab")
-        page.get_by_placeholder("Display name").press("Tab")
-        page.get_by_placeholder("Password", exact=True).fill(password)
-        page.get_by_role("button", name="Add a new user").click()
+        page.click("button[aria-label='Settings menu']")
+        page.click("#core_users")
+        page.get_by_role("button", name="New Account").click()
+        page.get_by_placeholder("Account name (required)", exact=True).fill(username)
+        page.get_by_placeholder("Password (required)", exact=True).fill(password)
+        #page.get_by_placeholder("Email", exact=True).fill(email)
+        page.get_by_role("button", name="Add new account").click()
         log_note("Close browser")
 
         # ---------------------
@@ -47,7 +45,7 @@ def create_user(playwright: Playwright, browser_name: str, username: str, passwo
         # set a timeout. Since the call to page.content() is blocking we need to defer it to the OS
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(20)
-        log_note(f"Page content was: {page.content()}")
+        #log_note(f"Page content was: {page.content()}")
         signal.alarm(0) # remove timeout signal
 
         raise e
@@ -62,4 +60,4 @@ with sync_playwright() as playwright:
     else:
         browser_name = "chromium"
 
-    create_user(playwright, browser_name, username="docs_dude", password="docsrule!12")
+    create_user(playwright, browser_name, username="docs_dude", password="docsrule!12", email="docs_dude@local.host")

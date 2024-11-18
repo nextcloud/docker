@@ -16,15 +16,15 @@ def send_message(sender, message):
     sender.get_by_role("textbox").press("Enter")
     log_note("GMT_SCI_R=1")
 
-def create_conversation(playwright: Playwright, browser_name: str) -> str:
+def create_conversation(playwright: Playwright, browser_name: str, headless=False) -> str:
     log_note(f"Launch browser {browser_name}")
     if browser_name == "firefox":
-        browser = playwright.firefox.launch(headless=True)
+        browser = playwright.firefox.launch(headless=headless)
     else:
         # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
         # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
-        browser = playwright.chromium.launch(headless=False,args=["--headless=new"])
-    context = browser.new_context()
+        browser = playwright.chromium.launch(headless=headless,args=["--headless=new"])
+    context = browser.new_context(ignore_https_errors=True)
     page = context.new_page()
     try:
         log_note("Login as admin")
@@ -71,19 +71,21 @@ def create_conversation(playwright: Playwright, browser_name: str) -> str:
         signal.alarm(0) # remove timeout signal
         raise e
 
-def talk(playwright: Playwright, url: str, browser_name: str) -> None:
-    action_delay_ms = 300
+def talk(playwright: Playwright, url: str, browser_name: str, headless=False) -> None:
+    ####
+    ### DON"T FORGET TO SET THIS BACK TO 300 TODO
+    action_delay_ms = 0
     browser_count = 5
 
     # Launch browsers
     log_note(f"Launching {browser_count} {browser_name} browsers")
     if browser_name == "firefox":
-        browsers = [playwright.firefox.launch(headless=True, slow_mo=action_delay_ms) for _ in range(browser_count)]
+        browsers = [playwright.firefox.launch(headless=headless, slow_mo=action_delay_ms) for _ in range(browser_count)]
     else:
         # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
         # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
-        browsers = [playwright.chromium.launch(headless=False,args=["--headless=new"], slow_mo=action_delay_ms) for _ in range(browser_count)]
-    contexts = [browser.new_context() for browser in browsers]
+        browsers = [playwright.chromium.launch(headless=headless,args=["--headless=new"], slow_mo=action_delay_ms) for _ in range(browser_count)]
+    contexts = [browser.new_context(ignore_https_errors=True) for browser in browsers]
     pages = [context.new_page() for context in contexts]
 
     # Go to URL for all users
@@ -143,7 +145,7 @@ with sync_playwright() as playwright:
             print("Invalid browser name. Please choose either 'chromium' or 'firefox'.")
             sys.exit(1)
     else:
-        browser_name = "chromium"
+        browser_name = "firefox"
 
     conversation_link = create_conversation(playwright, browser_name)
     talk(playwright, conversation_link, browser_name)

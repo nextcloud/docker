@@ -10,8 +10,8 @@ services:
     depends_on:
       nc:
         condition: service_healthy
-#    volumes:
-#       - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
+   volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
     environment:
        DISPLAY: ":0" # for debugging in non-headless mode
 

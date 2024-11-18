@@ -5,22 +5,22 @@ from playwright.sync_api import sync_playwright
 
 from helpers.helper_functions import log_note, get_random_text, login_nextcloud, close_modal, timeout_handler
 
-def main(browser_name: str = "chromium"):
+def main(browser_name: str = "firefox", headless=False):
     with sync_playwright() as playwright:
         log_note(f"Launch browser {browser_name}")
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(10)
         if browser_name == "firefox":
-            browser = playwright.firefox.launch(headless=True)
+            browser = playwright.firefox.launch(headless=headless)
         else:
             # this leverages new headless mode by Chromium: https://developer.chrome.com/articles/new-headless/
             # The mode is however ~40% slower: https://github.com/microsoft/playwright/issues/21216
-            browser = playwright.chromium.launch(headless=False,args=["--headless=new"])
-        context = browser.new_context()
+            browser = playwright.chromium.launch(headless=headless,args=["--headless=new"])
+        context = browser.new_context(ignore_https_errors=True)
         page = context.new_page()
         signal.alarm(0) # remove timeout signal
         try:
-            page.goto('http://nc/')
+            page.goto('https://ncs')
 
             # 1. Create User
             log_note("Create admin user")
@@ -57,6 +57,6 @@ if __name__ == '__main__':
             print("Invalid browser name. Please choose either 'chromium' or 'firefox'.")
             sys.exit(1)
     else:
-        browser_name = "chromium"
+        browser_name = "firefox"
 
     main(browser_name)
