@@ -24,30 +24,30 @@ run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
     local return_code=0
 
-    if ! [ -d "${hook_folder_path}" ]; then
-        echo "=> Skipping the folder \"${hook_folder_path}\", because it doesn't exist"
+    echo "=> Searching for hook scripts (*.sh) to run, located in the folder: ${hook_folder_path}"
+
+    if ! [ -d "${hook_folder_path}" ] || directory_empty "${hook_folder_path}"; then
+        echo "=> Skipping the hook folder \"${hook_folder_path}\", because it doesn't exist or is empty"
         return 0
     fi
-
-    echo "=> Searching for scripts (*.sh) to run, located in the folder: ${hook_folder_path}"
 
     (
         find "${hook_folder_path}" -maxdepth 1 -iname '*.sh' '(' -type f -o -type l ')' -print | sort | while read -r script_file_path; do
             if ! [ -x "${script_file_path}" ]; then
-                echo "==> The script \"${script_file_path}\" was skipped, because it didn't have the executable flag"
+                echo "==> The hook script \"${script_file_path}\" was skipped, because it didn't have the executable flag"
                 continue
             fi
 
-            echo "==> Running the script (cwd: $(pwd)): \"${script_file_path}\""
+            echo "==> Running the hook script (cwd: $(pwd)): \"${script_file_path}\""
 
             run_as "${script_file_path}" || return_code="$?"
 
             if [ "${return_code}" -ne "0" ]; then
-                echo "==> Failed at executing \"${script_file_path}\". Exit code: ${return_code}"
+                echo "==> Failed at executing hook script \"${script_file_path}\". Exit code: ${return_code}"
                 exit 1
             fi
 
-            echo "==> Finished the script: \"${script_file_path}\""
+            echo "==> Finished the hook script: \"${script_file_path}\""
         done
     )
 }
