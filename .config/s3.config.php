@@ -4,14 +4,25 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
   $use_path = getenv('OBJECTSTORE_S3_USEPATH_STYLE');
   $use_legacyauth = getenv('OBJECTSTORE_S3_LEGACYAUTH');
   $autocreate = getenv('OBJECTSTORE_S3_AUTOCREATE');
+  $endpointUrl = getenv('OBJECTSTORE_S3_LIKE_SERVICE_ENDPOINT_URL');
+  $hostname = '';
+  $port = '';
+  if ($endpointUrl) {
+    $parsedUrl = parse_url($endpointUrl);
+    $hostname = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+    $port = isset($parsedUrl['port']) ? $parsedUrl['port'] : '';
+  } else {
+    $hostname = getenv('OBJECTSTORE_S3_HOST') ?: '';
+    $port = getenv('OBJECTSTORE_S3_PORT') ?: '';
+  }
   $CONFIG = array(
     'objectstore' => array(
       'class' => '\OC\Files\ObjectStore\S3',
       'arguments' => array(
         'bucket' => getenv('OBJECTSTORE_S3_BUCKET'),
         'region' => getenv('OBJECTSTORE_S3_REGION') ?: '',
-        'hostname' => getenv('OBJECTSTORE_S3_HOST') ?: '',
-        'port' => getenv('OBJECTSTORE_S3_PORT') ?: '',
+        'hostname' => $hostname,
+        'port' => $port,
         'storageClass' => getenv('OBJECTSTORE_S3_STORAGE_CLASS') ?: '',
         'objectPrefix' => getenv("OBJECTSTORE_S3_OBJECT_PREFIX") ? getenv("OBJECTSTORE_S3_OBJECT_PREFIX") : "urn:oid:",
         'autocreate' => strtolower($autocreate) !== 'false',
