@@ -1,17 +1,5 @@
 # What is Nextcloud?
 
-[![GitHub CI build status badge](https://github.com/nextcloud/docker/workflows/Images/badge.svg)](https://github.com/nextcloud/docker/actions?query=workflow%3AImages)
-[![update.sh build status badge](https://github.com/nextcloud/docker/workflows/update.sh/badge.svg)](https://github.com/nextcloud/docker/actions?query=workflow%3Aupdate.sh)
-[![amd64 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/amd64/job/nextcloud.svg?label=amd64)](https://doi-janky.infosiftr.net/job/multiarch/job/amd64/job/nextcloud)
-[![arm32v5 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/nextcloud.svg?label=arm32v5)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/nextcloud)
-[![arm32v6 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/nextcloud.svg?label=arm32v6)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/nextcloud)
-[![arm32v7 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v7/job/nextcloud.svg?label=arm32v7)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v7/job/nextcloud)
-[![arm64v8 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/nextcloud.svg?label=arm64v8)](https://doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/nextcloud)
-[![i386 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/i386/job/nextcloud.svg?label=i386)](https://doi-janky.infosiftr.net/job/multiarch/job/i386/job/nextcloud)
-[![mips64le build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/mips64le/job/nextcloud.svg?label=mips64le)](https://doi-janky.infosiftr.net/job/multiarch/job/mips64le/job/nextcloud)
-[![ppc64le build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/nextcloud.svg?label=ppc64le)](https://doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/nextcloud)
-[![s390x build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/s390x/job/nextcloud.svg?label=s390x)](https://doi-janky.infosiftr.net/job/multiarch/job/s390x/job/nextcloud)
-
 A safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms.
 
 ![logo](https://cdn.rawgit.com/nextcloud/docker/071b888f7f689caa62c1498b6c61cb3599bcea2b/logo.svg)
