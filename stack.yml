@@ -1,3 +1,4 @@
+
 version: '3.2'
 
 services:
@@ -11,6 +12,7 @@ services:
       - POSTGRES_USER=nextcloud
       - POSTGRES_PASSWORD=nextcloud
 
+        
   app:
     image: nextcloud
     restart: always
