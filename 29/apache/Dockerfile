@@ -21,6 +21,7 @@ RUN set -ex; \
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 512M
+ENV REDIS_DB_INDEX=0
 RUN set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
