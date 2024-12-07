@@ -1,6 +1,18 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:8.2-apache-bookworm
 
+# OCI annotations
+LABEL org.opencontainers.image.authors="Nextcloud Community" \
+      org.opencontainers.image.title="Nextcloud" \
+      org.opencontainers.image.description="Nextcloud is a self-hosted platform for file sharing and collaboration" \
+      org.opencontainers.image.documentation="https://hub.docker.com/_/nextcloud" \
+      org.opencontainers.image.base.name="docker.io/library/php:8.2-apache-bookworm" \
+      org.opencontainers.image.licenses="AGPL-3.0" \
+      org.opencontainers.image.source="https://hub.docker.com/_/nextcloud" \
+      org.opencontainers.image.vendor="Nextcloud Community" \
+      org.opencontainers.image.version="28.0.11" \
+      org.opencontainers.image.url="https://github.com/nextcloud/docker"
+
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
