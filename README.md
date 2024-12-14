@@ -1,3 +1,11 @@
+![GitHub last commit](https://img.shields.io/github/last-commit/nextcloud/docker)
+[![GitHub Release](https://img.shields.io/github/v/release/nextcloud/docker?link=https%3A%2F%2Fgithub.com%2Fnextcloud%2Fdocker%2Freleases%2Flatest&label=latest%20Image)](https://github.com/nextcloud/docker/releases/)
+[![Docker Image Version](https://img.shields.io/docker/v/library/nextcloud?sort=semver&logo=nextcloud&label=Nextcloud)](https://nextcloud.com/changelog/)
+![GitHub commits since latest release](https://img.shields.io/github/commits-since/nextcloud/docker/latest)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/nextcloud/docker)
+![GitHub contributors](https://img.shields.io/github/contributors/nextcloud/docker?label=contributors%20-%20Thank%20you!)
+![Docker Pulls](https://img.shields.io/docker/pulls/library/nextcloud)
+
 # What is Nextcloud?
 
 A safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms.
@@ -18,6 +26,9 @@ The second option is a `fpm` container. It is based on the [php-fpm](https://hub
 ## Getting help
 
 Most Nextcloud Server administrative matters are covered in the official [Nextcloud Admin Manual](https://docs.nextcloud.com/server/latest/admin_manual/) or [other official Nextcloud documentation](https://docs.nextcloud.com) (which are all routinely updated).
+
+[![Discourse Users](https://img.shields.io/discourse/users?server=https%3A%2F%2Fhelp.nextcloud.com&label=Community%20Forum&color=blue&link=https%3A%2F%2Fhelp.nextcloud.com%2F)](https://help.nextcloud.com/)
+[![Discourse Posts](https://img.shields.io/discourse/posts?server=https%3A%2F%2Fhelp.nextcloud.com&label=Community%20Forum&color=blue&link=https%3A%2F%2Fhelp.nextcloud.com%2F)](https://help.nextcloud.com/)
 
 **If you have any problems or usage questions while using the image, please ask for assistance on the [Nextcloud Community Help Forum](https://help.nextcloud.com)** rather than reporting them as "bugs" (unless they are bugs of course). This helps the 
 maintainers (who are volunteers) remain focused on making the image better (rather than responding solely to one-on-one support issues). (Tip: Some of the maintainers are also regular responders to help requests 
@@ -732,8 +743,16 @@ If there is a relevant existing open issue, you can either add to the discussion
 
 If you believe you've found a new bug, please create a new Issue so that others can try to reproduce it and remediation can be tracked.
 
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/nextcloud/docker?label=Open%20Issues)
+![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/nextcloud/docker/bug?style=flat&label=Bug%20Reports&color=red)
+![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/nextcloud/docker/enhancement?style=flat&label=Enhancement%20Ideas&color=green)
+![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/nextcloud/docker/good%20first%20issue?style=flat&label=Good%20First%20Issues)
+
 **If you have any problems or usage questions while using the image, please ask for assistance on the [Nextcloud Community Help Forum](https://help.nextcloud.com)** rather than reporting them as "bugs" (unless they really are bugs of course). This helps the 
 maintainers (who are volunteers) remain focused on making the image better (rather than responding solely to one-on-one support issues). (Tip: Some of the maintainers are also regular responders to help requests 
 on the [Nextcloud Community Help Forum](https://help.nextcloud.com).)
+
+[![Discourse Users](https://img.shields.io/discourse/users?server=https%3A%2F%2Fhelp.nextcloud.com&label=Community%20Forum&color=blue&link=https%3A%2F%2Fhelp.nextcloud.com%2F)](https://help.nextcloud.com/)
+[![Discourse Posts](https://img.shields.io/discourse/posts?server=https%3A%2F%2Fhelp.nextcloud.com&label=Community%20Forum&color=blue&link=https%3A%2F%2Fhelp.nextcloud.com%2F)](https://help.nextcloud.com/)
 
 Most Nextcloud Server matters are covered in the official [Nextcloud Admin Manual](https://docs.nextcloud.com/server/latest/admin_manual/) or the [other official Nextcloud documentation](https://docs.nextcloud.com) (which are routinely updated).
