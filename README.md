@@ -501,7 +501,7 @@ Example:
 ```yaml
 services:
   db:
-    image: postgres
+    image: postgres:15
     restart: always
     volumes:
       - db:/var/lib/postgresql/data
