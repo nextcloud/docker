@@ -63,9 +63,22 @@ RUN set -ex; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-%%APCU_VERSION%%; \
-    pecl install imagick-%%IMAGICK_VERSION%%; \
     pecl install memcached-%%MEMCACHED_VERSION%%; \
     pecl install redis-%%REDIS_VERSION%%; \
+    #    pecl install -o imagick-3.7.0; \
+# Begin workaround ->
+# The master version on the imagick repository is compatible with PHP 8.3. However, the PECL version is not updated yet.
+# As soon as it will get updated, we can switch back to the PECL version, instead of having this workaround.
+    apk add --no-cache --virtual .git-build-deps git \
+    && git clone https://github.com/imagick/imagick.git --depth 1 /tmp/imagick \
+    && cd /tmp/imagick \
+    && git fetch --depth 1 origin ${IMAGICK_COMMIT_HASH} \
+    && git checkout ${IMAGICK_COMMIT_HASH} \
+    && sed -i "s/@PACKAGE_VERSION@/git-${IMAGICK_COMMIT_HASH:0:7}/" php_imagick.h \
+    && phpize && ./configure && make && make install; \
+    apk del .git-build-deps; \
+    cd && rm -r /tmp/imagick; \
+# <- End workaround
     \
     docker-php-ext-enable \
         apcu \
