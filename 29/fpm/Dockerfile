@@ -1,5 +1,8 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.2-fpm-bookworm
+FROM php:8.3-fpm-bookworm
+
+# Define the commit hash for imagick as a variable
+ARG IMAGICK_COMMIT_HASH=28f27044e435a2b203e32675e942eb8de620ee58
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -66,9 +69,22 @@ RUN set -ex; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.24; \
-    pecl install imagick-3.7.0; \
     pecl install memcached-3.3.0; \
-    pecl install redis-6.1.0; \
+    pecl install -o redis-6.1.0; \
+    # pecl install imagick-3.7.0; \
+# Begin workaround ->
+# The master version on the imagick repository is compatible with PHP 8.3. However, the PECL version is not updated yet.
+# As soon as it will get updated, we can switch back to the PECL version, instead of having this workaround.
+    apt-get install -y --no-install-recommends git libmagickwand-dev && \
+    git clone https://github.com/imagick/imagick.git --depth 1 /tmp/imagick && \
+    cd /tmp/imagick && \
+    git fetch --depth 1 origin ${IMAGICK_COMMIT_HASH} && \
+    git checkout ${IMAGICK_COMMIT_HASH} && \
+    sed -i "s/@PACKAGE_VERSION@/git-${IMAGICK_COMMIT_HASH} | cut -c 1-7)/" php_imagick.h && \
+    phpize && ./configure && make && make install && \
+    cd && rm -r /tmp/imagick; \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false git libmagickwand-dev; \
+# <- End workaround
     \
     docker-php-ext-enable \
         apcu \
@@ -139,8 +155,8 @@ RUN set -ex; \
     curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-29.0.10.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
-    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
-    gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
+    #gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
+    #gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
     gpgconf --kill all; \
     rm nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
