@@ -5,6 +5,7 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/nextcloud/docker)
 ![GitHub contributors](https://img.shields.io/github/contributors/nextcloud/docker?label=contributors%20-%20Thank%20you!)
 ![Docker Pulls](https://img.shields.io/docker/pulls/library/nextcloud)
+[![Helm](https://img.shields.io/badge/Helm-0F1689?logo=helm&logoColor=fff)](https://github.com/nextcloud/helm/?tab=readme-ov-file)
 
 # What is Nextcloud?
 
