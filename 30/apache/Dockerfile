@@ -89,7 +89,7 @@ RUN set -ex; \
         | sort -u \
         | xargs -rt apt-mark manual; \
     \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+    apt-get upgrade -y && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
     rm -rf /var/lib/apt/lists/*
 
 # set recommended PHP.ini settings
@@ -164,7 +164,7 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
     \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
+    apt-get upgrade -y && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
     rm -rf /var/lib/apt/lists/*
 
 COPY *.sh upgrade.exclude /
