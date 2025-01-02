@@ -290,12 +290,12 @@ To use an external S3 compatible object store as primary storage, set the follow
 - `OBJECTSTORE_S3_AUTOCREATE` (default: `true`): Create the container if it does not exist
 - `OBJECTSTORE_S3_SSE_C_KEY` (not set by default): Base64 encoded key with a maximum length of 32 bytes for server side encryption (SSE-C)
 - `OBJECTSTORE_S3_CONCURRENCY` (default: `5`) defines the maximum number of concurrent multipart uploads
-- `OBJECTSTORE_S3_PROXY` (default: `false`)
-- `OBJECTSTORE_S3_TIMEOUT` (default: `15`)
-- `OBJECTSTORE_S3_UPLOADPARTSIZE` (default: `524288000`)
-- `OBJECTSTORE_S3_PUTSIZELIMIT` (default: `104857600`)
-- `OBJECTSTORE_S3_VERSION` (default: `latest`)
-- `OBJECTSTORE_S3_VERIFY_BUCKET_EXISTS` (default: `true`)
+- `OBJECTSTORE_S3_PROXY` (default: `''`)
+- `OBJECTSTORE_S3_TIMEOUT` (default: `''`)
+- `OBJECTSTORE_S3_UPLOADPARTSIZE` (default: `''`)
+- `OBJECTSTORE_S3_PUTSIZELIMIT` (default: `''`)
+- `OBJECTSTORE_S3_VERSION` (default: `''`)
+- `OBJECTSTORE_S3_VERIFY_BUCKET_EXISTS` (default: `''`)
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#simple-storage-service-s3) for more information.
 
