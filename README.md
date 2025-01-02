@@ -289,7 +289,7 @@ To use an external S3 compatible object store as primary storage, set the follow
 - `OBJECTSTORE_S3_OBJECT_PREFIX` (default: `urn:oid:`): Prefix to prepend to the fileid
 - `OBJECTSTORE_S3_AUTOCREATE` (default: `true`): Create the container if it does not exist
 - `OBJECTSTORE_S3_SSE_C_KEY` (not set by default): Base64 encoded key with a maximum length of 32 bytes for server side encryption (SSE-C)
-- `OBJECTSTORE_S3_CONCURRENCY` (default: `5`) defines the maximum number of concurrent multipart uploads
+- `OBJECTSTORE_S3_CONCURRENCY` (default: `''`) defines the maximum number of concurrent multipart uploads
 - `OBJECTSTORE_S3_PROXY` (default: `''`)
 - `OBJECTSTORE_S3_TIMEOUT` (default: `''`)
 - `OBJECTSTORE_S3_UPLOADPARTSIZE` (default: `''`)
