@@ -10,7 +10,7 @@ declare -A debian_version=(
 )
 
 declare -A php_version=(
-	[default]='8.2'
+	[default]='8.3'
 )
 
 declare -A cmd=(
