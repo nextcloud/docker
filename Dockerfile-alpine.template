@@ -74,7 +74,7 @@ RUN set -ex; \
     && cd /tmp/imagick \
     && git fetch --depth 1 origin ${IMAGICK_COMMIT_HASH} \
     && git checkout ${IMAGICK_COMMIT_HASH} \
-    && sed -i "s/@PACKAGE_VERSION@/git-${IMAGICK_COMMIT_HASH:0:7}/" php_imagick.h \
+    && sed -i "s/@PACKAGE_VERSION@/git-$(echo ${IMAGICK_COMMIT_HASH} | cut -c 1-7)/" php_imagick.h \
     && phpize && ./configure && make && make install; \
     apk del .git-build-deps; \
     cd && rm -r /tmp/imagick; \

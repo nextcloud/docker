@@ -75,7 +75,7 @@ RUN set -ex; \
     && cd /tmp/imagick \
     && git fetch --depth 1 origin ${IMAGICK_COMMIT_HASH} \
     && git checkout ${IMAGICK_COMMIT_HASH} \
-    && sed -i "s/@PACKAGE_VERSION@/git-${IMAGICK_COMMIT_HASH:0:7}/" php_imagick.h \
+    && sed -i "s/@PACKAGE_VERSION@/git-$(echo ${IMAGICK_COMMIT_HASH} | cut -c 1-7)/" php_imagick.h \
     && phpize && ./configure && make && make install; \
     apk del .git-build-deps; \
     cd && rm -r /tmp/imagick; \
@@ -145,8 +145,8 @@ RUN set -ex; \
     curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-28.0.14.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
-    #gpg --batch --keyserver keyserver.ubuntu.com  --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
-    #gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
+    gpg --batch --keyserver keyserver.ubuntu.com  --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
+    gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
     gpgconf --kill all; \
     rm nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
