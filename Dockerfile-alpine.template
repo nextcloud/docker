@@ -96,7 +96,7 @@ RUN { \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
         echo 'opcache.jit=1255'; \
-        echo 'opcache.jit_buffer_size=128M'; \
+        echo 'opcache.jit_buffer_size=8M'; \
     } > "${PHP_INI_DIR}/conf.d/opcache-recommended.ini"; \
     \
     echo 'apc.enable_cli=1' >> "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"; \
