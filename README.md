@@ -31,8 +31,8 @@ Most Nextcloud Server administrative matters are covered in the official [Nextcl
 [![Discourse Users](https://img.shields.io/discourse/users?server=https%3A%2F%2Fhelp.nextcloud.com&label=Community%20Forum&color=blue&link=https%3A%2F%2Fhelp.nextcloud.com%2F)](https://help.nextcloud.com/)
 [![Discourse Posts](https://img.shields.io/discourse/posts?server=https%3A%2F%2Fhelp.nextcloud.com&label=Community%20Forum&color=blue&link=https%3A%2F%2Fhelp.nextcloud.com%2F)](https://help.nextcloud.com/)
 
-**If you have any problems or usage questions while using the image, please ask for assistance on the [Nextcloud Community Help Forum](https://help.nextcloud.com)** rather than reporting them as "bugs" (unless they are bugs of course). This helps the 
-maintainers (who are volunteers) remain focused on making the image better (rather than responding solely to one-on-one support issues). (Tip: Some of the maintainers are also regular responders to help requests 
+**If you have any problems or usage questions while using the image, please ask for assistance on the [Nextcloud Community Help Forum](https://help.nextcloud.com)** rather than reporting them as "bugs" (unless they are bugs of course). This helps the
+maintainers (who are volunteers) remain focused on making the image better (rather than responding solely to one-on-one support issues). (Tip: Some of the maintainers are also regular responders to help requests
 on the [community help forum](https://help.nextcloud.com/).)
 
 For the image specifically, we provide [some simple deployment examples](https://github.com/nextcloud/docker/?tab=readme-ov-file#running-this-image-with-docker-compose) as well as some more extensive [deployment examples](https://github.com/nextcloud/docker/tree/master/.examples). In addition, the [community help forum](https://help.nextcloud.com/) has a "how-to" section with further examples of other peoples' container based Nextcloud stacks.
@@ -183,11 +183,11 @@ The `--private` flag can also be specified, in order to output all configuration
 
 ## Auto configuration via environment variables
 
-The Nextcloud image supports auto configuration of the Nextcloud Server installation via environment variables. You can preconfigure everything that would otherwise be prompted for by the Nextcloud Installation Wizard (as well as a few other key parameters relevant to initial installation). 
+The Nextcloud image supports auto configuration of the Nextcloud Server installation via environment variables. You can preconfigure everything that would otherwise be prompted for by the Nextcloud Installation Wizard (as well as a few other key parameters relevant to initial installation).
 
 ### Database parameters
 
-To enable auto configuration, define your database connection via the following environment variables. If you set any group of values (i.e. all of `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`), they will not be requested via the Installation Wizard on first run. 
+To enable auto configuration, define your database connection via the following environment variables. If you set any group of values (i.e. all of `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`), they will not be requested via the Installation Wizard on first run.
 
 You must specify all of the environment variables for a given database or the database environment variables defaults to SQLITE. ONLY use one database type!
 
@@ -271,8 +271,8 @@ Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/adm
 
 ### Object Storage (Primary Storage)
 
-By default, Nextcloud stores all files in `/var/www/html/data/` (or whatever custom data directory you've configured). Nextcloud also allows the use of object storages (like OpenStack 
-Swift or any Amazon S3-compatible implementation) as *Primary Storage*. This semi-replaces the default storage of files in the data directory. Note: This data directory might still be 
+By default, Nextcloud stores all files in `/var/www/html/data/` (or whatever custom data directory you've configured). Nextcloud also allows the use of object storages (like OpenStack
+Swift or any Amazon S3-compatible implementation) as *Primary Storage*. This semi-replaces the default storage of files in the data directory. Note: This data directory might still be
 used for compatibility reasons and still needs to exist. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html) for more information.
 
 To use an external S3 compatible object store as primary storage, set the following variables:
@@ -289,13 +289,15 @@ To use an external S3 compatible object store as primary storage, set the follow
 - `OBJECTSTORE_S3_OBJECT_PREFIX` (default: `urn:oid:`): Prefix to prepend to the fileid
 - `OBJECTSTORE_S3_AUTOCREATE` (default: `true`): Create the container if it does not exist
 - `OBJECTSTORE_S3_SSE_C_KEY` (not set by default): Base64 encoded key with a maximum length of 32 bytes for server side encryption (SSE-C)
-- `OBJECTSTORE_S3_CONCURRENCY` (default: `''`) defines the maximum number of concurrent multipart uploads
-- `OBJECTSTORE_S3_PROXY` (default: `''`)
-- `OBJECTSTORE_S3_TIMEOUT` (default: `''`)
-- `OBJECTSTORE_S3_UPLOADPARTSIZE` (default: `''`)
-- `OBJECTSTORE_S3_PUTSIZELIMIT` (default: `''`)
-- `OBJECTSTORE_S3_VERSION` (default: `''`)
-- `OBJECTSTORE_S3_VERIFY_BUCKET_EXISTS` (default: `''`)
+- `OBJECTSTORE_S3_CONCURRENCY` defines the maximum number of concurrent multipart uploads
+- `OBJECTSTORE_S3_PROXY` (default: `false`)
+- `OBJECTSTORE_S3_TIMEOUT` (not set by default)
+- `OBJECTSTORE_S3_UPLOADPARTSIZE` (not set by default)
+- `OBJECTSTORE_S3_PUTSIZELIMIT` (not set by default)
+- `OBJECTSTORE_S3_USEMULTIPARTCOPY` (default: `false`)
+- `OBJECTSTORE_S3_COPYSIZELIMIT` (not set by default)
+- `OBJECTSTORE_S3_VERSION` (default: `latest`)
+- `OBJECTSTORE_S3_VERIFY_BUCKET_EXISTS` (default: `true`) Setting this to `false` after confirming the bucket has been created may provide a performance benefit, but may not be possible in multibucket scenarios.
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#simple-storage-service-s3) for more information.
 
@@ -509,9 +511,9 @@ Then run `docker compose up -d`, now you can access Nextcloud at http://localhos
 
 # Docker Secrets
 
-As an alternative to passing sensitive information via environment variables, `_FILE` may be appended to some the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in `/run/secrets/<secret_name>` files. 
+As an alternative to passing sensitive information via environment variables, `_FILE` may be appended to some the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in `/run/secrets/<secret_name>` files.
 
-Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DATABASE`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER`, `REDIS_HOST_PASSWORD`, `SMTP_PASSWORD`, `OBJECTSTORE_S3_KEY`, and `OBJECTSTORE_S3_SECRET`. 
+Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DATABASE`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER`, `REDIS_HOST_PASSWORD`, `SMTP_PASSWORD`, `OBJECTSTORE_S3_KEY`, and `OBJECTSTORE_S3_SECRET`.
 
 If you set any group of `_FILE` based values (i.e. all of `MYSQL_DATABASE_FILE`, `MYSQL_USER_FILE`, `MYSQL_PASSWORD_FILE`), their non-`_FILE` counterparts will be ignored (`MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`).
 
@@ -590,7 +592,7 @@ We recommend using a reverse proxy in front of your Nextcloud installation. Your
 In our [examples](https://github.com/nextcloud/docker/tree/master/.examples) section we have an example for a fully automated setup using a reverse proxy, a container for [Let's Encrypt](https://letsencrypt.org/) certificate handling, database and Nextcloud. It uses the popular [nginx-proxy](https://github.com/nginx-proxy/nginx-proxy) and [acme-companion](https://github.com/nginx-proxy/acme-companion) containers. Please check the according documentations before using this setup.
 
 # First use
-When you first access your Nextcloud, the setup wizard will appear and ask you to choose an administrator account username, password and the database connection (unless of course you've provided all the necessary auto-config config values ahead of time). 
+When you first access your Nextcloud, the setup wizard will appear and ask you to choose an administrator account username, password and the database connection (unless of course you've provided all the necessary auto-config config values ahead of time).
 
 For the database use `db` as host and `nextcloud` as table and user name. Also enter the password you chose in your `compose.yaml` file.
 
@@ -747,7 +749,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
 
 ## Migrating from a non-Alpine image to an Alpine image
 
-If you already use one of our non-Alpine images, but want to switch to an Alpine-based image, you may experience permissions problems with your existing volumes. This is because the Alpine images uses a different user ID for `www-data`. 
+If you already use one of our non-Alpine images, but want to switch to an Alpine-based image, you may experience permissions problems with your existing volumes. This is because the Alpine images uses a different user ID for `www-data`.
 So, you must change the ownership of the `/var/www/html` (or `$NEXTCLOUD_DATA_DIR`) folder to be compatible with Alpine:
 
 ```console
@@ -758,9 +760,9 @@ After changing the permissions, restart the container and the permission errors 
 
 # Reporting bugs or suggesting enhancements
 
-If you believe you've found a bug in the image itself (or have an enhancement idea specific to the image), please [search for already reported bugs and enhancement ideas](https://github.com/nextcloud/docker/issues). 
+If you believe you've found a bug in the image itself (or have an enhancement idea specific to the image), please [search for already reported bugs and enhancement ideas](https://github.com/nextcloud/docker/issues).
 
-If there is a relevant existing open issue, you can either add to the discussion there or upvote it to indicate you're impacted by (or interested in) the same issue. 
+If there is a relevant existing open issue, you can either add to the discussion there or upvote it to indicate you're impacted by (or interested in) the same issue.
 
 If you believe you've found a new bug, please create a new Issue so that others can try to reproduce it and remediation can be tracked.
 
@@ -769,8 +771,8 @@ If you believe you've found a new bug, please create a new Issue so that others 
 ![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/nextcloud/docker/enhancement?style=flat&label=Enhancement%20Ideas&color=green)
 ![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/nextcloud/docker/good%20first%20issue?style=flat&label=Good%20First%20Issues)
 
-**If you have any problems or usage questions while using the image, please ask for assistance on the [Nextcloud Community Help Forum](https://help.nextcloud.com)** rather than reporting them as "bugs" (unless they really are bugs of course). This helps the 
-maintainers (who are volunteers) remain focused on making the image better (rather than responding solely to one-on-one support issues). (Tip: Some of the maintainers are also regular responders to help requests 
+**If you have any problems or usage questions while using the image, please ask for assistance on the [Nextcloud Community Help Forum](https://help.nextcloud.com)** rather than reporting them as "bugs" (unless they really are bugs of course). This helps the
+maintainers (who are volunteers) remain focused on making the image better (rather than responding solely to one-on-one support issues). (Tip: Some of the maintainers are also regular responders to help requests
 on the [Nextcloud Community Help Forum](https://help.nextcloud.com).)
 
 [![Discourse Users](https://img.shields.io/discourse/users?server=https%3A%2F%2Fhelp.nextcloud.com&label=Community%20Forum&color=blue&link=https%3A%2F%2Fhelp.nextcloud.com%2F)](https://help.nextcloud.com/)
