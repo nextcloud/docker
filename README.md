@@ -236,6 +236,7 @@ To use Redis for memory caching as well as PHP session storage, specify the foll
 
 - `REDIS_HOST` (not set by default) Name of Redis container
 - `REDIS_HOST_PORT` (default: `6379`) Optional port for Redis, only use for external Redis servers that run on non-standard ports.
+- `REDIS_HOST_USER` (not set by default) Optional username for Redis, only use for external Redis servers that require a user.
 - `REDIS_HOST_PASSWORD` (not set by default) Redis password
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/caching_configuration.html) for more information.
