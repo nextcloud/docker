@@ -1,4 +1,5 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%-%%DEBIAN_VERSION%%
+# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
+FROM php:8.2-apache-bookworm
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -14,13 +15,12 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*; \
     \
     mkdir -p /var/spool/cron/crontabs; \
-    echo '*/%%CRONTAB_INT%% * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    echo '*/5 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 512M
-ENV PHP_OPCACHE_MEMORY_CONSUMTION 128
 RUN set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
@@ -65,10 +65,10 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-%%APCU_VERSION%%; \
-    pecl install imagick-%%IMAGICK_VERSION%%; \
-    pecl install memcached-%%MEMCACHED_VERSION%%; \
-    pecl install redis-%%REDIS_VERSION%%; \
+    pecl install APCu-5.1.24; \
+    pecl install imagick-3.7.0; \
+    pecl install memcached-3.3.0; \
+    pecl install redis-6.1.0; \
     \
     docker-php-ext-enable \
         apcu \
@@ -98,7 +98,7 @@ RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.interned_strings_buffer=32'; \
         echo 'opcache.max_accelerated_files=10000'; \
-        echo 'opcache.memory_consumption=${PHP_OPCACHE_MEMORY_CONSUMTION}'; \
+        echo 'opcache.memory_consumption=128'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
         echo 'opcache.jit=1255'; \
@@ -123,9 +123,24 @@ RUN { \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
-%%VARIANT_EXTRAS%%
 
-ENV NEXTCLOUD_VERSION %%VERSION%%
+RUN a2enmod headers rewrite remoteip ; \
+    { \
+     echo 'RemoteIPHeader X-Real-IP'; \
+     echo 'RemoteIPInternalProxy 10.0.0.0/8'; \
+     echo 'RemoteIPInternalProxy 172.16.0.0/12'; \
+     echo 'RemoteIPInternalProxy 192.168.0.0/16'; \
+    } > /etc/apache2/conf-available/remoteip.conf; \
+    a2enconf remoteip
+
+# set apache config LimitRequestBody
+ENV APACHE_BODY_LIMIT 1073741824
+RUN { \
+     echo 'LimitRequestBody ${APACHE_BODY_LIMIT}'; \
+    } > /etc/apache2/conf-available/apache-limits.conf; \
+    a2enconf apache-limits
+
+ENV NEXTCLOUD_VERSION 28.0.14
 
 RUN set -ex; \
     fetchDeps=" \
@@ -135,8 +150,8 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends $fetchDeps; \
     \
-    curl -fsSL -o nextcloud.tar.bz2 "%%DOWNLOAD_URL%%"; \
-    curl -fsSL -o nextcloud.tar.bz2.asc "%%DOWNLOAD_URL_ASC%%"; \
+    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-28.0.14.tar.bz2"; \
+    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-28.0.14.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
@@ -156,4 +171,4 @@ COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["%%CMD%%"]
+CMD ["apache2-foreground"]

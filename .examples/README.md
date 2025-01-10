@@ -52,9 +52,6 @@ The required steps for each optional/recommended package that is not already in 
 #### ffmpeg
 `apt install ffmpeg`
 
-#### imagemagick SVG support
-`apt install libmagickcore-6.q16-6-extra`
-
 #### LibreOffice
 `apt install libreoffice`
 
@@ -69,9 +66,9 @@ The following Dockerfile commands are also necessary for a sucessfull cron insta
 
 ## docker-compose
 In `docker-compose` additional services are bundled to create a complete nextcloud installation. The examples are designed to run out-of-the-box.
-Before running the examples you have to modify the `db.env` and `docker-compose.yml` file and fill in your custom information.
+Before running the examples you have to modify the `db.env` and `compose.yaml` file and fill in your custom information.
 
-The docker-compose examples make heavily use of derived Dockerfiles to add configuration files into the containers. This way they should also work on remote docker systems as _Docker for Windows_. When running docker-compose on the same host as the docker daemon, another possibility would be to simply mount the files in the volumes section in the `docker-compose.yml` file.
+The docker compose examples make heavily use of derived Dockerfiles to add configuration files into the containers. This way they should also work on remote docker systems as _Docker for Windows_. When running docker compose on the same host as the docker daemon, another possibility would be to simply mount the files in the volumes section in the `compose.yaml` file.
 
 
 ### insecure
@@ -81,10 +78,10 @@ For this use one of the [with-nginx-proxy](#with-nginx-proxy) examples.
 
 To use this example complete the following steps:
 
-1. if you use mariadb or mysql choose a root password for the database in `docker-compose.yml` behind `MYSQL_ROOT_PASSWORD=`
+1. if you use mariadb or mysql choose a root password for the database in `compose.yaml` behind `MYSQL_ROOT_PASSWORD=`
 2. choose a password for the database user nextcloud in `db.env` behind `MYSQL_PASSWORD=` (for mariadb/mysql) or `POSTGRES_PASSWORD=` (for postgres)
-3. run `docker-compose build --pull` to pull the most recent base images and build the custom dockerfiles
-4. start nextcloud with `docker-compose up -d`
+3. run `docker compose build --pull` to pull the most recent base images and build the custom dockerfiles
+4. start nextcloud with `docker compose up -d`
 
 
 If you want to update your installation to a newer version of nextcloud, repeat the steps 3 and 4.
@@ -100,13 +97,13 @@ This combination of the [nginxproxy/nginx-proxy](https://github.com/nginx-proxy/
 
 To use this example complete the following steps:
 
-1. open `docker-compose.yml`
+1. open `compose.yaml`
    1. insert your nextcloud domain behind `VIRTUAL_HOST=`and `LETSENCRYPT_HOST=`
    2. enter a valid email behind `LETSENCRYPT_EMAIL=`
    3. if you use mariadb or mysql choose a root password for the database behind `MYSQL_ROOT_PASSWORD=`
 2. choose a password for the database user nextcloud in `db.env` behind `MYSQL_PASSWORD=` (for mariadb/mysql) or `POSTGRES_PASSWORD=` (for postgres)
-3. run `docker-compose build --pull` to pull the most recent base images and build the custom dockerfiles
-4. start nextcloud with `docker-compose up -d`
+3. run `docker compose build --pull` to pull the most recent base images and build the custom dockerfiles
+4. start nextcloud with `docker compose up -d`
 
 
 If you want to update your installation to a newer version of nextcloud, repeat the steps 3 and 4.
