@@ -14,4 +14,8 @@ if (getenv('REDIS_HOST')) {
   } elseif (getenv('REDIS_HOST')[0] != '/') {
     $CONFIG['redis']['port'] = 6379;
   }
+
+  if (getenv('REDIS_HOST_USER') !== false) {
+    $CONFIG['redis']['user'] = (string) getenv('REDIS_HOST_USER');
+  }
 }
