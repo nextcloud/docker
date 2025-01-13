@@ -299,7 +299,7 @@ Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/adm
 To customize PHP limits you can change the following variables:
 - `PHP_MEMORY_LIMIT` (default `512M`) This sets the maximum amount of memory in bytes that a script is allowed to allocate. This is meant to help prevent poorly written scripts from eating up all available memory but it can prevent normal operation if set too tight.
 - `PHP_UPLOAD_LIMIT` (default `512M`) This sets the upload limit (`post_max_size` and `upload_max_filesize`) for big files. Note that you may have to change other limits depending on your client, webserver or operating system. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html) for more information.
-- `PHP_OPCACHE_MEMORY_CONSUMPTION` (default `128`) This sets the opcache.memory_consumption value. It's the size of the shared memory storage used by OPcache, in megabytes. 
+- `PHP_OPCACHE_MEMORY_CONSUMPTION` (default `128`) This sets the `opcache.memory_consumption` value. It's the size of the shared memory storage used by OPcache, in megabytes. 
 
 ### Apache Configuration
 
