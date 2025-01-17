@@ -172,12 +172,24 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             fi
 
             rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
+            if [ "$?" -ne "0" ]; then
+                echo "Rsync failed. Giving up to be safe."
+                exit 1
+       	    fi
             for dir in config data custom_apps themes; do
                 if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
                     rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
+                    if [ "$?" -ne "0" ]; then
+                        echo "Rsync failed. Giving up to be safe."
+                        exit 1
+                    fi
                 fi
             done
             rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
+            if [ "$?" -ne "0" ]; then
+     		    echo "Rsync failed. Giving up to be safe."
+               exit 1
+       	    fi
 
             # Install
             if [ "$installed_version" = "0.0.0.0" ]; then
