@@ -395,7 +395,7 @@ services:
   db:
     image: mariadb:10.11
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --expire-logs-days=7 --slave_connections_needed_for_purge=0
+    command: --transaction-isolation=READ-COMMITTED
     volumes:
       - db:/var/lib/mysql
     environment:
@@ -443,7 +443,7 @@ services:
   db:
     image: mariadb:10.11
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --expire-logs-days=7 --slave_connections_needed_for_purge=0
+    command: --transaction-isolation=READ-COMMITTED
     volumes:
       - db:/var/lib/mysql
     environment:
