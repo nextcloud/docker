@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:8.3-fpm-alpine3.20
+FROM php:8.3-fpm-alpine3.21
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -102,11 +102,12 @@ RUN set -ex; \
 # see https://docs.nextcloud.com/server/latest/admin_manual/installation/server_tuning.html#enable-php-opcache
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 512M
+ENV PHP_OPCACHE_MEMORY_CONSUMPTION 128
 RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.interned_strings_buffer=32'; \
         echo 'opcache.max_accelerated_files=10000'; \
-        echo 'opcache.memory_consumption=128'; \
+        echo 'opcache.memory_consumption=${PHP_OPCACHE_MEMORY_CONSUMPTION}'; \
         echo 'opcache.save_comments=1'; \
         echo 'opcache.revalidate_freq=60'; \
         echo 'opcache.jit=1255'; \

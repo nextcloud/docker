@@ -2,7 +2,7 @@
 set -eo pipefail
 
 declare -A alpine_version=(
-	[default]='3.20'
+	[default]='3.21'
 )
 
 declare -A debian_version=(
