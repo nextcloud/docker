@@ -395,7 +395,7 @@ services:
   db:
     image: mariadb:10.11
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    command: --transaction-isolation=READ-COMMITTED
     volumes:
       - db:/var/lib/mysql
     environment:
@@ -443,7 +443,7 @@ services:
   db:
     image: mariadb:10.11
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    command: --transaction-isolation=READ-COMMITTED
     volumes:
       - db:/var/lib/mysql
     environment:
