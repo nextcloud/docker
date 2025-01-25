@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:8.2-fpm-alpine3.21
+FROM php:8.3-fpm-alpine3.21
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -64,9 +64,22 @@ RUN set -ex; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.24; \
-    pecl install imagick-3.7.0; \
     pecl install memcached-3.3.0; \
     pecl install redis-6.1.0; \
+    #    pecl install -o imagick-3.7.0; \
+# Begin workaround ->
+# The master version on the imagick repository is compatible with PHP 8.3. However, the PECL version is not updated yet.
+# As soon as it will get updated, we can switch back to the PECL version, instead of having this workaround.
+    apk add --no-cache --virtual .git-build-deps git \
+    && git clone https://github.com/imagick/imagick.git --depth 1 /tmp/imagick \
+    && cd /tmp/imagick \
+    && git fetch --depth 1 origin ${IMAGICK_COMMIT_HASH} \
+    && git checkout ${IMAGICK_COMMIT_HASH} \
+    && sed -i "s/@PACKAGE_VERSION@/git-$(echo ${IMAGICK_COMMIT_HASH} | cut -c 1-7)/" php_imagick.h \
+    && phpize && ./configure && make && make install; \
+    apk del .git-build-deps; \
+    cd && rm -r /tmp/imagick; \
+# <- End workaround
     \
     docker-php-ext-enable \
         apcu \
