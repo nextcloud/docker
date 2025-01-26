@@ -1,6 +1,18 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
 FROM php:8.2-fpm-alpine3.21
 
+# OCI annotations
+LABEL org.opencontainers.image.authors="Nextcloud Community" \
+      org.opencontainers.image.title="Nextcloud" \
+      org.opencontainers.image.description="Nextcloud is a self-hosted platform for file sharing and collaboration" \
+      org.opencontainers.image.documentation="https://hub.docker.com/_/nextcloud" \
+      org.opencontainers.image.base.name="docker.io/library/php:8.2-fpm-alpine3.20" \
+      org.opencontainers.image.licenses="AGPL-3.0" \
+      org.opencontainers.image.source="https://hub.docker.com/_/nextcloud" \
+      org.opencontainers.image.vendor="Nextcloud Community" \
+      org.opencontainers.image.version="29.0.8" \
+      org.opencontainers.image.url="https://github.com/nextcloud/docker"
+
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
