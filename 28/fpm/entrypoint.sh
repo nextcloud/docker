@@ -63,14 +63,16 @@ file_env() {
     local varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
     local fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
     if [ -n "${varValue}" ] && [ -n "${fileVarValue}" ]; then
-        echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
-        exit 1
+        echo "Warning: both $var and $fileVar are set ($fileVar takes precedence)"
     fi
-    if [ -n "${varValue}" ]; then
-        export "$var"="${varValue}"
-    elif [ -n "${fileVarValue}" ]; then
+    if [ -n "${fileVarValue}" ]; then
+        echo "note: taking ${fileVar} file for ${var} value"
         export "$var"="$(cat "${fileVarValue}")"
+    elif [ -n "${varValue}" ]; then
+        echo "note: using ${var} variable for ${var} value"
+        export "$var"="${varValue}"
     elif [ -n "${def}" ]; then
+        echo "note: using invoked definition for ${var} value"
         export "$var"="$def"
     fi
     unset "$fileVar"
@@ -81,6 +83,21 @@ if expr "$1" : "apache" 1>/dev/null; then
         a2disconf remoteip
     fi
 fi
+
+# All possible content secrets to variable
+file_env NEXTCLOUD_ADMIN_PASSWORD
+file_env NEXTCLOUD_ADMIN_USER
+file_env MYSQL_DATABASE
+file_env MYSQL_PASSWORD
+file_env MYSQL_USER
+file_env POSTGRES_DB
+file_env POSTGRES_PASSWORD
+file_env POSTGRES_USER
+file_env REDIS_HOST_PASSWORD
+file_env SMTP_PASSWORD
+file_env OBJECTSTORE_S3_KEY
+file_env OBJECTSTORE_S3_SECRET
+file_env OBJECTSTORE_S3_SSE_C_KEY
 
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
     uid="$(id -u)"
