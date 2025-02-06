@@ -40,6 +40,14 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
     $CONFIG['objectstore']['arguments']['secret'] = '';
   }
 
+  if (getenv('OBJECTSTORE_S3_SESSION_TOKEN_FILE')) {
+    $CONFIG['objectstore']['arguments']['session_token'] = trim(file_get_contents(getenv('OBJECTSTORE_S3_SESSION_TOKEN_FILE')));
+  } elseif (getenv('OBJECTSTORE_S3_SESSION_TOKEN')) {
+    $CONFIG['objectstore']['arguments']['session_token'] = getenv('OBJECTSTORE_S3_SESSION_TOKEN');
+  } else {
+    $CONFIG['objectstore']['arguments']['session_token'] = '';
+  }
+
   if (getenv('OBJECTSTORE_S3_SSE_C_KEY_FILE')) {
     $CONFIG['objectstore']['arguments']['sse_c_key'] = trim(file_get_contents(getenv('OBJECTSTORE_S3_SSE_C_KEY_FILE')));
   } elseif (getenv('OBJECTSTORE_S3_SSE_C_KEY')) {
