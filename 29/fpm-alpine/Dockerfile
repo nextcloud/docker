@@ -64,12 +64,16 @@ RUN set -ex; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.24; \
+    pecl install igbinary-3.2.16; \
     pecl install imagick-3.7.0; \
-    pecl install memcached-3.3.0; \
-    pecl install redis-6.1.0; \
+    pecl install memcached-3.3.0 \
+        --configureoptions 'enable-memcached-igbinary="yes"'; \
+    pecl install redis-6.1.0 \
+        --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     \
     docker-php-ext-enable \
         apcu \
+        igbinary \
         imagick \
         memcached \
         redis \
@@ -102,6 +106,11 @@ RUN { \
     } > "${PHP_INI_DIR}/conf.d/opcache-recommended.ini"; \
     \
     echo 'apc.enable_cli=1' >> "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"; \
+    \
+    { \
+        echo 'apc.serializer=igbinary'; \
+        echo 'session.serialize_handler=igbinary'; \
+    } >> "${PHP_INI_DIR}/conf.d/docker-php-ext-igbinary.ini"; \
     \
     { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \

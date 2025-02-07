@@ -44,6 +44,24 @@ apcu_version="$(
 		| tail -1
 )"
 
+igbinary_version="$(
+	git ls-remote --tags https://github.com/igbinary/igbinary.git \
+		| cut -d/ -f3 \
+		| grep -viE '[a-z]' \
+		| tr -d '^{}' \
+		| sort -V \
+		| tail -1
+)"
+
+imagick_version="$(
+	git ls-remote --tags https://github.com/mkoppanen/imagick.git \
+		| cut -d/ -f3 \
+		| grep -viE '[a-z]' \
+		| tr -d '^{}' \
+		| sort -V \
+		| tail -1
+)"
+
 memcached_version="$(
 	git ls-remote --tags https://github.com/php-memcached-dev/php-memcached.git \
 		| cut -d/ -f3 \
@@ -62,20 +80,12 @@ redis_version="$(
 		| tail -1
 )"
 
-imagick_version="$(
-	git ls-remote --tags https://github.com/mkoppanen/imagick.git \
-		| cut -d/ -f3 \
-		| grep -viE '[a-z]' \
-		| tr -d '^{}' \
-		| sort -V \
-		| tail -1
-)"
-
 declare -A pecl_versions=(
 	[APCu]="$apcu_version"
+	[igbinary]="$igbinary_version"
+	[imagick]="$imagick_version"
 	[memcached]="$memcached_version"
 	[redis]="$redis_version"
-	[imagick]="$imagick_version"
 )
 
 variants=(
@@ -121,9 +131,10 @@ function create_variant() {
 		s/%%CMD%%/'"${cmd[$variant]}"'/g;
 		s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
+		s/%%IGBINARY_VERSION%%/'"${pecl_versions[igbinary]}"'/g;
+		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
-		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
 
