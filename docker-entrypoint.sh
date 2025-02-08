@@ -237,12 +237,14 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         fi
                         if [ -n "${NEXTCLOUD_TRUSTED_DOMAINS+x}" ]; then
                             echo "Setting trusted domains…"
+			    set -f # turn off glob
                             NC_TRUSTED_DOMAIN_IDX=1
-                            for DOMAIN in $NEXTCLOUD_TRUSTED_DOMAINS ; do
-                                DOMAIN=$(echo "$DOMAIN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-                                run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=$DOMAIN"
+                            for DOMAIN in ${NEXTCLOUD_TRUSTED_DOMAINS}; do
+                                DOMAIN=$(echo "${DOMAIN}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+                                run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=\"${DOMAIN}\""
                                 NC_TRUSTED_DOMAIN_IDX=$((NC_TRUSTED_DOMAIN_IDX+1))
                             done
+			    set +f # turn glob back on
                         fi
 
                         run_path post-installation
