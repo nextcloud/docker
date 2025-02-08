@@ -132,6 +132,26 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         } > /usr/local/etc/php/conf.d/redis-session.ini
     fi
 
+    if [ -n "${REDIS_CLUSTER+x}" ]; then
+
+        echo "Configuring Rediscluster as session handler"
+        {
+            file_env REDIS_HOST_PASSWORD
+            echo 'session.save_handler = rediscluster'
+            # check if redis password has been set
+            if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+                echo "session.save_path = \"seed[]=${REDIS_CLUSTER}&auth=${REDIS_HOST_PASSWORD}\""
+            else
+                echo "session.save_path = \"seed[]=${REDIS_CLUSTER}\""
+            fi
+            echo "redis.session.locking_enabled = 1"
+            echo "redis.session.lock_retries = -1"
+            # redis.session.lock_wait_time is specified in microseconds.
+            # Wait 10ms before retrying the lock rather than the default 2ms.
+            echo "redis.session.lock_wait_time = 10000"
+        } > /usr/local/etc/php/conf.d/redis-session.ini
+    fi
+
     # If another process is syncing the html folder, wait for
     # it to be done, then escape initalization.
     (
