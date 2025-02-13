@@ -271,6 +271,7 @@ To use an external S3 compatible object store as primary storage, set the follow
 - `OBJECTSTORE_S3_PORT`: The port that the object storage server is being served over
 - `OBJECTSTORE_S3_KEY`: AWS style access key
 - `OBJECTSTORE_S3_SECRET`: AWS style secret access key
+- `OBJECTSTORE_S3_SESSION_TOKEN`: AWS style session token for STS auth workflows
 - `OBJECTSTORE_S3_STORAGE_CLASS`: The storage class to use when adding objects to the bucket
 - `OBJECTSTORE_S3_SSL` (default: `true`): Whether or not SSL/TLS should be used to communicate with object storage server
 - `OBJECTSTORE_S3_USEPATH_STYLE` (default: `false`): Not required for AWS S3
