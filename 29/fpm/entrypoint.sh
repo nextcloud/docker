@@ -83,6 +83,12 @@ if expr "$1" : "apache" 1>/dev/null; then
 fi
 
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
+    if [ -n "${UID}" ] && [ -n "${GID}" ]; then
+        echo "Updating www-data user/group IDs..."
+        groupmod -o -g "${GID}" www-data
+        usermod -o -u "${UID}" www-data
+    fi
+
     uid="$(id -u)"
     gid="$(id -g)"
     if [ "$uid" = '0' ]; then

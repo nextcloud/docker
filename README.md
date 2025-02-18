@@ -172,7 +172,13 @@ The `--private` flag can also be specified, in order to output all configuration
 
 ## Auto configuration via environment variables
 
-The Nextcloud image supports auto configuration of the Nextcloud Server installation via environment variables. You can preconfigure everything that would otherwise be prompted for by the Nextcloud Installation Wizard (as well as a few other key parameters relevant to initial installation). 
+The Nextcloud image supports auto configuration via environment variables. You can preconfigure everything that would otherwise be prompted for by the Nextcloud Installation Wizard (as well as a few other key parameters relevant to initial installation).
+
+### User/Group Identifiers
+- `UID` - Set user ID for www-data user (optional)
+- `GID` - Set group ID for www-data group (optional)
+
+These optional variables allow you to match the container's www-data user/group IDs with your host system's user/group IDs for better file permission handling.
 
 ### Database parameters
 
