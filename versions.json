@@ -1,9 +1,9 @@
 {
   "30": {
     "branch": "30",
-    "version": "30.0.4",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-30.0.4.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-30.0.4.tar.bz2.asc",
+    "version": "30.0.6",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-30.0.6.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-30.0.6.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",
@@ -20,16 +20,16 @@
       "fpm-alpine": {
         "variant": "fpm-alpine",
         "base": "alpine",
-        "baseVersion": "3.20",
+        "baseVersion": "3.21",
         "phpVersion": "8.2"
       }
     }
   },
   "29": {
     "branch": "29",
-    "version": "29.0.10",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-29.0.10.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-29.0.10.tar.bz2.asc",
+    "version": "29.0.12",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-29.0.12.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-29.0.12.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",
@@ -46,33 +46,7 @@
       "fpm-alpine": {
         "variant": "fpm-alpine",
         "base": "alpine",
-        "baseVersion": "3.20",
-        "phpVersion": "8.2"
-      }
-    }
-  },
-  "28": {
-    "branch": "28",
-    "version": "28.0.14",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-28.0.14.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-28.0.14.tar.bz2.asc",
-    "variants": {
-      "apache": {
-        "variant": "apache",
-        "base": "debian",
-        "baseVersion": "bookworm",
-        "phpVersion": "8.2"
-      },
-      "fpm": {
-        "variant": "fpm",
-        "base": "debian",
-        "baseVersion": "bookworm",
-        "phpVersion": "8.2"
-      },
-      "fpm-alpine": {
-        "variant": "fpm-alpine",
-        "base": "alpine",
-        "baseVersion": "3.20",
+        "baseVersion": "3.21",
         "phpVersion": "8.2"
       }
     }
