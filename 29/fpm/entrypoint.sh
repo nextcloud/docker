@@ -10,7 +10,7 @@ version_greater() {
 directory_empty() {
     [ -z "$(ls -A "$1/")" ]
 }
-
+echo " nothing "
 run_as() {
     if [ "$(id -u)" = 0 ]; then
         su -p "$user" -s /bin/sh -c "$1"
