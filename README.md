@@ -141,6 +141,17 @@ If mounting additional volumes under `/var/www/html`, you should consider:
 
 **Data inside the main folder (`/var/www/html`) will be overridden/removed during installation and upgrades, unless listed in [upgrade.exclude](https://github.com/nextcloud/docker/blob/master/upgrade.exclude).** The additional volumes officially supported are already in that list, but custom volumes will need to be added by you. We suggest mounting custom storage volumes outside of `/var/www/html` and if possible read-only so that making this adjustment is unnecessary. If you must do so, however, you may build a custom image with a modified `/upgrade.exclude` file that incorporates your custom volume(s).
 
+## Running as an arbitrary user / file permissions / changing the default container user
+
+The default user within a container is root (uid = 0). By default, processes inside the container will expect to have root privileges. Network services will drop privileges and use `www-data` to serve requests. 
+
+Depending on your volumes configuration, this can lead to permission issues. You can address this by running the container with a different default user. When changing the default user, the image will no longer assume it has root privileges and will run all processes under the specified uid. To accomplish this, use the `--user` / `user` option in your container environment.
+
+See:
+
+- https://docs.docker.com/engine/containers/run/#user
+- https://github.com/docker-library/docs/tree/master/php#running-as-an-arbitrary-user
+- https://docs.podman.io/en/stable/markdown/podman-run.1.html#user-u-user-group
 
 ## Accessing the Nextcloud command-line interface (`occ`)
 
