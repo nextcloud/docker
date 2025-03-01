@@ -1,10 +1,22 @@
 contact_links:
-    - name: 🐛 Nextcloud issue
-      url: https://github.com/nextcloud/server/issues/new/choose
-      about: Bug reports and feature requests for Nextcloud
-    - name: 🐳 Docker Support and Help
-      url: https://forums.docker.com/
-      about: Configuration, installation, networking and other questions
-    - name: ❓ Nextcloud Support and Help
+    - name: ❓ Ask a question
       url: https://help.nextcloud.com/
-      about: Configuration, webserver/proxy or performance issues and other questions
+      about: Ask a question, get assistance or start a discussion regarding Nextcloud and/or this image
+    - name: Documentation - Nextcloud Server
+      url: https://docs.nextcloud.com/
+      about: Official documentation for Nextcloud Server
+    - name: Documentation - Nextcloud Docker Image
+      url: https://github.com/nextcloud/docker/blob/master/README.md
+      about: Official documentation for this image
+    - name: 🐳 Documentation - Docker
+      url: https://docs.docker.com/
+      about: Official documentation for Docker (installing, configuring, troubleshooting)  
+    - name: 🐳 Docker Forum
+      url: https://forums.docker.com/
+      about: Ask a question, get assistance or start a discussion regarding Docker
+    - name: 🐛 Bug Report: Nextcloud Server
+      url: https://github.com/nextcloud/server/issues/new/choose
+      about: Report a bug in Nextcloud Server
+    - name: Enhancement Idea: Nextcloud Server
+      url: https://github.com/nextcloud/server/issues/new/choose
+      about: Suggest an enhancement idea for Nextcloud Server
