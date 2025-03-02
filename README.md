@@ -393,6 +393,16 @@ To use the hooks triggered by the `entrypoint` script, either
 ...
 ```
 
+## Forcing an upgrade run
+
+Sometimes you need to force an explicit upgrade run even when the bundled Nextcloud version did not change.
+An example would be when you have custom apps bundled and you want to update those.
+
+To do this, you can simply create a file `/tmp/nextcloud-force-initialization` before the need for an upgrade is determined.
+The content is irrelevant.
+You can either create this file before starting the container, or you can use the `pre-initialization` hook to create it.
+After the update has successfully run, the file is removed automatically.
+
 # Running this image with `docker compose`
 The easiest way to get a fully featured and functional setup is using a `compose.yaml` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.
 
