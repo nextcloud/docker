@@ -259,7 +259,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         fi
 
                         run_path post-installation
-		    fi
+                    fi
                 fi
 		# not enough specified to do a fully automated installation 
                 if [ "$install" = false ]; then 
