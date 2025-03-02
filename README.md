@@ -362,8 +362,9 @@ As long as you have not modified any of the provided config files in `/var/www/h
 
 ## Auto configuration via hook folders
 
-There are 5 hooks
+There are 6 hooks
 
+- `pre-initialization` Executed before the need to update or install Nextcloud is determined
 - `pre-installation` Executed before the Nextcloud is installed/initiated
 - `post-installation` Executed after the Nextcloud is installed/initiated
 - `pre-upgrade` Executed before the Nextcloud is upgraded
@@ -383,6 +384,7 @@ To use the hooks triggered by the `entrypoint` script, either
     image: nextcloud:stable
 
     volumes:
+      - ./app-hooks/pre-initialization:/docker-entrypoint-hooks.d/pre-initialization
       - ./app-hooks/pre-installation:/docker-entrypoint-hooks.d/pre-installation
       - ./app-hooks/post-installation:/docker-entrypoint-hooks.d/post-installation
       - ./app-hooks/pre-upgrade:/docker-entrypoint-hooks.d/pre-upgrade
