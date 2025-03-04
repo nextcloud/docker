@@ -1,4 +1,6 @@
 services:
+  # Note: PostgreSQL is an external service. You can find more information about the configuration here:
+  # https://github.com/docker-library/docs/blob/master/postgres/README.md
   db:
     image: postgres:alpine
     restart: always
@@ -7,6 +9,8 @@ services:
     env_file:
       - db.env
 
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/#configuration
   redis:
     image: redis:alpine
     restart: always
@@ -26,14 +30,17 @@ services:
       - db
       - redis
 
+  # Note: Nginx is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/nginx/
   web:
-    build: ./web
+    image: nginx:alpine
     restart: always
     ports:
       - 127.0.0.1:8080:80
     volumes:
+      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro  # https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html
+      # NOTE: The `volumes` included below should match those of the `app` container (unless you know what you're doing)
       - nextcloud:/var/www/html:z,ro
-      # NOTE: The `volumes` included here should match those of the `app` container (unless you know what you're doing)
     depends_on:
       - app
 

@@ -1,4 +1,6 @@
 services:
+  # Note: MariaDB is an external service. You can find more information about the configuration here:
+  # https://docs.linuxserver.io/images/docker-mariadb/#environment-variables-e
   db:
     image: mariadb:10.11
     command: --transaction-isolation=READ-COMMITTED
@@ -12,6 +14,8 @@ services:
     env_file:
       - db.env
 
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/#configuration
   redis:
     image: redis:alpine
     restart: always

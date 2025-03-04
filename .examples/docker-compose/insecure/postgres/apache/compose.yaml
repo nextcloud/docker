@@ -1,4 +1,6 @@
 services:
+  # Note: PostgreSQL is an external service. You can find more information about the configuration here:
+  # https://github.com/docker-library/docs/blob/master/postgres/README.md
   db:
     image: postgres:alpine
     restart: always
@@ -7,6 +9,8 @@ services:
     env_file:
       - db.env
 
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/#configuration
   redis:
     image: redis:alpine
     restart: always
