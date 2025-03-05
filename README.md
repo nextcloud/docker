@@ -527,7 +527,7 @@ services:
   # Note: PostgreSQL is external service. You can find more information about the configuration here:
   # https://github.com/docker-library/docs/blob/master/postgres/README.md
   db:
-    image: postgres
+    image: postgres:16-alpine
     restart: always
     volumes:
       - db:/var/lib/postgresql/data
