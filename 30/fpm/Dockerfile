@@ -1,6 +1,9 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:8.2-fpm-bookworm
 
+# Define the commit hash for imagick as a variable
+ENV IMAGICK_COMMIT_HASH d7d3c24af1b4f599897408f1714600b69a56473b
+
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
@@ -65,14 +68,31 @@ RUN set -ex; \
         zip \
     ; \
     \
+# The master version on the imagick repository is compatible with PHP 8.3. However, the PECL version is not updated yet.
+# As soon as it will get updated, we can switch back to the PECL version, instead of having this workaround.
+    curl -fsSL -o imagick.tar.gz "https://github.com/Imagick/imagick/archive/$IMAGICK_COMMIT_HASH.tar.gz"; \
+    tar -xzf imagick.tar.gz -C /tmp; \
+    rm imagick.tar.gz; \
+    cd "/tmp/imagick-$IMAGICK_COMMIT_HASH"; \
+    sed -i "s/@PACKAGE_VERSION@/git-$(echo ${IMAGICK_COMMIT_HASH} | cut -c 1-7)/" php_imagick.h; \
+    phpize; \
+    ./configure; \
+    make; \
+    make install; \
+    cd; \
+    rm -r "/tmp/imagick-$IMAGICK_COMMIT_HASH"; \
+    \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.24; \
-    pecl install imagick-3.7.0; \
-    pecl install memcached-3.3.0; \
-    pecl install redis-6.1.0; \
+    pecl install igbinary-3.2.16; \
+    pecl install memcached-3.3.0 \
+        --configureoptions 'enable-memcached-igbinary="yes"'; \
+    pecl install redis-6.1.0 \
+        --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     \
     docker-php-ext-enable \
         apcu \
+        igbinary \
         imagick \
         memcached \
         redis \
@@ -109,6 +129,11 @@ RUN { \
     echo 'apc.enable_cli=1' >> "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"; \
     \
     { \
+        echo 'apc.serializer=igbinary'; \
+        echo 'session.serialize_handler=igbinary'; \
+    } >> "${PHP_INI_DIR}/conf.d/docker-php-ext-igbinary.ini"; \
+    \
+    { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
@@ -126,7 +151,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 30.0.5
+ENV NEXTCLOUD_VERSION 30.0.6
 
 RUN set -ex; \
     fetchDeps=" \
@@ -136,8 +161,8 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends $fetchDeps; \
     \
-    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-30.0.5.tar.bz2"; \
-    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-30.0.5.tar.bz2.asc"; \
+    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-30.0.6.tar.bz2"; \
+    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-30.0.6.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
