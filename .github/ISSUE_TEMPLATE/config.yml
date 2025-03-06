@@ -14,9 +14,9 @@ contact_links:
     - name: 🐳 Docker Forum
       url: https://forums.docker.com/
       about: Ask a question, get assistance or start a discussion regarding Docker
-    - name: 🐛 Bug Report: Nextcloud Server
+    - name: 🐛 Bug Report - Nextcloud Server
       url: https://github.com/nextcloud/server/issues/new/choose
       about: Report a bug in Nextcloud Server
-    - name: Enhancement Idea: Nextcloud Server
+    - name: Enhancement Idea - Nextcloud Server
       url: https://github.com/nextcloud/server/issues/new/choose
       about: Suggest an enhancement idea for Nextcloud Server
