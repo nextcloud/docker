@@ -1,0 +1,15 @@
+---
+name: 🚀 Suggest an enhancement
+about: Suggest an idea for improving the image
+labels: "enhancement, 0. Needs triage"
+---
+
+<!--
+Thanks for suggesting an idea to improve the Nextcloud Docker image!
+
+This image is maintained by volunteers so if you're able to assist with implementing your idea, please mention that (and consider submitting a PR as well).
+
+Note: This is the issue tracker of the official Nextcloud **Docker image**, please do NOT use this to suggestion enhancements in Nextcloud Server itself. 
+
+To learn more about official images, see https://github.com/docker-library/faq
+-->
