@@ -157,7 +157,7 @@ See:
 
 To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
 ```console
-$ docker exec --user www-data CONTAINER_ID php occ
+$ docker exec -it --user www-data CONTAINER_ID php occ
 ```
 or for docker compose:
 ```console
