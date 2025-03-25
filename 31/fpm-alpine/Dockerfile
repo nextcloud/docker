@@ -84,7 +84,7 @@ RUN set -ex; \
     pecl install igbinary-3.2.16; \
     pecl install memcached-3.3.0 \
         --configureoptions 'enable-memcached-igbinary="yes"'; \
-    pecl install redis-6.1.0 \
+    pecl install redis-6.2.0 \
         --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     \
     docker-php-ext-enable \
