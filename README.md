@@ -82,7 +82,7 @@ Database:
 ```console
 $ docker run -d \
 -v db:/var/lib/mysql \
-mariadb:10.11
+mariadb:lts
 ```
 
 ### Additional volumes
@@ -406,7 +406,8 @@ services:
   # Note: MariaDB is external service. You can find more information about the configuration here:
   # https://docs.linuxserver.io/images/docker-mariadb/#environment-variables-e
   db:
-    image: mariadb:10.11
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
+    image: mariadb:lts
     restart: always
     command: --transaction-isolation=READ-COMMITTED
     volumes:
@@ -458,7 +459,8 @@ services:
   # Note: MariaDB is an external service. You can find more information about the configuration here:
   # https://docs.linuxserver.io/images/docker-mariadb/#environment-variables-e
   db:
-    image: mariadb:10.11
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
+    image: mariadb:lts
     restart: always
     command: --transaction-isolation=READ-COMMITTED
     volumes:
@@ -492,7 +494,7 @@ services:
   # Note: Nginx is an external service. You can find more information about the configuration here:
   # https://hub.docker.com/_/nginx/
   web:
-    image: nginx:alpine
+    image: nginx:alpine-slim
     restart: always
     ports:
       - 8080:80
@@ -527,7 +529,8 @@ services:
   # Note: PostgreSQL is external service. You can find more information about the configuration here:
   # https://github.com/docker-library/docs/blob/master/postgres/README.md
   db:
-    image: postgres:16-alpine
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
+    image: postgres:alpine
     restart: always
     volumes:
       - db:/var/lib/postgresql/data
