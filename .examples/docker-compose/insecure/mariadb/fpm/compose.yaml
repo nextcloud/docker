@@ -38,7 +38,7 @@ services:
   # Note: Nginx is an external service. You can find more information about the configuration here:
   # https://hub.docker.com/_/nginx/
   web:
-    image: nginx:alpine
+    image: nginx:alpine-slim
     restart: always
     ports:
       - 127.0.0.1:8080:80
