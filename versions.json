@@ -9,19 +9,19 @@
         "variant": "apache",
         "base": "debian",
         "baseVersion": "bookworm",
-        "phpVersion": "8.2"
+        "phpVersion": "8.3"
       },
       "fpm": {
         "variant": "fpm",
         "base": "debian",
         "baseVersion": "bookworm",
-        "phpVersion": "8.2"
+        "phpVersion": "8.3"
       },
       "fpm-alpine": {
         "variant": "fpm-alpine",
         "base": "alpine",
         "baseVersion": "3.21",
-        "phpVersion": "8.2"
+        "phpVersion": "8.3"
       }
     }
   },
@@ -35,19 +35,19 @@
         "variant": "apache",
         "base": "debian",
         "baseVersion": "bookworm",
-        "phpVersion": "8.2"
+        "phpVersion": "8.3"
       },
       "fpm": {
         "variant": "fpm",
         "base": "debian",
         "baseVersion": "bookworm",
-        "phpVersion": "8.2"
+        "phpVersion": "8.3"
       },
       "fpm-alpine": {
         "variant": "fpm-alpine",
         "base": "alpine",
         "baseVersion": "3.21",
-        "phpVersion": "8.2"
+        "phpVersion": "8.3"
       }
     }
   },
