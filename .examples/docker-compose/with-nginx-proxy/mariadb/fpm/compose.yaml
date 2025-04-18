@@ -1,6 +1,6 @@
 services:
   # Note: MariaDB is an external service. You can find more information about the configuration here:
-  # https://docs.linuxserver.io/images/docker-mariadb/#environment-variables-e
+  # https://hub.docker.com/_/mariadb
   db:
     # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
     image: mariadb:lts
@@ -16,7 +16,7 @@ services:
       - db.env
 
   # Note: Redis is an external service. You can find more information about the configuration here:
-  # https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/#configuration
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always
@@ -88,7 +88,7 @@ services:
       - proxy-tier
 
   # Note: Letsencrypt companion is an external service. You can find more information about the configuration here:
-  # https://github.com/nginx-proxy/acme-companion/tree/main/docs#readme
+  # https://hub.docker.com/r/nginxproxy/acme-companion
   letsencrypt-companion:
     image: nginxproxy/acme-companion
     restart: always

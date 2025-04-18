@@ -404,7 +404,7 @@ Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` varia
 ```yaml
 services:
   # Note: MariaDB is external service. You can find more information about the configuration here:
-  # https://docs.linuxserver.io/images/docker-mariadb/#environment-variables-e
+  # https://hub.docker.com/_/mariadb
   db:
     # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
     image: mariadb:lts
@@ -419,7 +419,7 @@ services:
       - MYSQL_USER=nextcloud
 
   # Note: Redis is an external service. You can find more information about the configuration here:
-  # https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/#configuration
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always
@@ -457,7 +457,7 @@ Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` varia
 ```yaml
 services:
   # Note: MariaDB is an external service. You can find more information about the configuration here:
-  # https://docs.linuxserver.io/images/docker-mariadb/#environment-variables-e
+  # https://hub.docker.com/_/mariadb
   db:
     # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
     image: mariadb:lts
@@ -472,7 +472,7 @@ services:
       - MYSQL_USER=nextcloud
 
   # Note: Redis is an external service. You can find more information about the configuration here:
-  # https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/#configuration
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always
@@ -501,7 +501,8 @@ services:
     depends_on:
       - app
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro # https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html
+      # https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro 
     volumes_from:
       - app
 
@@ -527,7 +528,7 @@ Example:
 ```yaml
 services:
   # Note: PostgreSQL is external service. You can find more information about the configuration here:
-  # https://github.com/docker-library/docs/blob/master/postgres/README.md
+  # https://hub.docker.com/_/postgres
   db:
     # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
     image: postgres:alpine
@@ -543,7 +544,7 @@ services:
       - postgres_password
       - postgres_user
   # Note: Redis is an external service. You can find more information about the configuration here:
-  # https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/#configuration
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always
