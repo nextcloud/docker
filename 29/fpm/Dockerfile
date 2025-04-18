@@ -6,6 +6,7 @@ RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
+        ffmpeg \
         busybox-static \
         bzip2 \
         libldap-common \

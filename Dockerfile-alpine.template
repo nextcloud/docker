@@ -4,6 +4,7 @@ FROM php:%%PHP_VERSION%%-%%VARIANT%%%%ALPINE_VERSION%%
 RUN set -ex; \
     \
     apk add --no-cache \
+        ffmpeg \
         imagemagick \
         imagemagick-pdf \
         imagemagick-jpeg \
