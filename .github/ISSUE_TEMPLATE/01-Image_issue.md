@@ -1,6 +1,7 @@
 ---
-name: 🐛 Image issue
-about: Issues related to the Nextcloud Docker image
+name: 🐛 Report a bug in the image
+about: Create a report to help us improve the image
+labels: "bug, 0. Needs triage"
 ---
 
 <!--
