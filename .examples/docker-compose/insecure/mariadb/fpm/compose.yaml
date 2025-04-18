@@ -1,6 +1,9 @@
 services:
+  # Note: MariaDB is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/mariadb
   db:
-    image: mariadb:10.11
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
+    image: mariadb:lts
     command: --transaction-isolation=READ-COMMITTED
     restart: always
     volumes:
@@ -12,6 +15,8 @@ services:
     env_file:
       - db.env
 
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always
@@ -31,14 +36,18 @@ services:
       - db
       - redis
 
+  # Note: Nginx is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/nginx/
   web:
-    build: ./web
+    image: nginx:alpine-slim
     restart: always
     ports:
       - 127.0.0.1:8080:80
     volumes:
+      # https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html
+      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro  
+      # NOTE: The `volumes` included below should match those of the `app` container (unless you know what you're doing)
       - nextcloud:/var/www/html:z,ro
-      # NOTE: The `volumes` included here should match those of the `app` container (unless you know what you're doing)
     depends_on:
       - app
 

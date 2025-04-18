@@ -1,5 +1,8 @@
 services:
+  # Note: PostgreSQL is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/postgres
   db:
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
     image: postgres:alpine
     restart: always
     volumes:
@@ -7,6 +10,8 @@ services:
     env_file:
       - db.env
 
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always

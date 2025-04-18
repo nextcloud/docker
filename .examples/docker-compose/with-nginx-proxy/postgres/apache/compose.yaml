@@ -1,5 +1,8 @@
 services:
+  # Note: PostgreSQL is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/postgres
   db:
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
     image: postgres:alpine
     restart: always
     volumes:
@@ -7,6 +10,8 @@ services:
     env_file:
       - db.env
 
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always
@@ -44,6 +49,9 @@ services:
       - db
       - redis
 
+  # Note: Nginx-proxy is an external service. You can find more information about the configuration here:
+  # Warning: Do not use :latest tags of nginx-proxy unless absolutely sure about the consequences.
+  # https://hub.docker.com/r/nginxproxy/nginx-proxy
   proxy:
     build: ./proxy
     restart: always
@@ -60,6 +68,8 @@ services:
     networks:
       - proxy-tier
 
+  # Note: Letsencrypt companion is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/r/nginxproxy/acme-companion
   letsencrypt-companion:
     image: nginxproxy/acme-companion
     restart: always
@@ -74,7 +84,7 @@ services:
     depends_on:
       - proxy
 
-# self signed
+# self signed, outdated
 #  omgwtfssl:
 #    image: paulczar/omgwtfssl
 #    restart: "no"
