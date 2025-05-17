@@ -21,37 +21,37 @@ run_as() {
 
 # Execute all executable files in a given directory in alphanumeric order
 run_path() {
-    local hook_folder_path="/docker-entrypoint-hooks.d/$1"
-    local return_code=0
-    local found=0
+    _hook_folder_path="/docker-entrypoint-hooks.d/$1"
+    _return_code=0
+    _found=0
 
-    echo "=> Searching for hook scripts (*.sh) to run, located in the folder \"${hook_folder_path}\""
+    echo "=> Searching for hook scripts (*.sh) to run, located in the folder \"${_hook_folder_path}\""
 
-    if ! [ -d "${hook_folder_path}" ] || directory_empty "${hook_folder_path}"; then
+    if ! [ -d "${_hook_folder_path}" ] || directory_empty "${_hook_folder_path}"; then
         echo "==> Skipped: the \"$1\" folder is empty (or does not exist)"
         return 0
     fi
 
-    find "${hook_folder_path}" -maxdepth 1 -iname '*.sh' '(' -type f -o -type l ')' -print | sort | (
+    find "${_hook_folder_path}" -maxdepth 1 -iname '*.sh' '(' -type f -o -type l ')' -print | sort | (
         while read -r script_file_path; do
             if ! [ -x "${script_file_path}" ]; then
                 echo "==> The script \"${script_file_path}\" was skipped, because it lacks the executable flag"
-                found=$((found-1))
+                _found=$((_found-1))
                 continue
             fi
 
             echo "==> Running the script (cwd: $(pwd)): \"${script_file_path}\""
-            found=$((found+1))
-            run_as "${script_file_path}" || return_code="$?"
+            _found=$((_found+1))
+            run_as "${script_file_path}" || _return_code="$?"
 
-            if [ "${return_code}" -ne "0" ]; then
-                echo "==> Failed at executing script \"${script_file_path}\". Exit code: ${return_code}"
+            if [ "${_return_code}" -ne "0" ]; then
+                echo "==> Failed at executing script \"${script_file_path}\". Exit code: ${_return_code}"
                 exit 1
             fi
 
             echo "==> Finished executing the script: \"${script_file_path}\""
         done
-        if [ "$found" -lt "1" ]; then
+        if [ "$_found" -lt "1" ]; then
             echo "==> Skipped: the \"$1\" folder does not contain any valid scripts"
         else
             echo "=> Completed executing scripts in the \"$1\" folder"
@@ -64,23 +64,23 @@ run_path() {
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
 #  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
 file_env() {
-    local var="$1"
-    local fileVar="${var}_FILE"
-    local def="${2:-}"
-    local varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
-    local fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
-    if [ -n "${varValue}" ] && [ -n "${fileVarValue}" ]; then
-        echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+    _var="$1"
+    _fileVar="${_var}_FILE"
+    _def="${2:-}"
+    _varValue=$(env | grep -E "^${_var}=" | sed -E -e "s/^${_var}=//")
+    _fileVarValue=$(env | grep -E "^${_fileVar}=" | sed -E -e "s/^${_fileVar}=//")
+    if [ -n "${_varValue}" ] && [ -n "${_fileVarValue}" ]; then
+        echo >&2 "error: both $_var and $_fileVar are set (but are exclusive)"
         exit 1
     fi
-    if [ -n "${varValue}" ]; then
-        export "$var"="${varValue}"
-    elif [ -n "${fileVarValue}" ]; then
-        export "$var"="$(cat "${fileVarValue}")"
-    elif [ -n "${def}" ]; then
-        export "$var"="$def"
+    if [ -n "${_varValue}" ]; then
+        export "$_var"="${_varValue}"
+    elif [ -n "${_fileVarValue}" ]; then
+        export "$_var"="$(cat "${_fileVarValue}")"
+    elif [ -n "${_def}" ]; then
+        export "$_var"="$_def"
     fi
-    unset "$fileVar"
+    unset "$_fileVar"
 }
 
 if expr "$1" : "apache" 1>/dev/null; then
