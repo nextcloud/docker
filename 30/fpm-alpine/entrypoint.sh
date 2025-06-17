@@ -240,7 +240,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         echo "Starting nextcloud installation"
                         max_retries=10
                         try=0
-                        until  [ "$try" -gt "$max_retries" ] || run_as "php /var/www/html/occ maintenance:install $install_options" 
+                        until [ "$try" -gt "$max_retries" ] || run_as "php /var/www/html/occ maintenance:install $install_options"
                         do
                             echo "Retrying install..."
                             try=$((try+1))
@@ -252,21 +252,21 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         fi
                         if [ -n "${NEXTCLOUD_TRUSTED_DOMAINS+x}" ]; then
                             echo "Setting trusted domains…"
-			    set -f # turn off glob
+                            set -f # turn off glob
                             NC_TRUSTED_DOMAIN_IDX=1
                             for DOMAIN in ${NEXTCLOUD_TRUSTED_DOMAINS}; do
                                 DOMAIN=$(echo "${DOMAIN}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
                                 run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=\"${DOMAIN}\""
                                 NC_TRUSTED_DOMAIN_IDX=$((NC_TRUSTED_DOMAIN_IDX+1))
                             done
-			    set +f # turn glob back on
+                            set +f # turn glob back on
                         fi
 
                         run_path post-installation
-		    fi
+                    fi
                 fi
-		# not enough specified to do a fully automated installation 
-                if [ "$install" = false ]; then 
+                # not enough specified to do a fully automated installation
+                if [ "$install" = false ]; then
                     echo "Next step: Access your instance to finish the web-based installation!"
                     echo "Hint: You can specify NEXTCLOUD_ADMIN_USER and NEXTCLOUD_ADMIN_PASSWORD and the database variables _prior to first launch_ to fully automate initial installation."
                 fi
