@@ -21,9 +21,9 @@ run_as() {
 
 # Execute all executable files in a given directory in alphanumeric order
 run_path() {
-    local hook_folder_path="/docker-entrypoint-hooks.d/$1"
-    local return_code=0
-    local found=0
+    hook_folder_path="/docker-entrypoint-hooks.d/$1"
+    return_code=0
+    found=0
 
     echo "=> Searching for hook scripts (*.sh) to run, located in the folder \"${hook_folder_path}\""
 
@@ -57,6 +57,10 @@ run_path() {
             echo "=> Completed executing scripts in the \"$1\" folder"
         fi
     )
+
+    unset hook_folder_path
+    unset return_code
+    unset found
 }
 
 # usage: file_env VAR [DEFAULT]
@@ -64,11 +68,11 @@ run_path() {
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
 #  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
 file_env() {
-    local var="$1"
-    local fileVar="${var}_FILE"
-    local def="${2:-}"
-    local varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
-    local fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
+    var="$1"
+    fileVar="${var}_FILE"
+    def="${2:-}"
+    varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
+    fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
     if [ -n "${varValue}" ] && [ -n "${fileVarValue}" ]; then
         echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
         exit 1
@@ -80,7 +84,11 @@ file_env() {
     elif [ -n "${def}" ]; then
         export "$var"="$def"
     fi
-    unset "$fileVar"
+    unset var
+    unset fileVar
+    unset def
+    unset varValue
+    unset fileVarValue
 }
 
 if expr "$1" : "apache" 1>/dev/null; then
@@ -186,12 +194,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 rsync_options="-rlD"
             fi
 
+            # shellcheck disable=SC2086
             rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
             for dir in config data custom_apps themes; do
                 if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
+                    # shellcheck disable=SC2086
                     rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
                 fi
             done
+            # shellcheck disable=SC2086
             rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
 
             # Install
