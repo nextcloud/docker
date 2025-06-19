@@ -362,8 +362,9 @@ As long as you have not modified any of the provided config files in `/var/www/h
 
 ## Auto configuration via hook folders
 
-There are 5 hooks
+There are 6 hooks
 
+- `pre-initialization` Executed before the need to update or install Nextcloud is determined
 - `pre-installation` Executed before the Nextcloud is installed/initiated
 - `post-installation` Executed after the Nextcloud is installed/initiated
 - `pre-upgrade` Executed before the Nextcloud is upgraded
@@ -383,6 +384,7 @@ To use the hooks triggered by the `entrypoint` script, either
     image: nextcloud:stable
 
     volumes:
+      - ./app-hooks/pre-initialization:/docker-entrypoint-hooks.d/pre-initialization
       - ./app-hooks/pre-installation:/docker-entrypoint-hooks.d/pre-installation
       - ./app-hooks/post-installation:/docker-entrypoint-hooks.d/post-installation
       - ./app-hooks/pre-upgrade:/docker-entrypoint-hooks.d/pre-upgrade
@@ -390,6 +392,16 @@ To use the hooks triggered by the `entrypoint` script, either
       - ./app-hooks/before-starting:/docker-entrypoint-hooks.d/before-starting
 ...
 ```
+
+## Forcing an upgrade run
+
+Sometimes you need to force an explicit upgrade run even when the bundled Nextcloud version did not change.
+An example would be when you have custom apps bundled and you want to update those.
+
+To do this, you can simply create a file `/tmp/nextcloud-force-initialization` before the need for an upgrade is determined.
+The content is irrelevant.
+You can either create this file before starting the container, or you can use the `pre-initialization` hook to create it.
+After the update has successfully run, the file is removed automatically.
 
 # Running this image with `docker compose`
 The easiest way to get a fully featured and functional setup is using a `compose.yaml` file. There are too many different possibilities to setup your system, so here are only some examples of what you have to look for.

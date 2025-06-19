@@ -156,6 +156,8 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             flock 9
         fi
 
+        run_path pre-initialization
+
         installed_version="0.0.0.0"
         if [ -f /var/www/html/version.php ]; then
             # shellcheck disable=SC2016
@@ -169,7 +171,18 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             exit 1
         fi
 
+        need_initialization=false
+
         if version_greater "$image_version" "$installed_version"; then
+            need_initialization=true
+        fi
+
+        if [ -f /tmp/nextcloud-force-initialization ]; then
+            echo Found /tmp/nextcloud-force-initialization, forcing initialization
+            need_initialization=true
+        fi
+
+        if [ "true" = "$need_initialization" ]; then
             echo "Initializing nextcloud $image_version ..."
             if [ "$installed_version" != "0.0.0.0" ]; then
                 if [ "${image_version%%.*}" -gt "$((${installed_version%%.*} + 1))" ]; then
@@ -263,7 +276,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         fi
 
                         run_path post-installation
-		    fi
+                    fi
                 fi
 		# not enough specified to do a fully automated installation 
                 if [ "$install" = false ]; then 
@@ -282,6 +295,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 rm -f /tmp/list_before /tmp/list_after
 
                 run_path post-upgrade
+            fi
+
+            if [ -f /tmp/nextcloud-force-initialization ]; then
+                rm /tmp/nextcloud-force-initialization
             fi
 
             echo "Initializing finished"
