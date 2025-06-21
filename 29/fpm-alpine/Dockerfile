@@ -5,6 +5,7 @@ FROM php:8.2-fpm-alpine3.22
 RUN set -ex; \
     \
     apk add --no-cache \
+        ffmpeg \
         imagemagick \
         imagemagick-pdf \
         imagemagick-jpeg \
