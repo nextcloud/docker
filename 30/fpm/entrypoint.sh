@@ -21,9 +21,9 @@ run_as() {
 
 # Execute all executable files in a given directory in alphanumeric order
 run_path() {
-    local hook_folder_path="/docker-entrypoint-hooks.d/$1"
-    local return_code=0
-    local found=0
+    hook_folder_path="/docker-entrypoint-hooks.d/$1"
+    return_code=0
+    found=0
 
     echo "=> Searching for hook scripts (*.sh) to run, located in the folder \"${hook_folder_path}\""
 
@@ -57,6 +57,10 @@ run_path() {
             echo "=> Completed executing scripts in the \"$1\" folder"
         fi
     )
+
+    unset hook_folder_path
+    unset return_code
+    unset found
 }
 
 # usage: file_env VAR [DEFAULT]
@@ -64,11 +68,11 @@ run_path() {
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
 #  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
 file_env() {
-    local var="$1"
-    local fileVar="${var}_FILE"
-    local def="${2:-}"
-    local varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
-    local fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
+    var="$1"
+    fileVar="${var}_FILE"
+    def="${2:-}"
+    varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
+    fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
     if [ -n "${varValue}" ] && [ -n "${fileVarValue}" ]; then
         echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
         exit 1
@@ -80,7 +84,11 @@ file_env() {
     elif [ -n "${def}" ]; then
         export "$var"="$def"
     fi
-    unset "$fileVar"
+    unset var
+    unset fileVar
+    unset def
+    unset varValue
+    unset fileVarValue
 }
 
 if expr "$1" : "apache" 1>/dev/null; then
@@ -186,12 +194,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 rsync_options="-rlD"
             fi
 
+            # shellcheck disable=SC2086
             rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
             for dir in config data custom_apps themes; do
                 if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
+                    # shellcheck disable=SC2086
                     rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
                 fi
             done
+            # shellcheck disable=SC2086
             rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
 
             # Install
@@ -240,7 +251,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         echo "Starting nextcloud installation"
                         max_retries=10
                         try=0
-                        until  [ "$try" -gt "$max_retries" ] || run_as "php /var/www/html/occ maintenance:install $install_options" 
+                        until [ "$try" -gt "$max_retries" ] || run_as "php /var/www/html/occ maintenance:install $install_options"
                         do
                             echo "Retrying install..."
                             try=$((try+1))
@@ -252,21 +263,21 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         fi
                         if [ -n "${NEXTCLOUD_TRUSTED_DOMAINS+x}" ]; then
                             echo "Setting trusted domains…"
-			    set -f # turn off glob
+                            set -f # turn off glob
                             NC_TRUSTED_DOMAIN_IDX=1
                             for DOMAIN in ${NEXTCLOUD_TRUSTED_DOMAINS}; do
                                 DOMAIN=$(echo "${DOMAIN}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
                                 run_as "php /var/www/html/occ config:system:set trusted_domains $NC_TRUSTED_DOMAIN_IDX --value=\"${DOMAIN}\""
                                 NC_TRUSTED_DOMAIN_IDX=$((NC_TRUSTED_DOMAIN_IDX+1))
                             done
-			    set +f # turn glob back on
+                            set +f # turn glob back on
                         fi
 
                         run_path post-installation
-		    fi
+                    fi
                 fi
-		# not enough specified to do a fully automated installation 
-                if [ "$install" = false ]; then 
+                # not enough specified to do a fully automated installation
+                if [ "$install" = false ]; then
                     echo "Next step: Access your instance to finish the web-based installation!"
                     echo "Hint: You can specify NEXTCLOUD_ADMIN_USER and NEXTCLOUD_ADMIN_PASSWORD and the database variables _prior to first launch_ to fully automate initial installation."
                 fi
