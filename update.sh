@@ -10,7 +10,6 @@ declare -A debian_version=(
 )
 
 declare -A php_version=(
-	[29]='8.2'
 	[default]='8.3'
 )
 
@@ -95,7 +94,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='29'
+min_version='30'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
