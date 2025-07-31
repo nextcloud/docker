@@ -99,6 +99,25 @@ services:
 #    networks:
 #      - proxy-tier
 
+#Self-signed Certificate Generator (Replaces omgwtfssl)
+  cert-generator:
+    image: frapsoft/openssl
+    container_name: cert-generator-postgres-fpm
+    command: >
+      sh -c "
+      openssl req -x509 -nodes -days 365 -newkey rsa:2048
+        -keyout /certs/servhostname.local.key
+        -out /certs/servhostname.local.crt
+        -subj '/CN=servhostname.local/O=MyOrg/C=US'
+      && openssl req -new -key /certs/servhostname.local.key
+        -out /certs/servhostname.local.csr
+        -subj '/CN=servhostname.local/O=MyOrg/C=US'"
+    volumes:
+      - certs:/certs
+    restart: "no"
+    networks:
+      - proxy-tier
+
 volumes:
   db:
   nextcloud:
