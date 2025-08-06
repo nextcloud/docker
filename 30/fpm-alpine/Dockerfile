@@ -63,7 +63,7 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.25; \
+    pecl install APCu-5.1.26; \
     pecl install igbinary-3.2.16; \
     pecl install imagick-3.8.0; \
     pecl install memcached-3.3.0 \
