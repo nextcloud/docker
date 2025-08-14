@@ -8,13 +8,13 @@
       "apache": {
         "variant": "apache",
         "base": "debian",
-        "baseVersion": "bookworm",
+        "baseVersion": "trixie",
         "phpVersion": "8.3"
       },
       "fpm": {
         "variant": "fpm",
         "base": "debian",
-        "baseVersion": "bookworm",
+        "baseVersion": "trixie",
         "phpVersion": "8.3"
       },
       "fpm-alpine": {
@@ -34,13 +34,13 @@
       "apache": {
         "variant": "apache",
         "base": "debian",
-        "baseVersion": "bookworm",
+        "baseVersion": "trixie",
         "phpVersion": "8.3"
       },
       "fpm": {
         "variant": "fpm",
         "base": "debian",
-        "baseVersion": "bookworm",
+        "baseVersion": "trixie",
         "phpVersion": "8.3"
       },
       "fpm-alpine": {

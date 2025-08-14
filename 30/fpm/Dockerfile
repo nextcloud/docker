@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.3-fpm-bookworm
+FROM php:8.3-fpm-trixie
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -9,10 +9,10 @@ RUN set -ex; \
         busybox-static \
         bzip2 \
         libldap-common \
-        libmagickcore-6.q16-6-extra \
+        libmagickcore-7.q16-10-extra \
         rsync \
     ; \
-    rm -rf /var/lib/apt/lists/*; \
+    apt-get dist-clean; \
     \
     mkdir -p /var/spool/cron/crontabs; \
     echo '*/5 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
@@ -57,7 +57,6 @@ RUN set -ex; \
         gmp \
         intl \
         ldap \
-        opcache \
         pcntl \
         pdo_mysql \
         pdo_pgsql \
@@ -89,13 +88,14 @@ RUN set -ex; \
     ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { so = $(NF-1); if (index(so, "/usr/local/") == 1) { next }; gsub("^/(usr/)?", "", so); print so }' \
         | sort -u \
-        | xargs -r dpkg-query --search \
-        | cut -d: -f1 \
+        | xargs -rt dpkg-query --search \
+# https://manpages.debian.org/trixie/dpkg/dpkg-query.1.en.html#S (we ignore diversions and it'll be really unusual for more than one package to provide any given .so file)
+        | awk 'sub(":$", "", $1) { print $1 }' \
         | sort -u \
         | xargs -rt apt-mark manual; \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-    rm -rf /var/lib/apt/lists/*
+    apt-get dist-clean
 
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/latest/admin_manual/installation/server_tuning.html#enable-php-opcache
@@ -160,7 +160,7 @@ RUN set -ex; \
     chmod +x /usr/src/nextcloud/occ; \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
-    rm -rf /var/lib/apt/lists/*
+    apt-get dist-clean
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
