@@ -1,6 +1,9 @@
 name: Publish Docker image for PR
 
 on:
+  push:
+    branches:
+      - master
   pull_request:
     branches:
       - "**"
