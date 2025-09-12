@@ -1,9 +1,9 @@
 {
   "31": {
     "branch": "31",
-    "version": "31.0.8",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-31.0.8.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-31.0.8.tar.bz2.asc",
+    "version": "31.0.9",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-31.0.9.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-31.0.9.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",
@@ -27,9 +27,9 @@
   },
   "30": {
     "branch": "30",
-    "version": "30.0.14",
-    "url": "https://download.nextcloud.com/server/releases/nextcloud-30.0.14.tar.bz2",
-    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-30.0.14.tar.bz2.asc",
+    "version": "30.0.15",
+    "url": "https://download.nextcloud.com/server/releases/nextcloud-30.0.15.tar.bz2",
+    "ascUrl": "https://download.nextcloud.com/server/releases/nextcloud-30.0.15.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",
