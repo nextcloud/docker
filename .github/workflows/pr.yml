@@ -32,6 +32,7 @@ jobs:
           images: ghcr.io/trajano/nextcloud
           tags: |
             type=ref,event=pr,suffix=-apache
+            type=raw,value=latest,enable=${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -66,6 +67,7 @@ jobs:
           images: ghcr.io/trajano/nextcloud
           tags: |
             type=ref,event=pr,suffix=-fpm
+            type=raw,value=fpm,enable=${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
