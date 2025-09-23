@@ -139,6 +139,28 @@ file_env() {
 }
 
 ###############################################################################
+# rsync_wrapper
+# Helper to invoke rsync with the appropriate options depending on user/group.
+# Arguments:
+#   $@ - Additional rsync arguments and paths.
+# Globals:
+#   user - Username to use for chown (when running as root).
+# Returns: the exit code of the rsync command.
+# 
+# Handles:
+#   - SC2086 and word-splitting safely
+#   - DRY invocation of rsync for all sync operations
+###############################################################################
+rsync_wrapper() {
+    if [ "$(id -u)" = 0 ]; then
+        set -- -rlDog --chown "$user:$group" "$@"
+    else
+        set -- -rlD "$@"
+    fi
+    rsync "$@"
+}
+
+###############################################################################
 # Main Entrypoint Logic
 ###############################################################################
 
@@ -265,30 +287,95 @@ EOF
                 run_as "$OCC app:list" | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
             fi
 
-            # Handle rsync configuration
-            if [ "$(id -u)" = 0 ]; then
-                rsync_options="-rlDog --chown $user:$group"
-            else
-                rsync_options="-rlD"
-            fi
+            # Deploy image code onto the persistent storage volume.
+            ##########################################################################################
+            # Why we copy Nextcloud code from the image to persistent storage
+            #
+            # Nextcloud's application directory needs to be on persistent storage, not just inside
+            # the container's writable/read-only layers. This ensures:
+            #   - All code and changes survive container restarts and replacements.
+            #   - Clustering (using multiple containers with shared data) functions as expected.
+            #   - Nextcloud can safely modify, add, or remove files (mainly under config/, data/, apps/, 
+            #     custom_apps/) during normal operation.
+            #   - Upgrades, apps, and troubleshooting work reliably.
+            #
+            # The container’s writable layer is temporary and unique to each container. Changes made there
+            # are lost if the container is removed and are not shared between containers.
+            #
+            # This approach follows Nextcloud's official installation conventions and is necessary for
+            # robust container deployments.
+            #
+            # Note:
+            #   - Actual file changes are typically limited to config/, data/, apps/, and custom_apps/ 
+            #     in a standard setup (so there may be some room for improvement here).
+            #
+            # TODO:
+            #   - Consider ways to further streamline this process upstream.
+            #   - Investigate separating truly read-only folders from writable ones.
+            ##########################################################################################
 
-            # Replace installed code with newer image code except for exclusions
-            rsync "$rsync_options" --delete --exclude-from=/upgrade.exclude \
-                /usr/src/nextcloud/ /var/www/html/
+            # Replace installed code with newer image code except for exclusions.
+            #
+            # Risks & Considerations:
+            #   - Deleting files not listed in the exclusions file could remove legitimate Nextcloud data
+            #     if users overlook documentation or misconfigure persistent storage.
+            #   - Using rsync (cp would be similar) are slow on NFS and other network filesystems,
+            #     sometimes merely annoyingly; sometimes unacceptably.
+            #
+            # Alternative Approaches:
+            #   - Warn if we detect unexpected files that would be deleted, but avoid a hard error to
+            #     allow legitimate Nextcloud files/folders.
+            #   - A dry-run mode with a hard error would prevent mistakes, but also block valid upgrades.
+            #   - Batching files with tar on both ends of a pipe might help with performance.
+            #
+            # TODO:
+            #   - Print a warning if non-excluded files are detected for deletion.
+            #   - Investigate a middle ground between safety (preventing accidental deletion)
+            #     and usability (supporting easy upgrades).
+            #   - Consider batching file transfers for better performance on network filesystems.
+            #
+            # Notes:
+            #   - The current rsync approach works for local filesystems but may be slow or appear
+            #     to hang on networked storage.
 
-            # Utilize newer image code versions if no existing { config, data, custom_apps, themes }
+            rsync_wrapper \
+                --delete \
+                --exclude-from=/upgrade.exclude \
+                /usr/src/nextcloud/ \
+                /var/www/html/
+
+            # Copy newer image code for the following directories ONLY if they do not exist or are empty:
+            #   - config/
+            #   - data/
+            #   - custom_apps/
+            #   - themes/
+            #
+            # TODO:
+            #   - Consider updating only 'themes/' here, and move handling of 'config/', 'data/', and
+            #     'custom_apps/' into the install block. These directories should not be modified during a
+            #     regular update/upgrade.
+            #   - Review whether this change would cause any unexpected behavior or introduce breaking
+            #     changes.
+            
             for dir in config data custom_apps themes; do
                 if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
-                    rsync "$rsync_options" --include "/$dir/" --exclude '/*' \
-                        /usr/src/nextcloud/ /var/www/html/
+                    rsync_wrapper \
+                        --include "/$dir/" \
+                        --exclude '/*' \
+                        /usr/src/nextcloud/ \
+                        /var/www/html/
                 fi
             done
 
             # Replace installed code's version.php with newer image code version
-            rsync "$rsync_options" --include '/version.php' --exclude '/*' \
-                /usr/src/nextcloud/ /var/www/html/
+            rsync_wrapper \
+                --include '/version.php' \
+                --exclude '/*' \
+                /usr/src/nextcloud/ \
+                /var/www/html/
 
             # Install block for fresh instances.
+            # TODO: Consider moving install block to a dedicated function
             if [ "$installed_version" = "0.0.0.0" ]; then
                 echo "New nextcloud instance"
 
@@ -397,6 +484,7 @@ EOF
                 fi
 
             # Upgrade path for existing instances.
+            # TODO: Consider moving upgrade block to a dedicated function
             else
                 # Trigger pre-upgrade hook scripts (if any)
                 run_path pre-upgrade
