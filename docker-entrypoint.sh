@@ -438,6 +438,8 @@ warn_config_diffs() {
 # Sets database related install_options for the Nextcloud installer, and set trigger_installer flag if config is sufficient.
 # Arguments: none (uses env vars)
 # Sets: install_options (global), trigger_installer (global)
+# TODO: More properly handle arguments/splitting (will require some refactoring elsewhere including run_as/run_as calls)
+# TODO: Switch to using more proper `=` instead of whitespace between long options and their respective values
 ###############################################################################
 assemble_db_install_options() {
     
@@ -569,8 +571,8 @@ if is_apache || is_php_fpm || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
         fi
 
         # Instalization block.
-        # - Initialization is only for new installs or upgrades.
-        # - Bypassed if there's nothing to do
+        # - Initialization is only for new installs or (valid) upgrade scenarios.
+        # - Bypassed if there's nothing to do (or blocked above before we even get here)
         if ! is_installed || version_greater "$image_version" "$installed_version"; then
             echo "Initializing nextcloud $image_version ..."
 
@@ -753,7 +755,10 @@ if is_apache || is_php_fpm || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
         fi
     ) 9> /var/www/html/nextcloud-init-sync.lock
 
+    # Check (and warn about) Nextcloud persistent storage `config/` files that are out-of-date with image version
     warn_config_diffs
+    
+    # Trigger before-starting hook scripts (if any)
     run_path before-starting
 fi
 
@@ -761,4 +766,6 @@ fi
 # Handoff to Main Container Process
 ###############################################################################
 
+set -x
+echo "Handing off via exec: $@"
 exec "$@"
