@@ -571,7 +571,7 @@ if is_apache || is_php_fpm || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
         # Instalization block.
         # - Initialization is only for new installs or upgrades.
         # - Bypassed if there's nothing to do
-        if ! is installed || version_greater "$image_version" "$installed_version"; then
+        if ! is_installed || version_greater "$image_version" "$installed_version"; then
             echo "Initializing nextcloud $image_version ..."
 
             # A prior version is already installed, and has been deemed within allowed upgrade jump range so proceed.
