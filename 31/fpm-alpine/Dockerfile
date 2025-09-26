@@ -32,7 +32,6 @@ RUN set -ex; \
         imagemagick-dev \
         libevent-dev \
         libjpeg-turbo-dev \
-        libmcrypt-dev \
         libmemcached-dev \
         libpng-dev \
         libwebp-dev \
