@@ -67,7 +67,7 @@ RUN set -ex; \
     pecl install APCu-5.1.27; \
     pecl install igbinary-3.2.16; \
     pecl install imagick-3.8.0; \
-    pecl install memcached-3.3.0 \
+    pecl install memcached-3.4.0 \
         --configureoptions 'enable-memcached-igbinary="yes"'; \
     pecl install redis-6.2.0 \
         --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
