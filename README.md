@@ -15,6 +15,46 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 
 ⚠️⚠️⚠️ This image is maintained by community volunteers and designed for expert use. For quick and easy deployment that supports the full set of Nextcloud Hub features, use the [Nextcloud All-in-One docker container](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one) maintained by Nextcloud GmbH.
 
+## Table of Contents
+- [What is Nextcloud?](#what-is-nextcloud)
+- [How to use this image](#how-to-use-this-image)
+  - [Getting help](#getting-help)
+  - [Using the apache image](#using-the-apache-image)
+  - [Using the fpm image](#using-the-fpm-image)
+  - [Using an external database](#using-an-external-database)
+  - [Persistent data](#persistent-data)
+    - [Additional volumes](#additional-volumes)
+    - [Custom volumes](#custom-volumes)
+  - [Running as an arbitrary user / file permissions / changing the default container user](#running-as-an-arbitrary-user--file-permissions--changing-the-default-container-user)
+  - [Accessing the Nextcloud command-line interface (`occ`)](#accessing-the-nextcloud-command-line-interface-occ)
+  - [Viewing the Nextcloud configuration (`config.php`)](#viewing-the-nextcloud-configuration-configphp)
+  - [Auto configuration via environment variables](#auto-configuration-via-environment-variables)
+    - [Database parameters](#database-parameters)
+    - [Initial admin account](#initial-admin-account)
+    - [Custom Data directory (`datadirectory`)](#custom-data-directory-datadirectory)
+    - [Trusted domains (`trusted_domains`)](#trusted-domains-trusted_domains)
+    - [Image specific](#image-specific)
+    - [Redis Memory Caching](#redis-memory-caching)
+    - [E-mail (SMTP) Configuration](#e-mail-smtp-configuration)
+    - [Object Storage (Primary Storage)](#object-storage-primary-storage)
+    - [PHP Configuration](#php-configuration)
+    - [Apache Configuration](#apache-configuration)
+    - [Using the image behind a reverse proxy and specifying the server host and protocol](#using-the-image-behind-a-reverse-proxy-and-specifying-the-server-host-and-protocol)
+    - [Handling `Warning: /var/www/html/config/$cfgFile differs from the latest version of this image at /usr/src/nextcloud/config/$cfgFile` (aka: Auto configuration and Nextcloud updates)](#handling-warning-varwwwhtmlconfigcfgfile-differs-from-the-latest-version-of-this-image-at-usrsrcnextcloudconfigcfgfile-aka-auto-configuration-and-nextcloud-updates)
+  - [Auto configuration via hook folders](#auto-configuration-via-hook-folders)
+- [Running this image with `docker compose`](#running-this-image-with-docker-compose)
+  - [Base version - apache](#base-version---apache)
+  - [Base version - FPM](#base-version---fpm)
+- [Docker Secrets](#docker-secrets)
+- [Make your Nextcloud available from the internet](#make-your-nextcloud-available-from-the-internet)
+  - [HTTPS - SSL encryption](#https---ssl-encryption)
+- [First use](#first-use)
+- [Update to a newer version](#update-to-a-newer-version)
+- [Adding Features](#adding-features)
+- [Migrating an existing installation](#migrating-an-existing-installation)
+  - [Migrating from a non-Alpine image to an Alpine image](#migrating-from-a-non-alpine-image-to-an-alpine-image)
+- [Reporting bugs or suggesting enhancements](#reporting-bugs-or-suggesting-enhancements)
+
 # How to use this image
 This image is designed to be used in a micro-service environment. There are two versions of the image you can choose from.
 
