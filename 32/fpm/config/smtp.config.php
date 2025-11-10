@@ -4,6 +4,7 @@ if (getenv('SMTP_HOST') && getenv('MAIL_FROM_ADDRESS') && getenv('MAIL_DOMAIN'))
     'mail_smtpmode' => 'smtp',
     'mail_smtphost' => getenv('SMTP_HOST'),
     'mail_smtpport' => getenv('SMTP_PORT') ?: (getenv('SMTP_SECURE') ? 465 : 25),
+    'mail_smtptimeout' => getenv('SMTP_TIMEOUT') ?: 30,
     'mail_smtpsecure' => getenv('SMTP_SECURE') ?: '',
     'mail_smtpauth' => getenv('SMTP_NAME') && (getenv('SMTP_PASSWORD') || getenv('SMTP_PASSWORD_FILE')),
     'mail_smtpauthtype' => getenv('SMTP_AUTHTYPE') ?: 'LOGIN',

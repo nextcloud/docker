@@ -299,6 +299,7 @@ To use an external SMTP server, you have to provide the connection details. Note
 - `SMTP_HOST` (not set by default): The hostname of the SMTP server.
 - `SMTP_SECURE` (empty by default): Set to `ssl` to use SSL, or `tls` to use STARTTLS.
 - `SMTP_PORT` (default: `465` for SSL and `25` for non-secure connections): Optional port for the SMTP connection. Use `587` for an alternative port for STARTTLS.
+- `SMTP_TIMEOUT` (default: `30`): SMTP timeout in seconds
 - `SMTP_AUTHTYPE` (default: `LOGIN`): The method used for authentication. Use `PLAIN` if no authentication is required.
 - `SMTP_NAME` (empty by default): The username for the authentication.
 - `SMTP_PASSWORD` (empty by default): The password for the authentication.
