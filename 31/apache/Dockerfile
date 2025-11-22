@@ -8,6 +8,7 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         busybox-static \
         bzip2 \
+        ffmpeg \
         libldap-common \
         libmagickcore-7.q16-10-extra \
         rsync \
