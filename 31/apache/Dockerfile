@@ -35,6 +35,7 @@ RUN set -ex; \
         libicu-dev \
         libjpeg-dev \
         libldap2-dev \
+        liblz4-dev \
         libmagickwand-dev \
         libmemcached-dev \
         libpng-dev \
