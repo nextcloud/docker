@@ -63,10 +63,10 @@ RUN set -ex; \
     pecl install APCu-%%APCU_VERSION%%; \
     pecl install igbinary-%%IGBINARY_VERSION%%; \
     pecl install imagick-%%IMAGICK_VERSION%%; \
-    pecl install memcached-%%MEMCACHED_VERSION%% \
-        --configureoptions 'enable-memcached-igbinary="yes"'; \
-    pecl install redis-%%REDIS_VERSION%% \
-        --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
+    pecl install --configureoptions 'enable-memcached-igbinary="yes"' \
+        memcached-%%MEMCACHED_VERSION%%; \
+    pecl install --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' \
+        redis-%%REDIS_VERSION%%; \
     \
     docker-php-ext-enable \
         apcu \
