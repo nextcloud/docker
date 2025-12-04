@@ -132,7 +132,11 @@ RUN { \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-VOLUME /var/www/html
+VOLUME /var/www/html/data
+VOLUME /var/www/html/config
+VOLUME /var/www/html/custom_apps
+VOLUME /var/www/html/themes
+VOLUME /var/www/tmp
 
 
 ENV NEXTCLOUD_VERSION 32.0.2
@@ -152,12 +156,17 @@ RUN set -ex; \
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
     gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
     tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
+    mkdir /usr/src/nextcloud-base; \
+    mv -vf /usr/src/nextcloud/config /usr/src/nextcloud/themes /usr/src/nextcloud-base/; \
+    rm -Rvf /var/www/html; \
+    mv -vf /usr/src/nextcloud /var/www/html; \
+    mv -vf /usr/src/nextcloud-base /usr/src/nextcloud; \
     gpgconf --kill all; \
-    rm nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    rm -rf "$GNUPGHOME" /usr/src/nextcloud/updater; \
-    mkdir -p /usr/src/nextcloud/data; \
-    mkdir -p /usr/src/nextcloud/custom_apps; \
-    chmod +x /usr/src/nextcloud/occ; \
+    rm -rf "$GNUPGHOME" /var/www/html/updater; \
+    mkdir -p /var/www/html/data; \
+    mkdir -p /var/www/html/custom_apps; \
+    mkdir -p /var/www/html/themes; \
+    chmod +x /var/www/html/occ; \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
     apt-get dist-clean
