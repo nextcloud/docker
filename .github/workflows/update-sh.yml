@@ -5,7 +5,7 @@ on:
     branches:
     - master
   schedule:
-  - cron:  '15 0 * * *'
+  - cron:  '15 18 * * *'
   workflow_dispatch:
 
 jobs:
