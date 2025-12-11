@@ -1,4 +1,20 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
+FROM php:8.3-fpm-trixie AS usr-src
+RUN --mount=type=cache,sharing=locked,target=/var/lib/apt \
+    --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get update -y && \
+    apt-get install -y gnupg dirmngr
+ADD https://github.com/nextcloud-releases/server/releases/download/v32.0.3/nextcloud-32.0.3.tar.bz2 nextcloud.tar.bz2
+ADD https://github.com/nextcloud-releases/server/releases/download/v32.0.3/nextcloud-32.0.3.tar.bz2.asc nextcloud.tar.bz2.asc
+RUN tar -xjf nextcloud.tar.bz2 -C /usr/src/ && \
+# gpg key from https://nextcloud.com/nextcloud.asc
+    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A && \
+    gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2 && \
+    rm -rf /usr/src/nextcloud/updater && \
+    mkdir -p /usr/src/nextcloud/data && \
+    mkdir -p /usr/src/nextcloud/custom_apps && \
+    chmod +x /usr/src/nextcloud/occ
+
 FROM php:8.3-fpm-trixie
 
 # entrypoint.sh and cron.sh dependencies
@@ -20,10 +36,12 @@ RUN set -ex; \
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
-ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 512M
-ENV PHP_OPCACHE_MEMORY_CONSUMPTION 128
-RUN set -ex; \
+ENV PHP_MEMORY_LIMIT=512M \
+ PHP_UPLOAD_LIMIT=512M \
+ PHP_OPCACHE_MEMORY_CONSUMPTION=128
+RUN --mount=type=cache,sharing=locked,target=/var/lib/apt \
+    --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
     \
@@ -136,33 +154,8 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 32.0.3
-
-RUN set -ex; \
-    fetchDeps=" \
-        gnupg \
-        dirmngr \
-    "; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends $fetchDeps; \
-    \
-    curl -fsSL -o nextcloud.tar.bz2 "https://github.com/nextcloud-releases/server/releases/download/v32.0.3/nextcloud-32.0.3.tar.bz2"; \
-    curl -fsSL -o nextcloud.tar.bz2.asc "https://github.com/nextcloud-releases/server/releases/download/v32.0.3/nextcloud-32.0.3.tar.bz2.asc"; \
-    export GNUPGHOME="$(mktemp -d)"; \
-# gpg key from https://nextcloud.com/nextcloud.asc
-    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
-    gpg --batch --verify nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    tar -xjf nextcloud.tar.bz2 -C /usr/src/; \
-    gpgconf --kill all; \
-    rm nextcloud.tar.bz2.asc nextcloud.tar.bz2; \
-    rm -rf "$GNUPGHOME" /usr/src/nextcloud/updater; \
-    mkdir -p /usr/src/nextcloud/data; \
-    mkdir -p /usr/src/nextcloud/custom_apps; \
-    chmod +x /usr/src/nextcloud/occ; \
-    \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
-    apt-get dist-clean
-
+ENV NEXTCLOUD_VERSION=32.0.3
+COPY --from=usr-src /usr/src/ /usr/src/
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
