@@ -43,7 +43,7 @@ RUN set -ex; \
     ; \
     \
     docker-php-ext-configure ftp --with-openssl-dir=/usr; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif; \
     docker-php-ext-configure ldap; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
@@ -53,6 +53,7 @@ RUN set -ex; \
         gmp \
         intl \
         ldap \
+        opcache \
         pcntl \
         pdo_mysql \
         pdo_pgsql \
