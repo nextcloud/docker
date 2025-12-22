@@ -1,0 +1,12 @@
+services:
+  nextcloud:
+    image: nextcloud-fixed
+    container_name: nextcloud
+    ports:
+      - "8080:80"
+    volumes:
+      - nextcloud:/var/www/html
+    restart: always
+
+volumes:
+  nextcloud:
