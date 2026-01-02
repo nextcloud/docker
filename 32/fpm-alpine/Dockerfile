@@ -34,6 +34,7 @@ RUN set -ex; \
         libjpeg-turbo-dev \
         libmemcached-dev \
         libpng-dev \
+        libavif-dev
         libwebp-dev \
         libxml2-dev \
         libzip-dev \

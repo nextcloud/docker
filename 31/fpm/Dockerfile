@@ -40,6 +40,7 @@ RUN set -ex; \
         libmemcached-dev \
         libpng-dev \
         libpq-dev \
+        libavif-dev \
         libwebp-dev \
         libxml2-dev \
         libzip-dev \
