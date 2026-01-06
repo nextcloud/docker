@@ -216,7 +216,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     file_env POSTGRES_DB
                     file_env POSTGRES_PASSWORD
                     file_env POSTGRES_USER
-
+                    
                     if [ -n "${SQLITE_DATABASE+x}" ]; then
                         echo "Installing with SQLite database"
                         # shellcheck disable=SC2016
@@ -263,6 +263,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                         fi
 
                         run_path post-installation
+                        
+                        if [ -n "$POSTGRES_SSLMODE" ]; then
+                            echo "Configuring Postgres SSL Mode..."
+                            run_as 'php /var/www/html/occ config:system:set dbdriveroptions 1000 --value="'$POSTGRES_SSLMODE'" --type=string'
+                        fi
 		    fi
                 fi
 		# not enough specified to do a fully automated installation 

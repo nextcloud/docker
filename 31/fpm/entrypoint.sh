@@ -216,6 +216,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     file_env POSTGRES_DB
                     file_env POSTGRES_PASSWORD
                     file_env POSTGRES_USER
+					if [ -n "$POSTGRES_SSLMODE" ]; then
+    # 1000 is the internal PHP PDO constant for PDO::PGSQL_ATTR_SSL_MODE
+    run_as 'php /var/www/html/occ config:system:set dbdriveroptions 1000 --value="'$POSTGRES_SSLMODE'" --type=string'
+fi
+
+if [ -n "$POSTGRES_SSLCA" ]; then
+    # 1012 is the internal PHP PDO constant for PDO::PGSQL_ATTR_SSL_CA
+    run_as 'php /var/www/html/occ config:system:set dbdriveroptions 1012 --value="'$POSTGRES_SSLCA'" --type=string'
+fi
 
                     if [ -n "${SQLITE_DATABASE+x}" ]; then
                         echo "Installing with SQLite database"
