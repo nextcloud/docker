@@ -19,9 +19,9 @@ RUN set -ex; \
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
-ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 512M
-ENV PHP_OPCACHE_MEMORY_CONSUMPTION 128
+ENV PHP_MEMORY_LIMIT=512M
+ENV PHP_UPLOAD_LIMIT=512M
+ENV PHP_OPCACHE_MEMORY_CONSUMPTION=128
 RUN set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
@@ -144,13 +144,13 @@ RUN a2enmod headers rewrite remoteip ; \
     a2enconf remoteip
 
 # set apache config LimitRequestBody
-ENV APACHE_BODY_LIMIT 1073741824
+ENV APACHE_BODY_LIMIT=1073741824
 RUN { \
      echo 'LimitRequestBody ${APACHE_BODY_LIMIT}'; \
     } > /etc/apache2/conf-available/apache-limits.conf; \
     a2enconf apache-limits
 
-ENV NEXTCLOUD_VERSION 32.0.3
+ENV NEXTCLOUD_VERSION=32.0.3
 
 RUN set -ex; \
     fetchDeps=" \
