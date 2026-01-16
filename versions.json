@@ -1,9 +1,9 @@
 {
   "32": {
     "branch": "32",
-    "version": "32.0.4",
-    "url": "https://github.com/nextcloud-releases/server/releases/download/v32.0.4/nextcloud-32.0.4.tar.bz2",
-    "ascUrl": "https://github.com/nextcloud-releases/server/releases/download/v32.0.4/nextcloud-32.0.4.tar.bz2.asc",
+    "version": "32.0.5",
+    "url": "https://github.com/nextcloud-releases/server/releases/download/v32.0.5/nextcloud-32.0.5.tar.bz2",
+    "ascUrl": "https://github.com/nextcloud-releases/server/releases/download/v32.0.5/nextcloud-32.0.5.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",
