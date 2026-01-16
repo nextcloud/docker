@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.3-fpm-trixie
+FROM php:8.4-fpm-trixie
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -40,14 +40,15 @@ RUN set -ex; \
         libmemcached-dev \
         libpng-dev \
         libpq-dev \
+        libavif-dev \
         libwebp-dev \
         libxml2-dev \
         libzip-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
-    docker-php-ext-configure ftp --with-openssl-dir=/usr; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
+    docker-php-ext-configure ftp --with-ftp-ssl; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
@@ -57,6 +58,7 @@ RUN set -ex; \
         gmp \
         intl \
         ldap \
+        opcache \
         pcntl \
         pdo_mysql \
         pdo_pgsql \

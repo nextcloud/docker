@@ -11,6 +11,12 @@ declare -A debian_version=(
 
 declare -A php_version=(
 	[default]='8.3'
+	[32]='8.4'
+)
+
+declare -A ftp_options=(
+	[default]='--with-openssl-dir=/usr'
+	[8.4]='--with-ftp-ssl'
 )
 
 declare -A cmd=(
@@ -107,6 +113,7 @@ function create_variant() {
 	debianVersion=${debian_version[$version]-${debian_version[default]}}
 	phpVersion=${php_version[$version]-${php_version[default]}}
 	crontabInt=${crontab_int[$version]-${crontab_int[default]}}
+	ftp_options=${ftp_options[$phpVersion]-${ftp_options[default]}}
 	url="https://github.com/nextcloud-releases/server/releases/download/v$fullversion/nextcloud-$fullversion.tar.bz2"
 	ascUrl="https://github.com/nextcloud-releases/server/releases/download/v$fullversion/nextcloud-$fullversion.tar.bz2.asc"
 
@@ -132,6 +139,7 @@ function create_variant() {
 		s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
 		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
 		s/%%IGBINARY_VERSION%%/'"${pecl_versions[igbinary]}"'/g;
+		s|%%FTP_OPTIONS%%|'"$ftp_options"'|g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
