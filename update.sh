@@ -11,7 +11,7 @@ declare -A debian_version=(
 
 declare -A php_version=(
 	[default]='8.3'
-	[32]='8.4'
+	[33]='8.4'
 )
 
 declare -A ftp_options=(
