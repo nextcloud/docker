@@ -27,8 +27,8 @@ declare -A base=(
 
 declare -A extras=(
 	[apache]='\nRUN a2enmod headers rewrite remoteip ; \\\n    { \\\n     echo '\''RemoteIPHeader X-Real-IP'\''; \\\n     echo '\''RemoteIPInternalProxy 10.0.0.0/8'\''; \\\n     echo '\''RemoteIPInternalProxy 172.16.0.0/12'\''; \\\n     echo '\''RemoteIPInternalProxy 192.168.0.0/16'\''; \\\n    } > /etc/apache2/conf-available/remoteip.conf; \\\n    a2enconf remoteip\n\n# set apache config LimitRequestBody\nENV APACHE_BODY_LIMIT 1073741824\nRUN { \\\n     echo '\''LimitRequestBody ${APACHE_BODY_LIMIT}'\''; \\\n    } > /etc/apache2/conf-available/apache-limits.conf; \\\n    a2enconf apache-limits'
-	[fpm]=''
-	[fpm-alpine]=''
+	[fpm]='\nENV PHP_PM_MAX_CHILDREN 16\nRUN {\\\n     echo'\''pm = pm=dynamic'\''; \\\n     echo'\''pm.start_servers = 4'\''; \\\n     echo'\''pm.min_spare_servers = 2'\''; \\\n     echo'\''pm.max_spare_servers = 24'\''; \\\n     echo'\''pm.max_children = ${PHP_PM_MAX_CHILDREN}'\''; \\\n    } > "${PHP_FPM_DIR}/nextcloud.conf";\n'
+	[fpm-alpine]='\nENV PHP_PM_MAX_CHILDREN 16\nRUN {\\\n     echo'\''pm = pm=dynamic'\''; \\\n     echo'\''pm.start_servers = 4'\''; \\\n     echo'\''pm.min_spare_servers = 2'\''; \\\n     echo'\''pm.max_spare_servers = 24'\''; \\\n     echo'\''pm.max_children = ${PHP_PM_MAX_CHILDREN}'\''; \\\n    } > "${PHP_FPM_DIR}/nextcloud.conf";\n'
 )
 
 declare -A crontab_int=(
