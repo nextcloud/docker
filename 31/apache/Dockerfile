@@ -35,6 +35,7 @@ RUN set -ex; \
         libicu-dev \
         libjpeg-dev \
         libldap2-dev \
+        liblz4-dev \
         libmagickwand-dev \
         libmemcached-dev \
         libpng-dev \
@@ -64,13 +65,13 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.27; \
+    pecl install APCu-5.1.28; \
     pecl install igbinary-3.2.16; \
-    pecl install imagick-3.8.0; \
-    pecl install memcached-3.3.0 \
-        --configureoptions 'enable-memcached-igbinary="yes"'; \
-    pecl install redis-6.2.0 \
-        --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
+    pecl install imagick-3.8.1; \
+    pecl install --configureoptions 'enable-memcached-igbinary="yes"' \
+        memcached-3.4.0; \
+    pecl install --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' \
+        redis-6.3.0; \
     \
     docker-php-ext-enable \
         apcu \
@@ -149,7 +150,7 @@ RUN { \
     } > /etc/apache2/conf-available/apache-limits.conf; \
     a2enconf apache-limits
 
-ENV NEXTCLOUD_VERSION 31.0.9
+ENV NEXTCLOUD_VERSION 31.0.14
 
 RUN set -ex; \
     fetchDeps=" \
@@ -159,8 +160,8 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends $fetchDeps; \
     \
-    curl -fsSL -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-31.0.9.tar.bz2"; \
-    curl -fsSL -o nextcloud.tar.bz2.asc "https://download.nextcloud.com/server/releases/nextcloud-31.0.9.tar.bz2.asc"; \
+    curl -fsSL -o nextcloud.tar.bz2 "https://github.com/nextcloud-releases/server/releases/download/v31.0.14/nextcloud-31.0.14.tar.bz2"; \
+    curl -fsSL -o nextcloud.tar.bz2.asc "https://github.com/nextcloud-releases/server/releases/download/v31.0.14/nextcloud-31.0.14.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
