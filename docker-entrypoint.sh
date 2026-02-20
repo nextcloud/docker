@@ -19,6 +19,37 @@ run_as() {
     fi
 }
 
+# Function to get and validate Nextcloud version from version.php
+# Arguments: 
+#   $1 - path to version.php file
+#   $2 - description (e.g., "installed" or "image") for error messages
+# Returns:  version string on success, exits on failure
+get_nextcloud_version() {
+    version_file="$1"
+    description="$2"
+    
+    # shellcheck disable=SC2016
+    php_output="$(php -r 'require "'"$version_file"'"; echo implode(".", $OC_Version);' 2>&1)"
+    php_exit_code=$?
+    
+    if [ $php_exit_code -ne 0 ] || echo "$php_output" | grep -qiE '(error|warning|fatal)'; then
+        echo "Error: Failed to determine $description Nextcloud version." >&2
+        echo "PHP output: $php_output" >&2
+        echo "This usually indicates PHP is broken or missing required modules." >&2
+        exit 1
+    fi
+    
+    # Validate version format (should be at least 3 numeric parts, optionally 4)
+    # e.g., "32.0.3" or "32.0.3.2" - but NOT "32.0"
+    if ! echo "$php_output" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$'; then
+        echo "Error: Invalid $description version format:  $php_output" >&2
+        echo "Expected version number format with at least 3 parts (e.g., 32.0.3 or 32.0.3.2), but got unexpected output." >&2
+        exit 1
+    fi
+    
+    echo "$php_output"
+}
+
 # Execute all executable files in a given directory in alphanumeric order
 run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
@@ -159,10 +190,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         installed_version="0.0.0.0"
         if [ -f /var/www/html/version.php ]; then
             # shellcheck disable=SC2016
-            installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+            installed_version="$(get_nextcloud_version "/var/www/html/version.php" "installed")"
         fi
         # shellcheck disable=SC2016
-        image_version="$(php -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);')"
+        image_version="$(get_nextcloud_version "/usr/src/nextcloud/version.php" "image")"
 
         if version_greater "$installed_version" "$image_version"; then
             echo "Can't start Nextcloud because the version of the data ($installed_version) is higher than the docker image version ($image_version) and downgrading is not supported. Are you sure you have pulled the newest image version?"
