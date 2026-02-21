@@ -1,0 +1,94 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - db:/var/lib/postgresql/data:Z
+    environment:
+      - POSTGRES_PASSWORD=CHANGEME
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+
+  app:
+    build: ./
+    restart: unless-stopped
+    volumes:
+      - nextcloud:/var/www/html
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - default
+      - appapi
+    environment:
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=db
+      - POSTGRES_PASSWORD=CHANGEME
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+    depends_on:
+      - db
+      - redis
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+
+  web:
+    image: nginx:alpine
+    restart: unless-stopped
+    hostname: web
+    volumes:
+      - nextcloud:/var/www/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro # https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html
+    expose:
+      - 80
+    depends_on:
+      - app
+    networks:
+      - default
+      - proxy
+      - appapi
+
+  cron:
+    build: ./
+    restart: unless-stopped
+    networks:
+      - default
+      - appapi
+    volumes:
+      - nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - redis
+  
+  appapi:
+    platform: linux/amd64
+    container-name: appapi
+    hostname: appapi
+    privileged: true
+    image: ghcr.io/nextcloud/nextcloud-appapi-harp:release
+    networks:
+      - proxy
+      - appapi
+    restart: unless-stopped
+    depends_on:
+      - app
+    #env_file:
+    #  - appapi.env
+    environment:
+      - NC_HAPROXY_PASSWORD=CHANGEME # this needs to be at least 12 chars long. This exists for backward compatibility with the DSP image, it might be removed in the future from this example.
+      - HP_SHARED_KEY="CHANGEME" # this needs to be at least 12 chars long
+      - NC_INSTANCE_URL="https://external-nextcloud.url"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  db:
+  nextcloud:
+
+networks:
+  proxy: # This is external network, created for nginx-proxy-manager used by this setup.
+    name: proxy-manager_proxy_network
+    external: true
+  appapi: # this is required in order for appapi to work
+    name: appapi_network
