@@ -1,18 +1,10 @@
 # Nextcloud AppAPI (HaRP) – Docker Compose Example  
-(FPM + Nginx + nginx-proxy-manager)
+(FPM + Nginx + nginx-proxy)
 
 > **Warning**  
 > This example is based on a working setup but differs from other examples. Review the differences carefully before adapting it to your environment.
 
 This document provides a minimal example of running the AppAPI container required for Nextcloud 32 or newer using Docker Compose.
-
-The setup assumes:
-
-- `nginx-proxy-manager` as the external reverse proxy  
-- `nginx` + `php-fpm` (FPM variant of Nextcloud)  
-- A dedicated external proxy network  
-
-This configuration differs from other examples because it uses a separate proxy network. Review the network definitions carefully before deploying.
 
 This example must be significantly adapted if you intend to run Nextcloud with Apache.
 
@@ -63,9 +55,12 @@ This Dockerfile:
 
 ```yaml
 services:
+  # Note: PostgreSQL is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/postgres
   db:
-    image: postgres:16-alpine
-    restart: unless-stopped
+    image: postgres:18-alpine
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
+    restart: always
     volumes:
       - db:/var/lib/postgresql/data:Z
     environment:
@@ -75,9 +70,9 @@ services:
 
   app:
     build: ./
-    restart: unless-stopped
+    restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www/html:Z
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - default
@@ -92,34 +87,78 @@ services:
       - db
       - redis
 
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
-    restart: unless-stopped
-
+    restart: always
+  
+  # Note: Nginx is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/nginx/
   web:
     image: nginx:alpine
-    restart: unless-stopped
+    restart: always
     hostname: web
     volumes:
-      - nextcloud:/var/www/html:ro
+      - nextcloud:/var/www/html:z,ro
       - ./nginx.conf:/etc/nginx/nginx.conf:ro # https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html
-    expose:
-      - 80
+    environment:
+      - VIRTUAL_HOST=
+      - LETSENCRYPT_HOST=
+      - LETSENCRYPT_EMAIL=
     depends_on:
       - app
     networks:
       - default
-      - proxy
+      - proxy-tier
       - appapi
+  
+  # Note: Nginx-proxy is an external service. You can find more information about the configuration here:
+  # Warning: Do not use :latest tags of nginx-proxy unless absolutely sure about the consequences.
+  # https://hub.docker.com/r/nginxproxy/nginx-proxy
+  proxy:
+    build: ./proxy
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    volumes:
+      - certs:/etc/nginx/certs:z,ro
+      - vhost.d:/etc/nginx/vhost.d:z
+      - html:/usr/share/nginx/html:z
+      - /var/run/docker.sock:/tmp/docker.sock:z,ro
+    networks:
+      - proxy-tier
+
+  # Note: Letsencrypt companion is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/r/nginxproxy/acme-companion
+  letsencrypt-companion:
+    image: nginxproxy/acme-companion
+    restart: always
+    volumes:
+      - certs:/etc/nginx/certs:z
+      - acme:/etc/acme.sh:z
+      - vhost.d:/etc/nginx/vhost.d:z
+      - html:/usr/share/nginx/html:z
+      - /var/run/docker.sock:/var/run/docker.sock:z,ro
+    environment:
+      - DEFAULT_EMAIL=
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
 
   cron:
     build: ./
-    restart: unless-stopped
+    restart: always
     networks:
       - default
       - appapi
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud:/var/www/html:z
+      # NOTE: The `volumes` config of the `cron` and `app` containers must match
     entrypoint: /cron.sh
     depends_on:
       - db
@@ -132,18 +171,16 @@ services:
     privileged: true
     image: ghcr.io/nextcloud/nextcloud-appapi-harp:release
     networks:
-      - proxy
+      - proxy-tier
       - appapi
-    restart: unless-stopped
+    restart: always
     depends_on:
       - app
-    # env_file:
-    #   - appapi.env
     environment:
       # NC_HAPROXY_PASSWORD needs to be at least 12 chars long. This variable exists for backward compatibility with the DSP image
       # ToDo: verify whether this variable is still required
       - NC_HAPROXY_PASSWORD=CHANGEME1234
-      # HP_SHARED_KEY needs to be at least 12 chars long.
+      # HP_SHARED_KEY needs to be at least 12 chars long. 
       - HP_SHARED_KEY=CHANGEME1234
       # NC_INSTANCE_URL must be the externally accessible URL of the Nextcloud instance
       - NC_INSTANCE_URL=https://external-nextcloud.url
@@ -153,14 +190,14 @@ services:
 volumes:
   db:
   nextcloud:
+  certs:
+  acme:
+  vhost.d:
+  html:
 
 networks:
-  proxy: # This is an external network created for nginx-proxy-manager used by this setup. It must be edited to match your environment.
-    name: proxy-manager_proxy_network
-    external: true
-
-  appapi: # This network is required in order for AppAPI to function correctly. Using "host" networking as in some examples may fail.
-    name: appapi_network
+  proxy-tier: 
+  appapi:
 ```
 
 ---
