@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-stable_channel='31.0.13'
+stable_channel='32.0.6'
 
 self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"

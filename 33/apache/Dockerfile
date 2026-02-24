@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.3-fpm-trixie
+FROM php:8.3-apache-trixie
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -40,7 +40,6 @@ RUN set -ex; \
         libmemcached-dev \
         libpng-dev \
         libpq-dev \
-        libavif-dev \
         libwebp-dev \
         libxml2-dev \
         libzip-dev \
@@ -48,7 +47,7 @@ RUN set -ex; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     docker-php-ext-configure ftp --with-openssl-dir=/usr; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
@@ -58,7 +57,6 @@ RUN set -ex; \
         gmp \
         intl \
         ldap \
-        opcache \
         pcntl \
         pdo_mysql \
         pdo_pgsql \
@@ -136,8 +134,23 @@ RUN { \
 
 VOLUME /var/www/html
 
+RUN a2enmod headers rewrite remoteip ; \
+    { \
+     echo 'RemoteIPHeader X-Real-IP'; \
+     echo 'RemoteIPInternalProxy 10.0.0.0/8'; \
+     echo 'RemoteIPInternalProxy 172.16.0.0/12'; \
+     echo 'RemoteIPInternalProxy 192.168.0.0/16'; \
+    } > /etc/apache2/conf-available/remoteip.conf; \
+    a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 32.0.6
+# set apache config LimitRequestBody
+ENV APACHE_BODY_LIMIT 1073741824
+RUN { \
+     echo 'LimitRequestBody ${APACHE_BODY_LIMIT}'; \
+    } > /etc/apache2/conf-available/apache-limits.conf; \
+    a2enconf apache-limits
+
+ENV NEXTCLOUD_VERSION 33.0.0
 
 RUN set -ex; \
     fetchDeps=" \
@@ -147,8 +160,8 @@ RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends $fetchDeps; \
     \
-    curl -fsSL -o nextcloud.tar.bz2 "https://github.com/nextcloud-releases/server/releases/download/v32.0.6/nextcloud-32.0.6.tar.bz2"; \
-    curl -fsSL -o nextcloud.tar.bz2.asc "https://github.com/nextcloud-releases/server/releases/download/v32.0.6/nextcloud-32.0.6.tar.bz2.asc"; \
+    curl -fsSL -o nextcloud.tar.bz2 "https://github.com/nextcloud-releases/server/releases/download/v33.0.0/nextcloud-33.0.0.tar.bz2"; \
+    curl -fsSL -o nextcloud.tar.bz2.asc "https://github.com/nextcloud-releases/server/releases/download/v33.0.0/nextcloud-33.0.0.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
@@ -168,4 +181,4 @@ COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["apache2-foreground"]
