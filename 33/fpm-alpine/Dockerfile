@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:8.3-fpm-alpine3.23
+FROM php:8.4-fpm-alpine3.23
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -34,6 +34,7 @@ RUN set -ex; \
         libjpeg-turbo-dev \
         libmemcached-dev \
         libpng-dev \
+        libavif-dev \
         libwebp-dev \
         libxml2-dev \
         libzip-dev \
@@ -42,8 +43,8 @@ RUN set -ex; \
         postgresql-dev \
     ; \
     \
-    docker-php-ext-configure ftp --with-openssl-dir=/usr; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
+    docker-php-ext-configure ftp --with-ftp-ssl; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif; \
     docker-php-ext-configure ldap; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
@@ -53,6 +54,7 @@ RUN set -ex; \
         gmp \
         intl \
         ldap \
+        opcache \
         pcntl \
         pdo_mysql \
         pdo_pgsql \
