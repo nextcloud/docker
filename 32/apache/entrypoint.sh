@@ -131,10 +131,19 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
               fi
             # check if redis password has been set
             elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                if [ -n "${REDIS_HOST_USER+x}" ]; then
-                    echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
+                # check if redis host is using tls
+                if [ "$(echo "$REDIS_HOST" | cut -c1-6)" = "tls://" ]; then
+                    if [ -n "${REDIS_HOST_USER+x}" ]; then
+                        echo "session.save_path = \"${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
+                    else
+                        echo "session.save_path = \"${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
+                    fi
                 else
-                    echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
+                    if [ -n "${REDIS_HOST_USER+x}" ]; then
+                        echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
+                    else
+                        echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
+                    fi
                 fi
             else
                 echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
