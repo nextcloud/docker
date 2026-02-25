@@ -9,19 +9,19 @@
         "variant": "apache",
         "base": "debian",
         "baseVersion": "trixie",
-        "phpVersion": "8.3"
+        "phpVersion": "8.4"
       },
       "fpm": {
         "variant": "fpm",
         "base": "debian",
         "baseVersion": "trixie",
-        "phpVersion": "8.3"
+        "phpVersion": "8.4"
       },
       "fpm-alpine": {
         "variant": "fpm-alpine",
         "base": "alpine",
         "baseVersion": "3.23",
-        "phpVersion": "8.3"
+        "phpVersion": "8.4"
       }
     }
   },
