@@ -157,12 +157,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         fi
 
         installed_version="0.0.0.0"
-        if [ -f /var/www/html/version.php ]; then
+        if [ -f /var/www/html/config/version.php ]; then
             # shellcheck disable=SC2016
-            installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+            installed_version="$(php -r 'require "/var/www/html/config/version.php"; echo implode(".", $OC_Version);')"
         fi
         # shellcheck disable=SC2016
-        image_version="$(php -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);')"
+        image_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
 
         if version_greater "$installed_version" "$image_version"; then
             echo "Can't start Nextcloud because the version of the data ($installed_version) is higher than the docker image version ($image_version) and downgrading is not supported. Are you sure you have pulled the newest image version?"
@@ -186,13 +186,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 rsync_options="-rlD"
             fi
 
-            rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/nextcloud/ /var/www/html/
             for dir in config data custom_apps themes; do
                 if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
                     rsync $rsync_options --include "/$dir/" --exclude '/*' /usr/src/nextcloud/ /var/www/html/
                 fi
             done
-            rsync $rsync_options --include '/version.php' --exclude '/*' /usr/src/nextcloud/ /var/www/html/
 
             # Install
             if [ "$installed_version" = "0.0.0.0" ]; then
@@ -283,6 +281,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
                 run_path post-upgrade
             fi
+
+            cp -vf /var/www/html/version.php /var/www/html/config/
+            chown -c $user:$group /var/www/html/config/version.php
 
             echo "Initializing finished"
         fi
