@@ -1,3 +1,4 @@
+---
 name: Images
 
 on:
@@ -5,7 +6,7 @@ on:
   workflow_run:
     workflows: ["update.sh"]
     branches: [master]
-    types: 
+    types:
       - completed
 
 defaults:
