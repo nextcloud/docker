@@ -1,11 +1,12 @@
+---
 name: update.sh
 
 on:
   push:
     branches:
-    - master
+      - master
   schedule:
-  - cron:  '15 18 * * *'
+    - cron: '15 18 * * *'
   workflow_dispatch:
 
 jobs:
@@ -13,17 +14,17 @@ jobs:
     name: Run update.sh script
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Run update.sh script
-      run: ./update.sh
-    - name: Commit files
-      run: |
-        git config --local user.email "workflow@github.com"
-        git config --local user.name "GitHub Workflow"
-        git add -A
-        git commit -m "Runs update.sh" || echo "Nothing to update"
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        force: true
+      - uses: actions/checkout@v4
+      - name: Run update.sh script
+        run: ./update.sh
+      - name: Commit files
+        run: |
+          git config --local user.email "workflow@github.com"
+          git config --local user.name "GitHub Workflow"
+          git add -A
+          git commit -m "Runs update.sh" || echo "Nothing to update"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force: true
