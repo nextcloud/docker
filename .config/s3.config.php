@@ -4,6 +4,15 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
   $use_path = getenv('OBJECTSTORE_S3_USEPATH_STYLE');
   $use_legacyauth = getenv('OBJECTSTORE_S3_LEGACYAUTH');
   $autocreate = getenv('OBJECTSTORE_S3_AUTOCREATE');
+  $proxy = getenv('OBJECTSTORE_S3_PROXY');
+  $verify_bucket_exists = getenv('OBJECTSTORE_S3_VERIFY_BUCKET_EXISTS');
+  $use_multipart_copy = getenv('OBJECTSTORE_S3_USEMULTIPARTCOPY');
+  $concurrency = getenv('OBJECTSTORE_S3_CONCURRENCY');
+  $timeout = getenv('OBJECTSTORE_S3_TIMEOUT');
+  $upload_part_size = getenv('OBJECTSTORE_S3_UPLOADPARTSIZE');
+  $put_size_limit = getenv('OBJECTSTORE_S3_PUTSIZELIMIT');
+  $copy_size_limit = getenv('OBJECTSTORE_S3_COPYSIZELIMIT');
+
   $CONFIG = array(
     'objectstore' => array(
       'class' => '\OC\Files\ObjectStore\S3',
@@ -19,10 +28,34 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
         // required for some non Amazon S3 implementations
         'use_path_style' => $use_path == true && strtolower($use_path) !== 'false',
         // required for older protocol versions
-        'legacy_auth' => $use_legacyauth == true && strtolower($use_legacyauth) !== 'false'
+        'useMultipartCopy' => strtolower($useMultipartCopy) !== 'true',
+        'legacy_auth' => $use_legacyauth == true && strtolower($use_legacyauth) !== 'false',
+        'proxy' => strtolower($proxy) !== 'false',
+        'version' => getenv('OBJECTSTORE_S3_VERSION') ?: 'latest',
+        'verify_bucket_exists' => strtolower($verify_bucket_exists) !== 'true'
       )
     )
   );
+
+  if $concurrency {
+    $CONFIG['objectstore']['arguments']['concurrency'] = $concurrency;
+  }
+
+  if $timeout {
+    $CONFIG['objectstore']['arguments']['timeout'] = $timeout;
+  }
+
+  if $upload_part_size {
+    $CONFIG['objectstore']['arguments']['uploadPartSize'] = $upload_part_size;
+  }
+
+  if $put_size_limit {
+    $CONFIG['objectstore']['arguments']['putSizeLimit'] = $put_size_limit;
+  }
+
+  if $copy_size_limit {
+    $CONFIG['objectstore']['arguments']['copySizeLimit'] = $copy_size_limit;
+  }
 
   if (getenv('OBJECTSTORE_S3_KEY_FILE')) {
     $CONFIG['objectstore']['arguments']['key'] = trim(file_get_contents(getenv('OBJECTSTORE_S3_KEY_FILE')));
