@@ -1,3 +1,4 @@
+---
 services:
   # Note: MariaDB is an external service. You can find more information about the configuration here:
   # https://hub.docker.com/_/mariadb
@@ -44,7 +45,7 @@ services:
     restart: always
     volumes:
       # https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html
-      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro  
+      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro
       # NOTE: The `volumes` included below should match those of the `app` container (unless you know what you're doing)
       - nextcloud:/var/www/html:z,ro
     environment:
@@ -105,7 +106,7 @@ services:
     depends_on:
       - proxy
 
-# self signed, outdated. 
+# self signed, outdated.
 #  omgwtfssl:
 #    image: paulczar/omgwtfssl
 #    restart: "no"
