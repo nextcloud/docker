@@ -83,6 +83,51 @@ file_env() {
     unset "$fileVar"
 }
 
+# Write PHP session config for Redis to /usr/local/etc/php/conf.d/redis-session.ini
+configure_redis_session() {
+    echo "=> Configuring PHP session handler..."
+    if [ -z "${REDIS_HOST:-}" ]; then
+        echo "==> Using default PHP session handler"
+        return 0
+    fi
+
+    echo "==> Using Redis as PHP session handler..."
+    {
+        file_env REDIS_HOST_PASSWORD
+        echo 'session.save_handler = redis'
+        # check if redis host is a unix socket path
+        if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
+            if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+                if [ -n "${REDIS_HOST_USER+x}" ]; then
+                    echo "session.save_path = \"unix://${REDIS_HOST}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
+                else
+                    echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_HOST_PASSWORD}\""
+                fi
+            else
+                echo "session.save_path = \"unix://${REDIS_HOST}\""
+            fi
+        # check if redis password has been set
+        elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+            if [ -n "${REDIS_HOST_USER+x}" ]; then
+                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
+            else
+                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
+            fi
+        else
+            echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
+        fi
+        echo "redis.session.locking_enabled = 1"
+        echo "redis.session.lock_retries = -1"
+        # redis.session.lock_wait_time is specified in microseconds.
+        # Wait 10ms before retrying the lock rather than the default 2ms.
+        echo "redis.session.lock_wait_time = 10000"
+    } > /usr/local/etc/php/conf.d/redis-session.ini
+}
+
+########################################################################
+# Main
+########################################################################
+
 if expr "$1" : "apache" 1>/dev/null; then
     if [ -n "${APACHE_DISABLE_REWRITE_IP+x}" ]; then
         a2disconf remoteip
@@ -112,40 +157,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         group="$gid"
     fi
 
-    if [ -n "${REDIS_HOST+x}" ]; then
-
-        echo "Configuring Redis as session handler"
-        {
-            file_env REDIS_HOST_PASSWORD
-            echo 'session.save_handler = redis'
-            # check if redis host is an unix socket path
-            if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
-              if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                if [ -n "${REDIS_HOST_USER+x}" ]; then
-                  echo "session.save_path = \"unix://${REDIS_HOST}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
-                else
-                  echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_HOST_PASSWORD}\""
-                fi
-              else
-                echo "session.save_path = \"unix://${REDIS_HOST}\""
-              fi
-            # check if redis password has been set
-            elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                if [ -n "${REDIS_HOST_USER+x}" ]; then
-                    echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
-                else
-                    echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
-                fi
-            else
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
-            fi
-            echo "redis.session.locking_enabled = 1"
-            echo "redis.session.lock_retries = -1"
-            # redis.session.lock_wait_time is specified in microseconds.
-            # Wait 10ms before retrying the lock rather than the default 2ms.
-            echo "redis.session.lock_wait_time = 10000"
-        } > /usr/local/etc/php/conf.d/redis-session.ini
-    fi
+    configure_redis_session
 
     # If another process is syncing the html folder, wait for
     # it to be done, then escape initalization.
