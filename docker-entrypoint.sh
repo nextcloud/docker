@@ -91,12 +91,13 @@ configure_redis_session() {
     echo "=> Configuring PHP session handler..."
 
     if [ -z "${REDIS_HOST:-}" ]; then
-        echo "==> Using default PHP session handler"
-        unset PHP_REDIS_SESSION_HANDLER
-        unset PHP_REDIS_SESSION_SAVE_PATH
-        unset PHP_REDIS_SESSION_LOCKING_ENABLED
-        unset PHP_REDIS_SESSION_LOCK_RETRIES
-        unset PHP_REDIS_SESSION_LOCK_WAIT_TIME
+        echo "==> Using default PHP session handler (files)"
+		# @todo: consider moving to PHP 8.3 missing env variable fallbacks in the ini file itself
+        export PHP_REDIS_SESSION_HANDLER='files'
+        export PHP_REDIS_SESSION_SAVE_PATH=''
+        export PHP_REDIS_SESSION_LOCKING_ENABLED='0'
+        export PHP_REDIS_SESSION_LOCK_RETRIES='0'
+        export PHP_REDIS_SESSION_LOCK_WAIT_TIME='0'
         return 0
     fi
 
