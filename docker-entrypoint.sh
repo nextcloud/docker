@@ -83,7 +83,7 @@ file_env() {
     unset "$fileVar"
 }
 
-# Write PHP session config for Redis to /usr/local/etc/php/conf.d/redis-session.ini
+# Export PHP session config for Redis via environment variables
 configure_redis_session() {
     local redis_save_path
     local redis_auth=''
@@ -92,6 +92,11 @@ configure_redis_session() {
 
     if [ -z "${REDIS_HOST:-}" ]; then
         echo "==> Using default PHP session handler"
+        unset PHP_REDIS_SESSION_HANDLER
+        unset PHP_REDIS_SESSION_SAVE_PATH
+        unset PHP_REDIS_SESSION_LOCKING_ENABLED
+        unset PHP_REDIS_SESSION_LOCK_RETRIES
+        unset PHP_REDIS_SESSION_LOCK_WAIT_TIME
         return 0
     fi
 
@@ -112,16 +117,13 @@ configure_redis_session() {
         redis_auth="?auth=${REDIS_HOST_PASSWORD}"
     fi
 
+    export PHP_REDIS_SESSION_HANDLER='redis'
+    export PHP_REDIS_SESSION_SAVE_PATH="${redis_save_path}${redis_auth}"
+    export PHP_REDIS_SESSION_LOCKING_ENABLED='1'
+    export PHP_REDIS_SESSION_LOCK_RETRIES='-1'
+    export PHP_REDIS_SESSION_LOCK_WAIT_TIME='10000'
+
     echo "==> Using Redis as PHP session handler..."
-    {
-        echo 'session.save_handler = redis'
-        echo "session.save_path = \"${redis_save_path}${redis_auth}\""
-        echo "redis.session.locking_enabled = 1"
-        echo "redis.session.lock_retries = -1"
-        # redis.session.lock_wait_time is specified in microseconds.
-        # Wait 10ms before retrying the lock rather than the default 2ms.
-        echo "redis.session.lock_wait_time = 10000"
-    } > /usr/local/etc/php/conf.d/redis-session.ini
 }
 
 ########################################################################
