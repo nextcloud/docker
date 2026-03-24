@@ -36,7 +36,6 @@ run_path() {
         while read -r script_file_path; do
             if ! [ -x "${script_file_path}" ]; then
                 echo "==> The script \"${script_file_path}\" was skipped, because it lacks the executable flag"
-                found=$((found-1))
                 continue
             fi
 
