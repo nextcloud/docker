@@ -195,7 +195,7 @@ See:
 
 ## Accessing the Nextcloud command-line interface (`occ`)
 
-To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
+To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/occ_command.html) (aka. `occ` command):
 ```console
 $ docker exec -it --user www-data CONTAINER_ID php occ
 ```
