@@ -83,45 +83,48 @@ file_env() {
     unset "$fileVar"
 }
 
-# Write PHP session config for Redis to /usr/local/etc/php/conf.d/redis-session.ini
+# Export PHP session config for Redis via environment variables
 configure_redis_session() {
+    local redis_save_path
+    local redis_auth=''
+
     echo "=> Configuring PHP session handler..."
+
     if [ -z "${REDIS_HOST:-}" ]; then
-        echo "==> Using default PHP session handler"
+        echo "==> Using default PHP session handler (files)"
+		# @todo: consider moving to PHP 8.3 missing env variable fallbacks in the ini file itself
+        export PHP_REDIS_SESSION_HANDLER='files'
+        export PHP_REDIS_SESSION_SAVE_PATH=''
+        export PHP_REDIS_SESSION_LOCKING_ENABLED='0'
+        export PHP_REDIS_SESSION_LOCK_RETRIES='0'
+        export PHP_REDIS_SESSION_LOCK_WAIT_TIME='0'
         return 0
     fi
 
+    file_env REDIS_HOST_PASSWORD
+
+    case "$REDIS_HOST" in
+        /*)
+            redis_save_path="unix://${REDIS_HOST}"
+            ;;
+        *)
+            redis_save_path="tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}"
+            ;;
+    esac
+
+    if [ -n "${REDIS_HOST_PASSWORD+x}" ] && [ -n "${REDIS_HOST_USER+x}" ]; then
+        redis_auth="?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}"
+    elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+        redis_auth="?auth=${REDIS_HOST_PASSWORD}"
+    fi
+
+    export PHP_REDIS_SESSION_HANDLER='redis'
+    export PHP_REDIS_SESSION_SAVE_PATH="${redis_save_path}${redis_auth}"
+    export PHP_REDIS_SESSION_LOCKING_ENABLED='1'
+    export PHP_REDIS_SESSION_LOCK_RETRIES='-1'
+    export PHP_REDIS_SESSION_LOCK_WAIT_TIME='10000'
+
     echo "==> Using Redis as PHP session handler..."
-    {
-        file_env REDIS_HOST_PASSWORD
-        echo 'session.save_handler = redis'
-        # check if redis host is a unix socket path
-        if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
-            if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                if [ -n "${REDIS_HOST_USER+x}" ]; then
-                    echo "session.save_path = \"unix://${REDIS_HOST}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
-                else
-                    echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_HOST_PASSWORD}\""
-                fi
-            else
-                echo "session.save_path = \"unix://${REDIS_HOST}\""
-            fi
-        # check if redis password has been set
-        elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-            if [ -n "${REDIS_HOST_USER+x}" ]; then
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
-            else
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
-            fi
-        else
-            echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
-        fi
-        echo "redis.session.locking_enabled = 1"
-        echo "redis.session.lock_retries = -1"
-        # redis.session.lock_wait_time is specified in microseconds.
-        # Wait 10ms before retrying the lock rather than the default 2ms.
-        echo "redis.session.lock_wait_time = 10000"
-    } > /usr/local/etc/php/conf.d/redis-session.ini
 }
 
 ########################################################################
