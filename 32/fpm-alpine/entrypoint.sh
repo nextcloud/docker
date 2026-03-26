@@ -81,6 +81,14 @@ file_env() {
     unset "$fileVar"
 }
 
+get_enabled_apps() {
+    run_as 'php /var/www/html/occ app:list' \
+        | sed -n '/^Enabled:$/,/^Disabled:$/p' \
+        | sed '1d;$d' \
+        | sed -n 's/^  - \([^:]*\):.*/\1/p' \
+        | sort
+}
+
 # Write PHP session config for Redis to /usr/local/etc/php/conf.d/redis-session.ini
 configure_redis_session() {
     echo "=> Configuring PHP session handler..."
@@ -188,7 +196,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     exit 1
                 fi
                 echo "Upgrading nextcloud from $installed_version ..."
-                run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
+                get_enabled_apps > /tmp/list_before
             fi
             if [ "$(id -u)" = 0 ]; then
                 rsync_options="-rlDog --chown $user:$group"
@@ -286,9 +294,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
                 run_as 'php /var/www/html/occ upgrade'
 
-                run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
-                echo "The following apps have been disabled:"
-                diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
+                get_enabled_apps > /tmp/list_after
+                disabled_apps="$(comm -23 /tmp/list_before /tmp/list_after || true)"
+                if [ -n "$disabled_apps" ]; then
+                    echo "The following apps have been disabled:"
+                    printf '%s\n' "$disabled_apps"
+                fi
                 rm -f /tmp/list_before /tmp/list_after
 
                 run_path post-upgrade
