@@ -7,7 +7,7 @@ services:
     image: postgres:alpine
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data:Z
+      - db:/var/lib/postgresql:Z
     env_file:
       - db.env
 
