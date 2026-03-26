@@ -22,7 +22,6 @@ run_as() {
 # Execute all executable files in a given directory in alphanumeric order
 run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
-    local return_code=0
     local found=0
 
     echo "=> Searching for hook scripts (*.sh) to run, located in the folder \"${hook_folder_path}\""
@@ -42,12 +41,11 @@ run_path() {
 
             echo "==> Running the script (cwd: $(pwd)): \"${script_file_path}\""
             found=$((found+1))
-            run_as "${script_file_path}" || return_code="$?"
-
-            if [ "${return_code}" -ne "0" ]; then
+            run_as "${script_file_path}" || {
+                return_code="$?"
                 echo "==> Failed at executing script \"${script_file_path}\". Exit code: ${return_code}"
                 exit 1
-            fi
+            }
 
             echo "==> Finished executing the script: \"${script_file_path}\""
         done
