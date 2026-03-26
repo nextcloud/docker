@@ -1,9 +1,9 @@
 {
   "33": {
     "branch": "33",
-    "version": "33.0.0",
-    "url": "https://github.com/nextcloud-releases/server/releases/download/v33.0.0/nextcloud-33.0.0.tar.bz2",
-    "ascUrl": "https://github.com/nextcloud-releases/server/releases/download/v33.0.0/nextcloud-33.0.0.tar.bz2.asc",
+    "version": "33.0.1",
+    "url": "https://github.com/nextcloud-releases/server/releases/download/v33.0.1/nextcloud-33.0.1.tar.bz2",
+    "ascUrl": "https://github.com/nextcloud-releases/server/releases/download/v33.0.1/nextcloud-33.0.1.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",
@@ -27,9 +27,9 @@
   },
   "32": {
     "branch": "32",
-    "version": "32.0.6",
-    "url": "https://github.com/nextcloud-releases/server/releases/download/v32.0.6/nextcloud-32.0.6.tar.bz2",
-    "ascUrl": "https://github.com/nextcloud-releases/server/releases/download/v32.0.6/nextcloud-32.0.6.tar.bz2.asc",
+    "version": "32.0.7",
+    "url": "https://github.com/nextcloud-releases/server/releases/download/v32.0.7/nextcloud-32.0.7.tar.bz2",
+    "ascUrl": "https://github.com/nextcloud-releases/server/releases/download/v32.0.7/nextcloud-32.0.7.tar.bz2.asc",
     "variants": {
       "apache": {
         "variant": "apache",
