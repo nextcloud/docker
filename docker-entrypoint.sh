@@ -50,10 +50,10 @@ run_path() {
 
             echo "==> Finished executing the script: \"${script_file_path}\""
         done
-        if [ "$found" -lt "1" ]; then
-            echo "==> Skipped: the \"$1\" folder does not contain any valid scripts"
+        if [ "$found" -gt "0" ]; then
+		    echo "=> Completed executing scripts in the \"$1\" folder"
         else
-            echo "=> Completed executing scripts in the \"$1\" folder"
+		    echo "==> Skipped: the \"$1\" folder does not contain any valid scripts"
         fi
     )
 }
