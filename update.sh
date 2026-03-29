@@ -11,12 +11,12 @@ declare -A debian_version=(
 
 declare -A php_version=(
 	[32]='8.3'
-	[default]='8.4'
+	[default]='8.3'
 )
 
 declare -A ftp_options=(
 	[32]='--with-openssl-dir=/usr'
-	[default]='--with-ftp-ssl'
+	[default]='--with-openssl-dir=/usr'
 )
 
 declare -A cmd=(
