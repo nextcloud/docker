@@ -739,6 +739,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
     docker compose exec db rm /dmp
     ```
 3. Edit your config.php
+3. Edit your config.php
     1. Set database connection
         - In case of MySQL database
         ```php
@@ -748,17 +749,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
         ```php
         'dbhost' => 'db:5432',
         ```
-    2. Make sure you have no configuration for the `apps_paths`. Delete lines like these
-        ```php
-        'apps_paths' => array (
-            0 => array (
-                'path' => OC::$SERVERROOT.'/apps',
-                'url' => '/apps',
-                'writable' => true,
-            ),
-        ),
-        ```
-    3. Make sure to have the `apps` directory non writable and the `custom_apps` directory writable
+    2. Replace any existing `apps_paths` configuration with the following Docker-compatible version. Your existing configuration may look different (e.g. using `OC::$SERVERROOT.'/apps'` or having only a single entry), but it must be replaced with exactly this to ensure shipped apps in `apps` are non-writable and user-installed apps go to `custom_apps`:
         ```php
         'apps_paths' => array (
           0 => array (
@@ -773,7 +764,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
           ),
         ),
         ```
-    4. Make sure your data directory is set to /var/www/html/data
+    3. Make sure your data directory is set to /var/www/html/data
         ```php
         'datadirectory' => '/var/www/html/data',
         ```
