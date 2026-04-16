@@ -164,5 +164,14 @@ RUN set -ex; \
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
+LABEL org.opencontainers.image.title="Nextcloud" \
+      org.opencontainers.image.description="A safe home for all your data. Access & share your files, calendars, contacts, mail & more from any device, on your terms." \
+      org.opencontainers.image.url="https://nextcloud.com" \
+      org.opencontainers.image.source="https://github.com/nextcloud/docker" \
+      org.opencontainers.image.documentation="https://hub.docker.com/_/nextcloud" \
+      org.opencontainers.image.vendor="Nextcloud GmbH" \
+      org.opencontainers.image.licenses="AGPL-3.0-or-later" \
+      org.opencontainers.image.version="%%VERSION%%"
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["%%CMD%%"]
