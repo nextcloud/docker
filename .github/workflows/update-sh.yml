@@ -1,6 +1,9 @@
 ---
 name: update.sh
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:

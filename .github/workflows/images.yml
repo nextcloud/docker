@@ -1,6 +1,8 @@
 ---
 name: Images
 
+permissions: {}
+
 on:
   pull_request:
   workflow_run:
