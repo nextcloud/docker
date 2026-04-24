@@ -169,7 +169,6 @@ LABEL org.opencontainers.image.title="Nextcloud" \
       org.opencontainers.image.url="https://nextcloud.com" \
       org.opencontainers.image.source="https://github.com/nextcloud/docker" \
       org.opencontainers.image.documentation="https://hub.docker.com/_/nextcloud" \
-      org.opencontainers.image.vendor="Nextcloud GmbH" \
       org.opencontainers.image.licenses="AGPL-3.0-or-later" \
       org.opencontainers.image.version="%%VERSION%%"
 
