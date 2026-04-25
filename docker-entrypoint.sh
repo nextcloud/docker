@@ -22,7 +22,6 @@ run_as() {
 # Execute all executable files in a given directory in alphanumeric order
 run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
-    local return_code=0
     local found=0
 
     echo "=> Searching for hook scripts (*.sh) to run, located in the folder \"${hook_folder_path}\""
@@ -36,25 +35,23 @@ run_path() {
         while read -r script_file_path; do
             if ! [ -x "${script_file_path}" ]; then
                 echo "==> The script \"${script_file_path}\" was skipped, because it lacks the executable flag"
-                found=$((found-1))
                 continue
             fi
 
             echo "==> Running the script (cwd: $(pwd)): \"${script_file_path}\""
             found=$((found+1))
-            run_as "${script_file_path}" || return_code="$?"
-
-            if [ "${return_code}" -ne "0" ]; then
+            run_as "${script_file_path}" || {
+                return_code="$?"
                 echo "==> Failed at executing script \"${script_file_path}\". Exit code: ${return_code}"
                 exit 1
-            fi
+            }
 
             echo "==> Finished executing the script: \"${script_file_path}\""
         done
-        if [ "$found" -lt "1" ]; then
-            echo "==> Skipped: the \"$1\" folder does not contain any valid scripts"
+        if [ "$found" -gt "0" ]; then
+		    echo "=> Completed executing scripts in the \"$1\" folder"
         else
-            echo "=> Completed executing scripts in the \"$1\" folder"
+		    echo "==> Skipped: the \"$1\" folder does not contain any valid scripts"
         fi
     )
 }
@@ -81,6 +78,14 @@ file_env() {
         export "$var"="$def"
     fi
     unset "$fileVar"
+}
+
+get_enabled_apps() {
+    run_as 'php /var/www/html/occ app:list' \
+        | sed -n '/^Enabled:$/,/^Disabled:$/p' \
+        | sed '1d;$d' \
+        | sed -n 's/^  - \([^:]*\):.*/\1/p' \
+        | sort
 }
 
 # Export PHP session config for Redis via environment variables
@@ -193,7 +198,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     exit 1
                 fi
                 echo "Upgrading nextcloud from $installed_version ..."
-                run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
+                get_enabled_apps > /tmp/list_before
             fi
             if [ "$(id -u)" = 0 ]; then
                 rsync_options="-rlDog --chown $user:$group"
@@ -291,9 +296,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
                 run_as 'php /var/www/html/occ upgrade'
 
-                run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
-                echo "The following apps have been disabled:"
-                diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
+                get_enabled_apps > /tmp/list_after
+                disabled_apps="$(comm -23 /tmp/list_before /tmp/list_after || true)"
+                if [ -n "$disabled_apps" ]; then
+                    echo "The following apps have been disabled:"
+                    printf '%s\n' "$disabled_apps"
+                fi
                 rm -f /tmp/list_before /tmp/list_after
 
                 run_path post-upgrade

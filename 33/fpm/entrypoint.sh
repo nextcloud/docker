@@ -22,7 +22,6 @@ run_as() {
 # Execute all executable files in a given directory in alphanumeric order
 run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
-    local return_code=0
     local found=0
 
     echo "=> Searching for hook scripts (*.sh) to run, located in the folder \"${hook_folder_path}\""
@@ -36,25 +35,23 @@ run_path() {
         while read -r script_file_path; do
             if ! [ -x "${script_file_path}" ]; then
                 echo "==> The script \"${script_file_path}\" was skipped, because it lacks the executable flag"
-                found=$((found-1))
                 continue
             fi
 
             echo "==> Running the script (cwd: $(pwd)): \"${script_file_path}\""
             found=$((found+1))
-            run_as "${script_file_path}" || return_code="$?"
-
-            if [ "${return_code}" -ne "0" ]; then
+            run_as "${script_file_path}" || {
+                return_code="$?"
                 echo "==> Failed at executing script \"${script_file_path}\". Exit code: ${return_code}"
                 exit 1
-            fi
+            }
 
             echo "==> Finished executing the script: \"${script_file_path}\""
         done
-        if [ "$found" -lt "1" ]; then
-            echo "==> Skipped: the \"$1\" folder does not contain any valid scripts"
+        if [ "$found" -gt "0" ]; then
+		    echo "=> Completed executing scripts in the \"$1\" folder"
         else
-            echo "=> Completed executing scripts in the \"$1\" folder"
+		    echo "==> Skipped: the \"$1\" folder does not contain any valid scripts"
         fi
     )
 }
@@ -83,39 +80,47 @@ file_env() {
     unset "$fileVar"
 }
 
+get_enabled_apps() {
+    run_as 'php /var/www/html/occ app:list' \
+        | sed -n '/^Enabled:$/,/^Disabled:$/p' \
+        | sed '1d;$d' \
+        | sed -n 's/^  - \([^:]*\):.*/\1/p' \
+        | sort
+}
+
 # Write PHP session config for Redis to /usr/local/etc/php/conf.d/redis-session.ini
 configure_redis_session() {
+    local redis_save_path
+    local redis_auth=''
+
     echo "=> Configuring PHP session handler..."
+
     if [ -z "${REDIS_HOST:-}" ]; then
         echo "==> Using default PHP session handler"
         return 0
     fi
 
+    file_env REDIS_HOST_PASSWORD
+
+    case "$REDIS_HOST" in
+        /*)
+            redis_save_path="unix://${REDIS_HOST}"
+            ;;
+        *)
+            redis_save_path="tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}"
+            ;;
+    esac
+
+    if [ -n "${REDIS_HOST_PASSWORD+x}" ] && [ -n "${REDIS_HOST_USER+x}" ]; then
+        redis_auth="?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}"
+    elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+        redis_auth="?auth=${REDIS_HOST_PASSWORD}"
+    fi
+
     echo "==> Using Redis as PHP session handler..."
     {
-        file_env REDIS_HOST_PASSWORD
         echo 'session.save_handler = redis'
-        # check if redis host is a unix socket path
-        if [ "$(echo "$REDIS_HOST" | cut -c1-1)" = "/" ]; then
-            if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                if [ -n "${REDIS_HOST_USER+x}" ]; then
-                    echo "session.save_path = \"unix://${REDIS_HOST}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
-                else
-                    echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_HOST_PASSWORD}\""
-                fi
-            else
-                echo "session.save_path = \"unix://${REDIS_HOST}\""
-            fi
-        # check if redis password has been set
-        elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-            if [ -n "${REDIS_HOST_USER+x}" ]; then
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}\""
-            else
-                echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}?auth=${REDIS_HOST_PASSWORD}\""
-            fi
-        else
-            echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}\""
-        fi
+        echo "session.save_path = \"${redis_save_path}${redis_auth}\""
         echo "redis.session.locking_enabled = 1"
         echo "redis.session.lock_retries = -1"
         # redis.session.lock_wait_time is specified in microseconds.
@@ -190,7 +195,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     exit 1
                 fi
                 echo "Upgrading nextcloud from $installed_version ..."
-                run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_before
+                get_enabled_apps > /tmp/list_before
             fi
             if [ "$(id -u)" = 0 ]; then
                 rsync_options="-rlDog --chown $user:$group"
@@ -288,9 +293,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
 
                 run_as 'php /var/www/html/occ upgrade'
 
-                run_as 'php /var/www/html/occ app:list' | sed -n "/Enabled:/,/Disabled:/p" > /tmp/list_after
-                echo "The following apps have been disabled:"
-                diff /tmp/list_before /tmp/list_after | grep '<' | cut -d- -f2 | cut -d: -f1
+                get_enabled_apps > /tmp/list_after
+                disabled_apps="$(comm -23 /tmp/list_before /tmp/list_after || true)"
+                if [ -n "$disabled_apps" ]; then
+                    echo "The following apps have been disabled:"
+                    printf '%s\n' "$disabled_apps"
+                fi
                 rm -f /tmp/list_before /tmp/list_after
 
                 run_path post-upgrade

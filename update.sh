@@ -10,13 +10,11 @@ declare -A debian_version=(
 )
 
 declare -A php_version=(
-	[31]='8.3'
 	[32]='8.3'
 	[default]='8.4'
 )
 
 declare -A ftp_options=(
-	[31]='--with-openssl-dir=/usr'
 	[32]='--with-openssl-dir=/usr'
 	[default]='--with-ftp-ssl'
 )
@@ -102,7 +100,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='31'
+min_version='32'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
