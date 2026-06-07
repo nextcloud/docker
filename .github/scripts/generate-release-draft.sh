@@ -697,7 +697,7 @@ current_git_range_display="$(
 
   echo
   echo "**Full Changelog**:"
-  echo "* Image: [${REPO} ${PREVIOUS_TAG}...master](https://github.com/${REPO}/compare/${PREVIOUS_TAG}...master)"
+  echo "* Image: [${REPO} ${PREVIOUS_TAG}...${TARGET_SHA:0:7}](https://github.com/${REPO}/compare/${PREVIOUS_TAG}...${TARGET_SHA})"
   echo "* Nextcloud Server: [Changelog](https://nextcloud.com/changelog/)"
   echo "* Docker Official Image: [${official_repo}#${OFFICIAL_IMAGES_PR}](${OFFICIAL_IMAGES_PR_URL})"
   echo
