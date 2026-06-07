@@ -362,8 +362,10 @@ extract_dependency_bumps_from_patch() {
 
   if grep -qi 'alpine' <<<"$patch"; then
     local alpine_version
+    local added_lines
+    added_lines="$(grep '^\+[^+]' <<<"$patch" || true)"
     alpine_version="$(
-      grep -oE 'Alpine[[:space:]]+[0-9]+\.[0-9]+' <<<"$patch" | tail -1 || true
+      grep -oE 'Alpine[[:space:]]+[0-9]+\.[0-9]+' <<<"$added_lines" | tail -1 || true
     )"
     if [[ -n "$alpine_version" ]]; then
       printf '%s\n' "Bump alpine images to ${alpine_version}"
@@ -371,7 +373,7 @@ extract_dependency_bumps_from_patch() {
     fi
   fi
 
-  for dep in APCu apcu imagick redis smbclient; do
+  for dep in APCu imagick redis smbclient; do
     local version
     version="$(
       grep -iE "${dep}[^0-9]*[0-9]+\.[0-9]+(\.[0-9]+)?" <<<"$patch" \
