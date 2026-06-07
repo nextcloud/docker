@@ -18,14 +18,17 @@ export TARGET_SHA=""
 if [[ -n "${INPUT_OFFICIAL_IMAGES_PR:-}" ]]; then
   OFFICIAL_IMAGES_PR="${INPUT_OFFICIAL_IMAGES_PR}"
 else
-  OFFICIAL_IMAGES_PR="$(
+  official_prs_json="$(
     gh pr list \
       --repo "$official_repo" \
-      --search 'is:merged label:"library/nextcloud"' \
       --state merged \
+      --search 'label:"library/nextcloud"' \
       --limit 20 \
-      --json number,mergedAt \
-      --jq 'sort_by(.mergedAt) | reverse | .[0].number'
+      --json number,mergedAt,url,title
+  )"
+
+  OFFICIAL_IMAGES_PR="$(
+    jq -r 'sort_by(.mergedAt) | reverse | .[0].number // empty' <<<"$official_prs_json"
   )"
 fi
 
@@ -62,10 +65,10 @@ if [[ -n "$existing_tags" ]]; then
     description="$(
       gh release view "$tag" \
         --repo "$REPO" \
-        --json description \
-        --jq '.description // ""'
+        --json body \
+        --jq '.body // ""'
     )"
-    if grep -q "docker-library/official-images/pull/${OFFICIAL_IMAGES_PR}" <<<"$description"; then
+    if grep -qF "docker-library/official-images/pull/${OFFICIAL_IMAGES_PR}" <<<"$description"; then
       SKIP_RELEASE=true
       SKIP_REASON="A release already references docker-library/official-images PR #${OFFICIAL_IMAGES_PR}."
       {
@@ -115,7 +118,7 @@ else
   next_n=1
   if [[ -n "$existing_month_tags" ]]; then
     max_n="$(
-      sed -n "s/^${year_month}\.\([0-9][0-9]*\)$/\1/p" <<<"$existing_month_tags" \
+      sed -n "s/^${year_month//./\\.}\.\([0-9][0-9]*\)$/\1/p" <<<"$existing_month_tags" \
       | sort -n \
       | tail -1
     )"
@@ -127,15 +130,18 @@ else
   RELEASE_TAG="${year_month}.${next_n}"
 fi
 
-TARGET_SHA="$(git rev-parse origin/master)"
+TARGET_SHA="$(git rev-parse refs/remotes/origin/master)"
 
 repo_prs_json="$(
   gh pr list \
     --repo "$REPO" \
-    --search "is:merged merged:>${previous_published_at}" \
     --state merged \
     --limit 100 \
-    --json number,title,url,author,mergedAt
+    --json number,title,url,author,mergedAt \
+  | jq --arg prev "$previous_published_at" '
+      map(select(.mergedAt > $prev))
+      | sort_by(.mergedAt)
+    '
 )"
 
 change_count="$(jq 'length' <<<"$repo_prs_json")"
@@ -154,6 +160,7 @@ change_count="$(jq 'length' <<<"$repo_prs_json")"
   echo "## New Contributors"
   echo
 
+  # “best effort,” not authoritative; can be optimized after proof of concept.
   first_time_contributors="$(
     jq -r '.[].author.login' <<<"$repo_prs_json" | sort -u | while read -r login; do
       [[ -z "$login" ]] && continue
@@ -183,6 +190,7 @@ change_count="$(jq 'length' <<<"$repo_prs_json")"
 
   echo
   echo "**Full Changelog**:"
+  # reflects "previous release to current branch head," not strictly "previous release to release tag."; can be updated after POC
   echo "* Image: https://github.com/${REPO}/compare/${PREVIOUS_TAG}...master"
   echo "* Nextcloud Server: https://nextcloud.com/changelog/"
   echo "* Docker Official Image: ${OFFICIAL_IMAGES_PR_URL}"
