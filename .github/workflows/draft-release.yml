@@ -2,6 +2,7 @@ name: Draft image release
 
 permissions:
   contents: write
+  pull-requests: read
 
 on:
   workflow_dispatch:
@@ -18,7 +19,7 @@ on:
   #  - cron: "23 * * * *"
 
 concurrency:
-  group: draft-image-release
+  group: ${{ github.workflow }}-${{ github.repository }}
   cancel-in-progress: false
 
 defaults:
@@ -34,10 +35,6 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          ref: master
-
-      - name: Ensure origin/master is available
-        run: git fetch origin master
 
       - name: Verify required tools
         run: |
@@ -78,15 +75,22 @@ jobs:
 
       - name: Workflow summary
         if: env.SKIP_RELEASE != 'true'
+        env:
+          REPO: ${{ github.repository }}
         run: |
+          release_url="https://github.com/${REPO}/releases/tag/${RELEASE_TAG}"
           {
             echo "## Draft release prepared"
             echo
             echo "- Release tag: \`$RELEASE_TAG\`"
             echo "- Target SHA: \`$TARGET_SHA\`"
             echo "- Previous tag: \`$PREVIOUS_TAG\`"
-            echo "- Official Images PR: #$OFFICIAL_IMAGES_PR"
-            echo "- Official Images URL: $OFFICIAL_IMAGES_PR_URL"
+            echo "- Official Images PR: [#${OFFICIAL_IMAGES_PR}](${OFFICIAL_IMAGES_PR_URL})"
+            echo "- Draft release: [${RELEASE_TAG}](${release_url})"
+            echo
+            echo "### Generated notes"
+            echo
+            cat "$RUNNER_TEMP/release-notes.md"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Skip summary
