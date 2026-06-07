@@ -39,6 +39,12 @@ jobs:
       - name: Ensure origin/master is available
         run: git fetch origin master
 
+      - name: Verify required tools
+        run: |
+          gh --version
+          jq --version
+          git --version
+
       - name: Generate release draft payload
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
