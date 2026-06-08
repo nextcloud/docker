@@ -71,6 +71,14 @@ get_library_nextcloud_file_at_ref() {
     "/repos/${official_repo}/contents/library/nextcloud?ref=${ref}"
 }
 
+extract_target_sha_from_library_header() {
+  local file="$1"
+
+  sed -n '1p' <<<"$file" \
+    | grep -oE '[0-9a-f]{40}' \
+    | head -1 || true
+}
+
 extract_added_gitcommits_from_patch() {
   local patch="$1"
 
@@ -651,7 +659,21 @@ else
   RELEASE_TAG="${year_month}.${next_n}"
 fi
 
-TARGET_SHA="$(git rev-parse refs/remotes/origin/master)"
+TARGET_SHA="$(extract_target_sha_from_library_header "$new_library_file")"
+
+if [[ -z "$TARGET_SHA" ]]; then
+  unique_added_git_commit_count="$(
+    printf '%s\n' "$added_git_commits" | sed '/^$/d' | sort -u | wc -l | tr -d ' '
+  )"
+  if [[ "$unique_added_git_commit_count" -eq 1 ]]; then
+    TARGET_SHA="$(printf '%s\n' "$added_git_commits" | sed '/^$/d' | sort -u | head -1)"
+  fi
+fi
+
+if [[ -z "$TARGET_SHA" ]]; then
+  echo "Could not determine TARGET_SHA from library/nextcloud generated header or added GitCommit entries for official-images PR #${OFFICIAL_IMAGES_PR}." >&2
+  exit 1
+fi
 
 tag_bullets="$(
   emit_tag_change_bullets_from_files "$old_library_file" "$new_library_file" || true
