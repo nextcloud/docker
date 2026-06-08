@@ -17,6 +17,7 @@ export PREVIOUS_TAG=""
 export RELEASE_TAG=""
 export TARGET_SHA=""
 export CHANGED_GIT_COMMITS=""
+export ALLOW_EXISTING_OFFICIAL_IMAGES_PR="${INPUT_ALLOW_EXISTING_OFFICIAL_IMAGES_PR:-false}"
 
 get_official_images_pr_number() {
   if [[ -n "${INPUT_OFFICIAL_IMAGES_PR:-}" ]]; then
@@ -541,7 +542,7 @@ existing_tags="$(
     --jq '.[].tagName'
 )"
 
-if [[ -n "$existing_tags" ]]; then
+if [[ "$ALLOW_EXISTING_OFFICIAL_IMAGES_PR" != "true" && -n "$existing_tags" ]]; then
   while read -r tag; do
     [[ -z "$tag" ]] && continue
     body="$(
@@ -562,30 +563,38 @@ if [[ -n "$existing_tags" ]]; then
   done <<<"$existing_tags"
 fi
 
-PREVIOUS_TAG="$(
-  gh release list \
-    --repo "$REPO" \
-    --exclude-drafts \
-    --limit 20 \
-    --json tagName,publishedAt \
-    --jq 'sort_by(.publishedAt) | reverse | .[0].tagName'
-)"
+if [[ -n "${INPUT_PREVIOUS_TAG:-}" ]]; then
+  PREVIOUS_TAG="${INPUT_PREVIOUS_TAG}"
+else
+  PREVIOUS_TAG="$(
+    gh release list \
+      --repo "$REPO" \
+      --exclude-drafts \
+      --limit 20 \
+      --json tagName,publishedAt \
+      --jq 'sort_by(.publishedAt) | reverse | .[0].tagName'
+  )"
+fi
 
 if [[ -z "$PREVIOUS_TAG" || "$PREVIOUS_TAG" == "null" ]]; then
   echo "Could not determine the previous published release tag." >&2
   exit 1
 fi
 
-previous_release_body="$(
-  gh release view "$PREVIOUS_TAG" \
-    --repo "$REPO" \
-    --json body \
-    --jq '.body // ""'
-)"
+if [[ -n "${INPUT_PREVIOUS_OFFICIAL_IMAGES_PR:-}" ]]; then
+  PREVIOUS_OFFICIAL_IMAGES_PR="${INPUT_PREVIOUS_OFFICIAL_IMAGES_PR}"
+else
+  previous_release_body="$(
+    gh release view "$PREVIOUS_TAG" \
+      --repo "$REPO" \
+      --json body \
+      --jq '.body // ""'
+  )"
 
-PREVIOUS_OFFICIAL_IMAGES_PR="$(
-  extract_previous_official_images_pr_from_release_body "$previous_release_body"
-)"
+  PREVIOUS_OFFICIAL_IMAGES_PR="$(
+    extract_previous_official_images_pr_from_release_body "$previous_release_body"
+  )"
+fi
 
 if [[ -z "$PREVIOUS_OFFICIAL_IMAGES_PR" ]]; then
   echo "Could not determine the previous official-images PR from release ${PREVIOUS_TAG}." >&2
@@ -659,7 +668,11 @@ else
   RELEASE_TAG="${year_month}.${next_n}"
 fi
 
-TARGET_SHA="$(extract_target_sha_from_library_header "$new_library_file")"
+if [[ -n "${INPUT_TARGET_SHA:-}" ]]; then
+  TARGET_SHA="${INPUT_TARGET_SHA}"
+else
+  TARGET_SHA="$(extract_target_sha_from_library_header "$new_library_file")"
+fi
 
 if [[ -z "$TARGET_SHA" ]]; then
   unique_added_git_commit_count="$(
