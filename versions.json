@@ -20,7 +20,7 @@
       "fpm-alpine": {
         "variant": "fpm-alpine",
         "base": "alpine",
-        "baseVersion": "3.23",
+        "baseVersion": "3.24",
         "phpVersion": "8.4"
       }
     }
@@ -46,7 +46,7 @@
       "fpm-alpine": {
         "variant": "fpm-alpine",
         "base": "alpine",
-        "baseVersion": "3.23",
+        "baseVersion": "3.24",
         "phpVersion": "8.4"
       }
     }
@@ -72,7 +72,7 @@
       "fpm-alpine": {
         "variant": "fpm-alpine",
         "base": "alpine",
-        "baseVersion": "3.23",
+        "baseVersion": "3.24",
         "phpVersion": "8.3"
       }
     }
