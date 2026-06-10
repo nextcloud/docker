@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:8.4-fpm-alpine3.24
+FROM php:8.5-fpm-alpine3.24
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -62,7 +62,7 @@ RUN set -ex; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.28; \
-    pecl install igbinary-3.2.16; \
+    pecl install igbinary-3.2.17RC1; \
     pecl install imagick-3.8.1; \
     pecl install --configureoptions 'enable-memcached-igbinary="yes"' \
         memcached-3.4.0; \
