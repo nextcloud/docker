@@ -80,25 +80,80 @@ For the image specifically, we provide [some simple deployment examples](https:/
 Below you'll find the main documentation for using this image.
 
 ## Using the apache image
+
 The apache image contains a webserver and exposes port 80. To start the container type:
 
 ```console
-$ docker run -d -p 8080:80 nextcloud
+$ docker run -d -p 8080:80 nextcloud:stable-apache
 ```
+
+<details>
+<summary>Docker Compose equivalent</summary>
+
+```yaml
+# compose.yaml
+services:
+  app:
+    image: nextcloud:stable-apache
+    restart: always
+    ports:
+      - 8080:80
+```
+
+```console
+$ docker compose up -d
+```
+
+</details>
 
 Now you can access Nextcloud at http://localhost:8080/ from your host system.
 
-WARNING: This example is only suitable for limited testing purposes. Please read on to understand how the image handles storing your data and other aspects you need to consider to establish a full Nextcloud stack.
+WARNING: This example is only suitable for limited testing purposes. Please read on to understand how the image handles storing your data and other aspects you need to consider to establish a full Nextcloud deployment.
 
 
 ## Using the fpm image
-To use the fpm image, you need an additional web server, such as [nginx](https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html), that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases, you might want to use another container or your host as proxy. If you use your host you can address your Nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker compose` file). In both cases you don't want to map the fpm port to your host.
+
+To use the fpm image, you need an additional web server, such as [nginx](https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html), that can proxy http-request to the fpm-port of the container. For the connection between the fpm-container and the webserver-container you can use the default docker network or create your own.
 
 ```console
-$ docker run -d nextcloud:fpm
+$ docker run -d nextcloud:stable-fpm
 ```
 
-As the fastCGI-Process is not capable of serving static files (style sheets, images, ...), the webserver needs access to these files. This can be achieved with the `volumes-from` option. You can find more information in the [docker compose section](#running-this-image-with-docker-compose).
+<details>
+<summary>Docker Compose equivalent</summary>
+
+```yaml
+# compose.yaml
+services:
+  app:
+    image: nextcloud:stable-fpm
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+
+  web:
+    image: nginx:alpine-slim
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - app
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    volumes_from:
+      - app
+
+volumes:
+  nextcloud:
+```
+
+See [Base version - FPM](#base-version---fpm) for a complete example including a database and Redis.
+
+**Note:** You will need to provide an `nginx.conf` file. See the [Nextcloud nginx documentation](https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html) for the recommended configuration, and the [FPM examples](https://github.com/nextcloud/docker/tree/master/.examples/docker-compose/insecure/postgres/fpm) in this repository for a working sample.
+
+</details>
+
+As the fastCGI-Process is not capable of serving static files (style sheets, images, ...), the webserver needs access to these files. This can be achieved with the `volumes-from` option. You can find more information in the docker documentation, for example in the [Building a first-class app](https://docs.docker.com/engine/tutorials/dockerlinks/) section.
 
 ## Using an external database
 By default, this container uses SQLite for data storage but the Nextcloud setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB or PostgreSQL database. You can also link a database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup. More info is in [the docker compose section](https://github.com/nextcloud/docker/?tab=readme-ov-file#running-this-image-with-docker-compose).
