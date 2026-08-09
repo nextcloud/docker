@@ -104,10 +104,10 @@ configure_redis_session() {
 
     case "$REDIS_HOST" in
         /*)
-            redis_save_path="unix://${REDIS_HOST}"
+            redis_save_path="unix://${REDIS_HOST}/${REDIS_HOST_DB:=0}"
             ;;
         *)
-            redis_save_path="tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}"
+            redis_save_path="tcp://${REDIS_HOST}:${REDIS_HOST_PORT:=6379}/${REDIS_HOST_DB:=0}"
             ;;
     esac
 
