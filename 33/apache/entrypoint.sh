@@ -176,10 +176,14 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         installed_version="0.0.0.0"
         if [ -f /var/www/html/version.php ]; then
             # shellcheck disable=SC2016
-            installed_version="$(php -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);')"
+            # display_errors is set to STDOUT, so any PHP startup warning (e.g. a stale
+            # "zend_extension=opcache" directive left over from an older PHP base image,
+            # see https://github.com/nextcloud/docker/issues/2595) would otherwise end up
+            # in the captured version string and corrupt the downgrade check below.
+            installed_version="$(php -d display_errors=stderr -r 'require "/var/www/html/version.php"; echo implode(".", $OC_Version);' 2>/dev/null)"
         fi
         # shellcheck disable=SC2016
-        image_version="$(php -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);')"
+        image_version="$(php -d display_errors=stderr -r 'require "/usr/src/nextcloud/version.php"; echo implode(".", $OC_Version);' 2>/dev/null)"
 
         if version_greater "$installed_version" "$image_version"; then
             echo "Can't start Nextcloud because the version of the data ($installed_version) is higher than the docker image version ($image_version) and downgrading is not supported. Are you sure you have pulled the newest image version?"
