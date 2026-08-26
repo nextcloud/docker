@@ -45,4 +45,14 @@ if (getenv('OBJECTSTORE_S3_BUCKET')) {
   } elseif (getenv('OBJECTSTORE_S3_SSE_C_KEY')) {
     $CONFIG['objectstore']['arguments']['sse_c_key'] = getenv('OBJECTSTORE_S3_SSE_C_KEY');
   }
+
+  $sse_kms_enabled = getenv('OBJECTSTORE_S3_SSE_KMS_ENABLED');
+  $sse_kms_key_id = getenv('OBJECTSTORE_S3_SSE_KMS_KEY_ID');
+  // Setting a key id implies enabling SSE-KMS; the flag alone uses the bucket default key.
+  if ($sse_kms_key_id || ($sse_kms_enabled && strtolower($sse_kms_enabled) !== 'false')) {
+    $CONFIG['objectstore']['arguments']['sse_kms_enabled'] = true;
+    if ($sse_kms_key_id) {
+      $CONFIG['objectstore']['arguments']['sse_kms_key_id'] = $sse_kms_key_id;
+    }
+  }
 }
