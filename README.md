@@ -104,82 +104,168 @@ As the fastCGI-Process is not capable of serving static files (style sheets, ima
 By default, this container uses SQLite for data storage but the Nextcloud setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB or PostgreSQL database. You can also link a database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup. More info is in [the docker compose section](https://github.com/nextcloud/docker/?tab=readme-ov-file#running-this-image-with-docker-compose).
 
 ## Persistent data
-The Nextcloud installation and all data beyond what lives in the database (file uploads, etc.) are stored in the [unnamed docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) volume `/var/www/html`. The docker daemon will store that data within the docker directory `/var/lib/docker/volumes/...`. That means your data is saved even if the container crashes, is stopped or deleted.
 
-A named Docker volume or a mounted host directory should be used for upgrades and backups. To achieve this, you need one volume for your database container and one for Nextcloud.
+Running Nextcloud in Docker means your **data on disk must be persistent** across container restarts, upgrades, and recreation. Depending on which database you use, this involves at least one, and typically two volumes:
 
-Nextcloud:
-- `/var/www/html/` folder where all Nextcloud data lives
+1. **Nextcloud's files** — the application, configuration, user uploads, installed apps, and themes, all stored under `/var/www/html`.
+2. **Your database** — if you use **MariaDB/MySQL or PostgreSQL**, the database runs in a separate container with its own volume. If you use **SQLite** (the default), the database file is stored inside the Nextcloud data directory (`/var/www/html/data`), so it is already covered by the Nextcloud volume — no separate database container or volume is needed.
+
+### The default (unnamed) volume
+
+If you run the image without specifying a volume, Docker creates an **unnamed (anonymous) volume** for `/var/www/html`. This is fine for a quick test — it survives container restarts — but it is **not suitable for real deployments**:
+
+- You can't easily reference it by name for backups or migration.
+- When you replace a container (common during upgrades), Docker creates a *new* anonymous volume. Your old volume remains on disk but is orphaned and unused, which often looks like data loss (your files are still on disk, but not mounted).
+
+> ⚠️ **For upgrades and backups, always use a named volume or a bind mount.**
+
+### How upgrades interact with `/var/www/html`
+
+Each time the container starts, the entrypoint script compares the Nextcloud version shipped in the image with the version installed in `/var/www/html`. When it detects a new version (or a fresh, empty volume), it synchronizes the Nextcloud source from the image into `/var/www/html/` (**removing files that are not part of the image**), while preserving excluded paths. This update mechanism runs when the container uses the image’s default startup command (or when `NEXTCLOUD_UPDATE=1` is set for custom commands).
+
+To protect administrator-managed state, specific paths are excluded (preserved) during this process. The default exclusions are defined in [`upgrade.exclude`](https://github.com/nextcloud/docker/blob/master/upgrade.exclude):
+
+- `/config/`
+- `/data/`
+- `/custom_apps/`
+- `/themes/`
+- `/version.php`
+- `/nextcloud-init-sync.lock`
+
+**Everything else inside `/var/www/html/` is replaced or removed**, including any files or folders you may have added yourself. This sync occurs on first install and during upgrades, not on every normal restart. Understanding this is essential — it is why volumes matter, and why mounting volumes in the wrong place can lead to data loss.
+
+> **Implementation note:** Currently, the replacement is performed using `rsync --delete` with the exclusions above. Files in the destination that do not exist in the image source and are not excluded are deleted.
+
+### Recommended setup: named volumes
+
+The simplest and most robust approach uses one named volume for Nextcloud. The four protected subdirectories (`config`, `data`, `custom_apps`, `themes`) all live inside it automatically.
+
+**Nextcloud** — `/var/www/html` contains the application, configuration, user data, and apps:
 ```console
 $ docker run -d \
--v nextcloud:/var/www/html \
-nextcloud
+  -v nextcloud:/var/www/html \
+  nextcloud
 ```
 
-Database:
-- `/var/lib/mysql` MySQL / MariaDB Data
-- `/var/lib/postgresql/data` PostgreSQL Data
+**If you use SQLite** (the default database), this single volume is all you need — the SQLite database file lives inside `/var/www/html/data` and is already persisted.
+
+**If you use MariaDB/MySQL or PostgreSQL**, your database runs in a separate container and needs its own volume. Refer to the [MariaDB](https://hub.docker.com/_/mariadb) or [PostgreSQL](https://hub.docker.com/_/postgres) image documentation for full details.
+
+MariaDB / MySQL — `/var/lib/mysql`:
 ```console
 $ docker run -d \
--v db:/var/lib/mysql \
-mariadb:lts
+  -v db:/var/lib/mysql \
+  mariadb:lts
 ```
 
-### Additional volumes
-
-If you want to get fine grained access to your individual files, you can mount additional volumes for data, config, your theme and custom apps. The `data`, `config` files are stored in respective subfolders inside `/var/www/html/`. The apps are split into core `apps` (which are shipped with Nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use a custom theme it would go into the `themes` subfolder.
-
-Overview of the folders that can be mounted as volumes:
-
-- `/var/www/html` Main folder, needed for updating
-- `/var/www/html/custom_apps` installed / modified apps
-- `/var/www/html/config` local configuration
-- `/var/www/html/data` the actual data of your Nextcloud
-- `/var/www/html/themes/<YOUR_CUSTOM_THEME>` theming/branding
-
-If you want to use named volumes for all of these, it would look like this:
+PostgreSQL — `/var/lib/postgresql/data`:
 ```console
 $ docker run -d \
--v nextcloud:/var/www/html \
--v custom_apps:/var/www/html/custom_apps \
--v config:/var/www/html/config \
--v data:/var/www/html/data \
--v theme:/var/www/html/themes/<YOUR_CUSTOM_THEME> \
-nextcloud
+  -v db:/var/lib/postgresql/data \
+  postgres:alpine
 ```
 
-If you'd prefer to use bind mounts instead of named volumes, for instance, when working with different device or network mounts for user data files and configuration:
+### Additional volumes (more control)
+
+The single-volume approach above is the simplest option. You can instead mount the protected subfolders as **separate volumes** when you need to:
+
+- Back up user data on a different schedule than configuration.
+- Place user data on a different storage backend (e.g. NFS or a large disk) from the rest of the application.
+- Inspect or manage files directly on the host.
+
+| Mount point | Purpose |
+|---|---|
+| `/var/www/html` |Main folder — recommended to mount (required for the upgrade mechanism to work as intended) |
+| `/var/www/html/custom_apps` | Apps you install (App Store) or manage yourself |
+| `/var/www/html/config` | Configuration files (including `config.php` and image-provided config snippets) |
+| `/var/www/html/data` | User files and, if using SQLite, the database file |
+| `/var/www/html/themes/<YOUR_CUSTOM_THEME>` | Custom theming / branding |
+
+If you mount subfolders separately, still mount `/var/www/html` (usually as a named volume) so upgrades work as intended.
+
+> ⚠️ **Do not mount a volume at `/var/www/html/apps`.** This directory contains
+> Nextcloud's built-in ("shipped") apps, which are replaced by the image on
+> every upgrade. There is no reason to persist it separately, and doing so is a
+> common source of confusion with `/var/www/html/custom_apps`, which is where
+> user-installed apps belong. If you accidentally place apps in `apps` instead
+> of `custom_apps`, they they may be deleted/overwritten on the next upgrade.
+
+#### Using named volumes
+
 ```console
 $ docker run -d \
--v /path/on/host/to/folder/nextcloud:/var/www/html \
--v /path/on/host/to/folder/custom_apps:/var/www/html/custom_apps \
--v /path/on/host/to/folder/config:/var/www/html/config \
--v /path/on/host/to/folder/data:/var/www/html/data \
--v /path/on/host/to/folder/theme:/var/www/html/themes/<YOUR_CUSTOM_THEME> \
-nextcloud
+  -v nextcloud:/var/www/html \
+  -v custom_apps:/var/www/html/custom_apps \
+  -v config:/var/www/html/config \
+  -v data:/var/www/html/data \
+  -v theme:/var/www/html/themes/<YOUR_CUSTOM_THEME> \
+  nextcloud
 ```
 
-Here’s the same example using Docker's more detailed `--mount`. Note that with `-v` or `--volume`, the specified folders are created automatically if they don't exist. However, when using `--mount` for bind mounts, the directories must already exist on the host, or Docker will return an error.
+#### Using bind mounts
+
+Bind mounts are useful when you want user data on a specific disk or network mount, or you need direct host access for backups.
+
+With the `-v` flag, Docker creates host directories automatically if they don't exist:
 ```console
 $ docker run -d \
---mount type=bind,source=/path/on/host/to/folder/nextcloud,target=/var/www/html \
---mount type=bind,source=/path/on/host/to/folder/custom_apps,target=/var/www/html/custom_apps \
---mount type=bind,source=/path/on/host/to/folder/config,target=/var/www/html/config \
---mount type=bind,source=/path/on/host/to/folder/data,target=/var/www/html/data \
---mount type=bind,source=/path/on/host/to/folder/theme,target=/var/www/html/themes/<YOUR_CUSTOM_THEME> \
-nextcloud
+  -v /path/on/host/nextcloud:/var/www/html \
+  -v /path/on/host/custom_apps:/var/www/html/custom_apps \
+  -v /path/on/host/config:/var/www/html/config \
+  -v /path/on/host/data:/var/www/html/data \
+  -v /path/on/host/theme:/var/www/html/themes/<YOUR_CUSTOM_THEME> \
+  nextcloud
 ```
-The examples above use figurative directory `/path/on/host/to/folder/` for bind mounts. Please modify the paths by using either a relative or absolute path.
 
-NOTE: Do not confuse the `apps` and `custom_apps` folders. These folders contain different sets of apps, and mixing them will result in a broken installation. The former contains "shipped" apps, which come with Nextcloud Server. The latter contains apps you install from the App Store.
+With `--mount type=bind`, the host directories **must already exist** or Docker will return an error:
+```console
+$ docker run -d \
+  --mount type=bind,source=/path/on/host/nextcloud,target=/var/www/html \
+  --mount type=bind,source=/path/on/host/custom_apps,target=/var/www/html/custom_apps \
+  --mount type=bind,source=/path/on/host/config,target=/var/www/html/config \
+  --mount type=bind,source=/path/on/host/data,target=/var/www/html/data \
+  --mount type=bind,source=/path/on/host/theme,target=/var/www/html/themes/<YOUR_CUSTOM_THEME> \
+  nextcloud
+```
+
+Replace `/path/on/host/…` with your actual absolute or relative paths.
 
 ### Custom volumes
 
-If mounting additional volumes under `/var/www/html`, you should consider:
-- Confirming that [upgrade.exclude](https://github.com/nextcloud/docker/blob/master/upgrade.exclude) contains the files and folders that should persist during installation and upgrades; or
-- Mounting storage volumes to locations outside of `/var/www/html`.
+The volume paths documented above are safe because they are already listed in `upgrade.exclude`. If you mount **custom** folders inside `/var/www/html`, you must protect them from being removed during installation and upgrades (see [How upgrades interact with /var/www/html](#how-upgrades-interact-with-varwwwhtml)).
 
-**Data inside the main folder (`/var/www/html`) will be overridden/removed during installation and upgrades, unless listed in [upgrade.exclude](https://github.com/nextcloud/docker/blob/master/upgrade.exclude).** The additional volumes officially supported are already in that list, but custom volumes will need to be added by you. We suggest mounting custom storage volumes outside of `/var/www/html` and if possible read-only so that making this adjustment is unnecessary. If you must do so, however, you may build a custom image with a modified `/upgrade.exclude` file that incorporates your custom volume(s).
+You have two options:
+
+1. **Mount outside `/var/www/html` (recommended).** This avoids the problem entirely and requires no image changes:
+   ```console
+   -v my-storage:/mnt/my-storage
+   ```
+
+2. **Build a custom image with a modified `/upgrade.exclude`.** The entrypoint reads the exclude list from `/upgrade.exclude` at the root of the container filesystem. To add your custom path, create a derived image:
+   ```dockerfile
+   FROM nextcloud:stable
+   COPY my-upgrade.exclude /upgrade.exclude
+   ```
+   where `my-upgrade.exclude` contains the default entries plus your addition:
+   ```
+   /config/
+   /data/
+   /custom_apps/
+   /themes/
+   /version.php
+   /nextcloud-init-sync.lock
+   /my-storage/
+   ```
+
+Where possible, mount custom storage outside `/var/www/html` and, if appropriate, read-only — so that no `upgrade.exclude` adjustment is needed.
+
+### Backups
+
+Back up both your Nextcloud volume(s) and your database. If you use SQLite, the database file is inside the Nextcloud data directory, so backing up the Nextcloud volume covers both. If you use MariaDB/MySQL or PostgreSQL, back up the database volume (or use a database dump) separately.
+
+For consistent backups, consider putting Nextcloud into [maintenance mode](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/backup.html) first.
+
+Verify your backups by performing a test restore.
 
 ## Running as an arbitrary user / file permissions / changing the default container user
 
