@@ -6,10 +6,13 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         ffmpeg \
         ghostscript \
-        libmagickcore-6.q16-6-extra \
+        libmagickcore-7.q16-10-extra \
         procps \
         smbclient \
         supervisor \
+        lsb-release \
+        ca-certificates \
+        curl \
 #       libreoffice \
     ; \
     rm -rf /var/lib/apt/lists/*
@@ -17,6 +20,10 @@ RUN set -ex; \
 RUN set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
+    \
+    curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb; \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb; \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/debsuryorg-archive-keyring.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
