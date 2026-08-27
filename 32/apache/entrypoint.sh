@@ -221,7 +221,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                 install=false
                 if [ -n "${NEXTCLOUD_ADMIN_USER+x}" ] && [ -n "${NEXTCLOUD_ADMIN_PASSWORD+x}" ]; then
                     # shellcheck disable=SC2016
-                    install_options='-n --admin-user "$NEXTCLOUD_ADMIN_USER" --admin-pass "$NEXTCLOUD_ADMIN_PASSWORD"'
+                    install_options='-n --admin-user "$NEXTCLOUD_ADMIN_USER" "--admin-pass=$NEXTCLOUD_ADMIN_PASSWORD"'
                     if [ -n "${NEXTCLOUD_DATA_DIR+x}" ]; then
                         # shellcheck disable=SC2016
                         install_options=$install_options' --data-dir "$NEXTCLOUD_DATA_DIR"'
@@ -242,12 +242,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
                     elif [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ]; then
                         echo "Installing with MySQL database"
                         # shellcheck disable=SC2016
-                        install_options=$install_options' --database mysql --database-name "$MYSQL_DATABASE" --database-user "$MYSQL_USER" --database-pass "$MYSQL_PASSWORD" --database-host "$MYSQL_HOST"'
+                        install_options=$install_options' --database mysql --database-name "$MYSQL_DATABASE" --database-user "$MYSQL_USER" "--database-pass=$MYSQL_PASSWORD" --database-host "$MYSQL_HOST"'
                         install=true
                     elif [ -n "${POSTGRES_DB+x}" ] && [ -n "${POSTGRES_USER+x}" ] && [ -n "${POSTGRES_PASSWORD+x}" ] && [ -n "${POSTGRES_HOST+x}" ]; then
                         echo "Installing with PostgreSQL database"
                         # shellcheck disable=SC2016
-                        install_options=$install_options' --database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" --database-pass "$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST"'
+                        install_options=$install_options' --database pgsql --database-name "$POSTGRES_DB" --database-user "$POSTGRES_USER" "--database-pass=$POSTGRES_PASSWORD" --database-host "$POSTGRES_HOST"'
                         install=true
                     fi
 
