@@ -290,6 +290,10 @@ To use Redis for memory caching as well as PHP session storage, specify the foll
 - `REDIS_HOST_USER` (not set by default) Optional username for Redis, only use for external Redis servers that require a user.
 - `REDIS_HOST_PASSWORD` (not set by default) Redis password
 
+For Redis Cluster, set the seed list as a comma-separated list of host:port pairs. When `REDIS_CLUSTER_SEEDS` is set, Redis Cluster config is used instead of `REDIS_HOST`.
+
+- `REDIS_CLUSTER_SEEDS` (not set by default) Comma-separated list of cluster seeds, e.g. `redis-1:6379,redis-2:6379,redis-3:6379`
+
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/caching_configuration.html) for more information.
 
 ### E-mail (SMTP) Configuration
