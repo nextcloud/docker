@@ -363,6 +363,10 @@ size of the HTTP request body sent from the client. It specifies the number of _
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html#apache) for more information.
 
+To change the default HTTP and HTTPS port from `80` and `443`, use the following variables:
+- `APACHE_HTTP_PORT` (default 80): Set the http port of the proxy
+- `APACHE_HTTPS_PORT` (default 443) Set the https port of the proxy
+
 ### Using the image behind a reverse proxy and specifying the server host and protocol
 
 By default, the apache image will replace the remote addr (IP address visible to Nextcloud) with the IP address from `X-Real-IP` if the request is coming from a reverse proxy in `10.0.0.0/8`, `172.16.0.0/12` or `192.168.0.0/16`. If you want Nextcloud to pick up the server host (`HTTP_X_FORWARDED_HOST`), protocol (`HTTP_X_FORWARDED_PROTO`) and client IP (`HTTP_X_FORWARDED_FOR`) from a trusted proxy, then disable rewrite IP and add the reverse proxy's IP address to `TRUSTED_PROXIES`.
