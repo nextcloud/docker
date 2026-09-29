@@ -113,6 +113,13 @@ RUN { \
         echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
+        echo; \
+        echo '; Use Redis for PHP sessions when configured by the entrypoint'; \
+        echo 'session.save_handler=${PHP_REDIS_SESSION_HANDLER}'; \
+        echo 'session.save_path="${PHP_REDIS_SESSION_SAVE_PATH}"'; \
+        echo 'redis.session.locking_enabled=${PHP_REDIS_SESSION_LOCKING_ENABLED}'; \
+        echo 'redis.session.lock_retries=${PHP_REDIS_SESSION_LOCK_RETRIES}'; \
+        echo 'redis.session.lock_wait_time=${PHP_REDIS_SESSION_LOCK_WAIT_TIME}'; \
     } > "${PHP_INI_DIR}/conf.d/nextcloud.ini"; \
     \
     mkdir /var/www/data; \
