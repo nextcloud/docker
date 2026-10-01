@@ -4,14 +4,16 @@ if (getenv('REDIS_HOST')) {
     'memcache.distributed' => '\OC\Memcache\Redis',
     'memcache.locking' => '\OC\Memcache\Redis',
     'redis' => array(
-      'host' => getenv('REDIS_HOST'),
+      'host' => (getenv('REDIS_HOST')[0] === '/' ? 'unix' : (getenv('REDIS_PROTOCOL') ?: 'tcp')) . "://" . getenv('REDIS_HOST'),
       'password' => getenv('REDIS_HOST_PASSWORD_FILE') ? trim(file_get_contents(getenv('REDIS_HOST_PASSWORD_FILE'))) : (string) getenv('REDIS_HOST_PASSWORD'),
     ),
   );
 
-  if (getenv('REDIS_HOST_PORT') !== false) {
+  if (getenv('REDIS_HOST')[0] === '/') {
+    $CONFIG['redis']['port'] = 0;
+  } elseif (getenv('REDIS_HOST_PORT') !== false) {
     $CONFIG['redis']['port'] = (int) getenv('REDIS_HOST_PORT');
-  } elseif (getenv('REDIS_HOST')[0] != '/') {
+  } else {
     $CONFIG['redis']['port'] = 6379;
   }
 
