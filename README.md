@@ -285,10 +285,11 @@ You might want to make sure the htaccess is up to date after each container upda
 
 To use Redis for memory caching as well as PHP session storage, specify the following values and also add a [Redis](https://hub.docker.com/_/redis/) container to your stack. See the [examples](https://github.com/nextcloud/docker/tree/master/.examples) for further instructions.
 
-- `REDIS_HOST` (not set by default) Name of Redis container
+- `REDIS_HOST` (not set by default) Name of Redis container.
 - `REDIS_HOST_PORT` (default: `6379`) Optional port for Redis, only use for external Redis servers that run on non-standard ports.
 - `REDIS_HOST_USER` (not set by default) Optional username for Redis, only use for external Redis servers that require a user.
-- `REDIS_HOST_PASSWORD` (not set by default) Redis password
+- `REDIS_HOST_PASSWORD` (not set by default) Redis password.
+- `REDIS_PROTOCOL` (default: `tcp`) Set to `tls` to use TLS when connecting to Redis server.
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/caching_configuration.html) for more information.
 
