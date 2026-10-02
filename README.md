@@ -34,6 +34,7 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
     - [Custom Data directory (`datadirectory`)](#custom-data-directory-datadirectory)
     - [Trusted domains (`trusted_domains`)](#trusted-domains-trusted_domains)
     - [Image specific](#image-specific)
+    - [Background jobs (`cron.php`)](#background-jobs-cronphp)
     - [Redis Memory Caching](#redis-memory-caching)
     - [E-mail (SMTP) Configuration](#e-mail-smtp-configuration)
     - [Object Storage (Primary Storage)](#object-storage-primary-storage)
@@ -280,6 +281,18 @@ The install and update script is only triggered when a default command is used (
 You might want to make sure the htaccess is up to date after each container update. Especially on multiple swarm nodes as any discrepancy will make your server unusable.
 
 - `NEXTCLOUD_INIT_HTACCESS` (not set by default) Set it to true to enable run `occ maintenance:update:htaccess` after container initialization.
+
+### Background jobs (`cron.php`)
+
+The images ship a `/cron.sh` entrypoint that runs `php -f /var/www/html/cron.php` every 5 minutes via busybox `crond`. To run the background jobs less often, override the schedule with a standard five-field cron expression:
+
+- `NEXTCLOUD_CRON_SCHEDULE` (default: `*/5 * * * *`) Cron expression for `cron.php`.
+
+```console
+$ docker run -d --volumes-from app -e NEXTCLOUD_CRON_SCHEDULE='*/30 * * * *' --entrypoint /cron.sh nextcloud
+```
+
+Note that Nextcloud's admin overview reports a warning once the last background job ran more than an hour ago, and jobs such as calendar event reminders are delayed by up to one interval. `TZ` applies to the schedule, so it is evaluated in the container's local time.
 
 ### Redis Memory Caching
 
