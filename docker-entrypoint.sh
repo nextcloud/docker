@@ -137,6 +137,12 @@ if expr "$1" : "apache" 1>/dev/null; then
     if [ -n "${APACHE_DISABLE_REWRITE_IP+x}" ]; then
         a2disconf remoteip
     fi
+    if [ -n "${APACHE_HTTP_PORT}" ]; then
+        sed  -i "s/Listen 80/Listen $APACHE_HTTP_PORT/" /etc/apache2/ports.conf
+    fi
+    if [ -n "${APACHE_HTTPS_PORT}" ]; then
+        sed -i "s/Listen 443/Listen $APACHE_HTTPS_PORT/" /etc/apache2/ports.conf
+    fi 
 fi
 
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UPDATE:-0}" -eq 1 ]; then
