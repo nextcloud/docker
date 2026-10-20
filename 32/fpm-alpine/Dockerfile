@@ -9,8 +9,6 @@ RUN set -ex; \
         imagemagick-pdf \
         imagemagick-jpeg \
         imagemagick-raw \
-        imagemagick-tiff \
-        imagemagick-heic \
         imagemagick-webp \
         imagemagick-svg \
         rsync \
