@@ -273,13 +273,15 @@ One or more trusted domains can be set through environment variable, too. They w
 
 ### Image specific
 
-The install and update script is only triggered when a default command is used (`apache-foreground` or `php-fpm`). If you use a custom command you have to enable the install / update with
+The image’s entrypoint uses the container’s startup command (the image `CMD`, or your Compose `command:`) to decide whether to run its install/update logic. If you override the default `CMD` with a custom one (for example `supervisord`), the entrypoint no longer sees the expected `apache-foreground` / `php-fpm` startup command and therefore will not automatically run the install/update handling unless explicitly enabled.
+
+To force install/update handling with a custom `CMD` / `command:`, set the following to `1`:
 
 - `NEXTCLOUD_UPDATE` (default: `0`)
 
-You might want to make sure the htaccess is up to date after each container update. Especially on multiple swarm nodes as any discrepancy will make your server unusable.
+You may also want to ensure `.htaccess` is refreshed after container startup, especially in multi-node/swarm deployments where inconsistencies can make the instance unusable. Setting the following variable will run `occ maintenance:update:htaccess` after initialization:
 
-- `NEXTCLOUD_INIT_HTACCESS` (not set by default) Set it to true to enable run `occ maintenance:update:htaccess` after container initialization.
+- `NEXTCLOUD_INIT_HTACCESS` (not set by default)
 
 ### Redis Memory Caching
 
