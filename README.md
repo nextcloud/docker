@@ -460,7 +460,11 @@ services:
       - MYSQL_PASSWORD=
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
-
+    # Note: the following configuration is needed to avoid warnings in the nextcloud admin settings:
+    command:
+      - --innodb-log-file-size=256M
+      - --slow-query-log=ON
+      - --long-query-time=2
   # Note: Redis is an external service. You can find more information about the configuration here:
   # https://hub.docker.com/_/redis
   redis:
