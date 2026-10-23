@@ -106,6 +106,7 @@ RUN { \
     { \
         echo 'apc.serializer=igbinary'; \
         echo 'session.serialize_handler=igbinary'; \
+        echo 'session.upload_progress.enabled=0'; \
     } >> "${PHP_INI_DIR}/conf.d/docker-php-ext-igbinary.ini"; \
     \
     { \
