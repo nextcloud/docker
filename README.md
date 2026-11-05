@@ -64,6 +64,15 @@ The second option is a `fpm` container. It is based on the [php-fpm](https://hub
 
 [![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/nextcloud/docker/8db861d67f257a3e9ac1790ea06d4e2a7a193a6c/stack.yml)
 
+### Deploying with Easypanel
+
+[Easypanel](https://easypanel.io) is a self-hosted Docker deployment platform, and Nextcloud has a one-click deployment template there:
+
+[![Deploy on Easypanel][easypanel-btn]][easypanel-deploy]
+
+[easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
+[easypanel-deploy]: https://easypanel.io/templates/nextcloud
+
 ## Getting help
 
 Most Nextcloud Server administrative matters are covered in the official [Nextcloud Admin Manual](https://docs.nextcloud.com/server/latest/admin_manual/) or [other official Nextcloud documentation](https://docs.nextcloud.com) (which are all routinely updated).
