@@ -290,6 +290,7 @@ To use Redis for memory caching as well as PHP session storage, specify the foll
 - `REDIS_HOST_USER` (not set by default) Optional username for Redis, only use for external Redis servers that require a user.
 - `REDIS_HOST_PASSWORD` (not set by default) Redis password.
 - `REDIS_PROTOCOL` (default: `tcp`) Set to `tls` to use TLS when connecting to Redis server.
+- `REDIS_PREFIX` (not set by default) Optional prefix for Redis keys used by the PHP session handler, including session locks. If unset or empty, the phpredis default `PHPREDIS_SESSION:` is used. This does not change Nextcloud's `memcache_customprefix` setting.
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/caching_configuration.html) for more information.
 

@@ -91,7 +91,7 @@ get_enabled_apps() {
 # Write PHP session config for Redis to /usr/local/etc/php/conf.d/redis-session.ini
 configure_redis_session() {
     local redis_save_path
-    local redis_auth=''
+    local redis_query=''
 
     echo "=> Configuring PHP session handler..."
 
@@ -112,15 +112,25 @@ configure_redis_session() {
     esac
 
     if [ -n "${REDIS_HOST_PASSWORD+x}" ] && [ -n "${REDIS_HOST_USER+x}" ]; then
-        redis_auth="?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}"
+        redis_query="?auth[]=${REDIS_HOST_USER}&auth[]=${REDIS_HOST_PASSWORD}"
     elif [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-        redis_auth="?auth=${REDIS_HOST_PASSWORD}"
+        redis_query="?auth=${REDIS_HOST_PASSWORD}"
+    fi
+
+    if [ -n "${REDIS_PREFIX:-}" ]; then
+        local redis_prefix
+        redis_prefix="$(php -r 'echo rawurlencode(getenv("REDIS_PREFIX"));')"
+        if [ -n "$redis_query" ]; then
+            redis_query="${redis_query}&prefix=${redis_prefix}"
+        else
+            redis_query="?prefix=${redis_prefix}"
+        fi
     fi
 
     echo "==> Using Redis as PHP session handler..."
     {
         echo 'session.save_handler = redis'
-        echo "session.save_path = \"${redis_save_path}${redis_auth}\""
+        echo "session.save_path = \"${redis_save_path}${redis_query}\""
         echo "redis.session.locking_enabled = 1"
         echo "redis.session.lock_retries = -1"
         # redis.session.lock_wait_time is specified in microseconds.
