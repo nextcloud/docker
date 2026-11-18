@@ -89,6 +89,7 @@ RUN set -ex; \
 ENV PHP_MEMORY_LIMIT 512M
 ENV PHP_UPLOAD_LIMIT 512M
 ENV PHP_OPCACHE_MEMORY_CONSUMPTION 128
+ENV PHP_APC_SHM_SIZE 32M
 RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.interned_strings_buffer=32'; \
@@ -101,6 +102,7 @@ RUN { \
     } > "${PHP_INI_DIR}/conf.d/opcache-recommended.ini"; \
     \
     echo 'apc.enable_cli=1' >> "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"; \
+    echo 'apc.shm_size=${PHP_APC_SHM_SIZE}' >> "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"; \
     \
     { \
         echo 'apc.serializer=igbinary'; \
