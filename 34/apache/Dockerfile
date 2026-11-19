@@ -139,6 +139,7 @@ RUN a2enmod headers rewrite remoteip ; \
     { \
      echo 'RemoteIPHeader X-Real-IP'; \
      echo 'RemoteIPInternalProxy 10.0.0.0/8'; \
+     echo 'RemoteIPInternalProxy 127.0.0.0/8'; \
      echo 'RemoteIPInternalProxy 172.16.0.0/12'; \
      echo 'RemoteIPInternalProxy 192.168.0.0/16'; \
     } > /etc/apache2/conf-available/remoteip.conf; \
